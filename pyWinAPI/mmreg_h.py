@@ -1,0 +1,5428 @@
+from .winapifamily_h import * # NOQA
+from .wtypes_h import (
+    BYTE,
+    DWORD,
+    WORD,
+    SHORT,
+    POINTER,
+    ULONG,
+    GUID,
+    CHAR
+)
+from .guiddef_h import (
+    DEFINE_GUIDNAMED,
+    DEFINE_GUIDSTRUCT
+)
+import ctypes
+
+
+def MAKEFOURCC(ch0, ch1, ch2, ch3):
+    return ord(ch0) | (ord(ch1) << 8) | (ord(ch2) << 16) | (ord(ch3) << 24)
+
+
+def mmioFOURCC(ch0, ch1, ch2, ch3):
+    return MAKEFOURCC(ch0, ch1, ch2, ch3)
+
+# /@@@+++@@@@******************************************************************
+
+# Copyright (C) Microsoft Corporation. All rights reserved.
+
+# Multimedia Registration
+
+# /@@@---@@@@******************************************************************
+
+# Define the following to skip definitions
+
+# NOMMIDS      Multimedia IDs are not defined
+# NONEWWAVE    No new waveform types are defined except WAVEFORMATEX
+# NONEWRIFF    No new RIFF forms are defined
+# NOJPEGDIB    No JPEG DIB definitions
+# NONEWIC      No new Image Compressor types are defined
+# NOBITMAP     No extended bitmap info header definition
+# @@@+++@@@@******************************************************************
+# Copyright (C) Microsoft Corporation. All rights reserved.
+# Multimedia Registration
+# @@@---@@@@******************************************************************
+# Define the following to skip definitions
+# NOMMIDS      Multimedia IDs are not defined
+# NONEWWAVE    No new waveform types are defined except WAVEFORMATEX
+# NONEWRIFF    No new RIFF forms are defined
+# NOJPEGDIB    No JPEG DIB definitions
+# NONEWIC      No new Image Compressor types are defined
+# NOBITMAP     No extended bitmap info header definition
+# #if !defined(__midl)
+# #ifndef _INC_MMREG
+# use version number to verify compatibility
+# version * 100 + revision
+
+_INC_MMREG = 0x9E
+# Assume byte packing throughout
+# from pshpack1_h import * # NOQA
+# RC_INVOKED
+# Assume C declarations for C++
+# __cplusplus
+# manufacturer IDs
+# Microsoft Corporation
+MM_MICROSOFT = 0x1
+# Creative Labs, Inc.
+# Media Vision, Inc.
+MM_CREATIVE = 0x2
+# Fujitsu Corp.
+MM_MEDIAVISION = 0x3
+# PRAGMATRAX Software
+MM_FUJITSU = 0x4
+# Cyrix Corporation
+MM_PRAGMATRAX = 0x5
+# Philips Speech Processing
+MM_CYRIX = 0x6
+# NetXL, Inc.
+MM_PHILIPS_SPEECH_PROCESSING = 0x7
+# ZyXEL Communications, Inc.
+MM_NETXL = 0x8
+# BeCubed Software Inc.
+MM_ZYXEL = 0x9
+# Aardvark Computer Systems, Inc.
+MM_BECUBED = 0xA
+# Bin Tec Communications GmbH
+MM_AARDVARK = 0xB
+# Hewlett-Packard Company
+MM_BINTEC = 0xC
+# Aculab plc
+MM_HEWLETT_PACKARD = 0xD
+# Faith,Inc.
+MM_ACULAB = 0xE
+# Mitel Corporation
+MM_FAITH = 0xF
+# Quantum3D, Inc.
+MM_MITEL = 0x10
+# Siemens-Nixdorf
+MM_QUANTUM3D = 0x11
+# E-mu Systems, Inc.
+MM_SNI = 0x12
+# Artisoft, Inc.
+MM_EMU = 0x13
+# Turtle Beach, Inc.
+MM_ARTISOFT = 0x14
+# IBM Corporation
+MM_TURTLE_BEACH = 0x15
+# Vocaltec Ltd.
+MM_IBM = 0x16
+# Roland
+MM_VOCALTEC = 0x17
+# DSP Solutions, Inc.
+MM_ROLAND = 0x18
+# NEC
+MM_DSP_SOLUTIONS = 0x19
+# ATI Technologies Inc.
+MM_NEC = 0x1A
+# Wang Laboratories, Inc.
+MM_ATI = 0x1B
+# Tandy Corporation
+MM_WANGLABS = 0x1C
+# Voyetra
+MM_TANDY = 0x1D
+# Antex Electronics Corporation
+MM_VOYETRA = 0x1E
+# ICL Personal Systems
+MM_ANTEX = 0x1F
+# Intel Corporation
+MM_ICL_PS = 0x20
+# Advanced Gravis
+MM_INTEL = 0x21
+# Video Associates Labs, Inc.
+MM_GRAVIS = 0x22
+# InterActive Inc.
+MM_VAL = 0x23
+# Yamaha Corporation of America
+MM_INTERACTIVE = 0x24
+# Everex Systems, Inc.
+MM_YAMAHA = 0x25
+# Echo Speech Corporation
+MM_EVEREX = 0x26
+# Sierra Semiconductor Corp
+MM_ECHO = 0x27
+# Computer Aided Technologies
+MM_SIERRA = 0x28
+# APPS Software International
+MM_CAT = 0x29
+# DSP Group, Inc.
+MM_APPS = 0x2A
+# microEngineering Labs
+MM_DSP_GROUP = 0x2B
+# Computer Friends, Inc.
+MM_MELABS = 0x2C
+# ESS Technology
+MM_COMPUTER_FRIENDS = 0x2D
+# Audio, Inc.
+MM_ESS = 0x2E
+# Motorola, Inc.
+MM_AUDIOFILE = 0x2F
+# Canopus, co., Ltd.
+MM_MOTOROLA = 0x30
+# Seiko Epson Corporation
+MM_CANOPUS = 0x31
+# Truevision
+MM_EPSON = 0x32
+# Aztech Labs, Inc.
+MM_TRUEVISION = 0x33
+# Videologic
+MM_AZTECH = 0x34
+# SCALACS
+MM_VIDEOLOGIC = 0x35
+# Korg Inc.
+MM_SCALACS = 0x36
+# Audio Processing Technology
+MM_KORG = 0x37
+# Integrated Circuit Systems, Inc.
+MM_APT = 0x38
+# Iterated Systems, Inc.
+MM_ICS = 0x39
+# Metheus
+MM_ITERATEDSYS = 0x3A
+# Logitech, Inc.
+MM_METHEUS = 0x3B
+# Winnov, Inc.
+MM_LOGITECH = 0x3C
+# NCR Corporation
+MM_WINNOV = 0x3D
+# EXAN
+MM_NCR = 0x3E
+# AST Research Inc.
+MM_EXAN = 0x3F
+# Willow Pond Corporation
+MM_AST = 0x40
+# Sonic Foundry
+MM_WILLOWPOND = 0x41
+# Vitec Multimedia
+MM_SONICFOUNDRY = 0x42
+# MOSCOM Corporation
+MM_VITEC = 0x43
+# Silicon Soft, Inc.
+MM_MOSCOM = 0x44
+# TerraTec Electronic GmbH
+MM_SILICONSOFT = 0x45
+# MediaSonic Ltd.
+MM_TERRATEC = 0x46
+# SANYO Electric Co., Ltd.
+MM_MEDIASONIC = 0x47
+# Supermac
+MM_SANYO = 0x48
+# Audio Processing Technology
+MM_SUPERMAC = 0x49
+# NOGATECH Ltd.
+MM_AUDIOPT = 0x4A
+# Speech Compression
+MM_NOGATECH = 0x4B
+# Ahead, Inc.
+MM_SPEECHCOMP = 0x4C
+# Dolby Laboratories
+MM_AHEAD = 0x4D
+# OKI
+MM_DOLBY = 0x4E
+# AuraVision Corporation
+MM_OKI = 0x4F
+# Ing C. Olivetti & C., S.p.A.
+MM_AURAVISION = 0x50
+# I/O Magic Corporation
+MM_OLIVETTI = 0x51
+# Matsushita Electric Industrial Co., Ltd.
+MM_IOMAGIC = 0x52
+# Control Resources Limited
+MM_MATSUSHITA = 0x53
+# Xebec Multimedia Solutions Limited
+MM_CONTROLRES = 0x54
+# New Media Corporation
+MM_XEBEC = 0x55
+# Natural MicroSystems
+MM_NEWMEDIA = 0x56
+# Lyrrus Inc.
+MM_NMS = 0x57
+# Compusic
+MM_LYRRUS = 0x58
+# OPTi Computers Inc.
+MM_COMPUSIC = 0x59
+# Adlib Accessories Inc.
+MM_OPTI = 0x5A
+# Compaq Computer Corp.
+MM_ADLACC = 0x5B
+# Dialogic Corporation
+MM_COMPAQ = 0x5C
+# InSoft, Inc.
+MM_DIALOGIC = 0x5D
+# M.P. Technologies, Inc.
+MM_INSOFT = 0x5E
+# Weitek
+MM_MPTUS = 0x5F
+# Lernout & Hauspie
+MM_WEITEK = 0x60
+# Quanta Computer Inc.
+MM_LERNOUT_AND_HAUSPIE = 0x61
+# Apple Computer, Inc.
+MM_QCIAR = 0x62
+# Digital Equipment Corporation
+MM_APPLE = 0x63
+# Mark of the Unicorn
+MM_DIGITAL = 0x64
+# Workbit Corporation
+MM_MOTU = 0x65
+# Ositech Communications Inc.
+MM_WORKBIT = 0x66
+# miro Computer Products AG
+MM_OSITECH = 0x67
+# Cirrus Logic
+MM_MIRO = 0x68
+# ISOLUTION  B.V.
+MM_CIRRUSLOGIC = 0x69
+# Horizons Technology, Inc.
+MM_ISOLUTION = 0x6A
+# Computer Concepts Ltd.
+MM_HORIZONS = 0x6B
+# Voice Technologies Group, Inc.
+MM_CONCEPTS = 0x6C
+# Radius
+MM_VTG = 0x6D
+# Rockwell International
+MM_RADIUS = 0x6E
+# Co. XYZ for testing
+MM_ROCKWELL = 0x6F
+# Opcode Systems
+MM_XYZ = 0x70
+# Voxware Inc.
+MM_OPCODE = 0x71
+# Northern Telecom Limited
+MM_VOXWARE = 0x72
+# APICOM
+MM_NORTHERN_TELECOM = 0x73
+# Grande Software
+MM_APICOM = 0x74
+# ADDX
+MM_GRANDE = 0x75
+# Wildcat Canyon Software
+MM_ADDX = 0x76
+# Rhetorex Inc.
+MM_WILDCAT = 0x77
+# Brooktree Corporation
+MM_RHETOREX = 0x78
+# ENSONIQ Corporation
+MM_BROOKTREE = 0x79
+# FAST Multimedia AG
+MM_ENSONIQ = 0x7D
+# NVidia Corporation
+MM_FAST = 0x7E
+# OKSORI Co., Ltd.
+MM_NVIDIA = 0x7F
+# DiAcoustics, Inc.
+MM_OKSORI = 0x80
+# Gulbransen, Inc.
+MM_DIACOUSTICS = 0x81
+# Kay Elemetrics, Inc.
+MM_GULBRANSEN = 0x82
+# Crystal Semiconductor Corporation
+MM_KAY_ELEMETRICS = 0x83
+# Splash Studios
+MM_CRYSTAL = 0x84
+# Quarterdeck Corporation
+MM_SPLASH_STUDIOS = 0x85
+# TDK Corporation
+MM_QUARTERDECK = 0x86
+# Digital Audio Labs, Inc.
+MM_TDK = 0x87
+# Seer Systems, Inc.
+MM_DIGITAL_AUDIO_LABS = 0x88
+# PictureTel Corporation
+MM_SEERSYS = 0x89
+# AT&T Microelectronics
+MM_PICTURETEL = 0x8A
+# Osprey Technologies, Inc.
+MM_ATT_MICROELECTRONICS = 0x8B
+# Mediatrix Peripherals
+MM_OSPREY = 0x8C
+# SounDesignS M.C.S. Ltd.
+MM_MEDIATRIX = 0x8D
+# A.L. Digital Ltd.
+MM_SOUNDESIGNS = 0x8E
+# Spectrum Signal Processing, Inc.
+MM_ALDIGITAL = 0x8F
+# Electronic Courseware Systems, Inc.
+MM_SPECTRUM_SIGNAL_PROCESSING = 0x90
+# AMD
+MM_ECS = 0x91
+# Core Dynamics
+MM_AMD = 0x92
+# CANAM Computers
+MM_COREDYNAMICS = 0x93
+# Softsound, Ltd.
+MM_CANAM = 0x94
+# Norris Communications, Inc.
+MM_SOFTSOUND = 0x95
+# Danka Data Devices
+MM_NORRIS = 0x96
+# EuPhonics
+MM_DDD = 0x97
+# Precept Software, Inc.
+MM_EUPHONICS = 0x98
+# Crystal Net Corporation
+MM_PRECEPT = 0x99
+# Chromatic Research, Inc.
+MM_CRYSTAL_NET = 0x9A
+# Voice Information Systems, Inc.
+MM_CHROMATIC = 0x9B
+# Vienna Systems
+MM_VOICEINFO = 0x9C
+# Connectix Corporation
+MM_VIENNASYS = 0x9D
+# Gadget Labs LLC
+MM_CONNECTIX = 0x9E
+# Frontier Design Group LLC
+MM_GADGETLABS = 0x9F
+# Viona Development GmbH
+MM_FRONTIER = 0xA0
+# Casio Computer Co., LTD
+MM_VIONA = 0xA1
+# Diamond Multimedia
+MM_CASIO = 0xA2
+# S3
+MM_DIAMONDMM = 0xA3
+# D-Vision Systems, Inc.
+MM_S3 = 0xA4
+# Netscape Communications
+MM_DVISION = 0xA5
+# Soundspace Audio
+MM_NETSCAPE = 0xA6
+# VanKoevering Company
+MM_SOUNDSPACE = 0xA7
+# Q-Team
+MM_VANKOEVERING = 0xA8
+# Zefiro Acoustics
+MM_QTEAM = 0xA9
+# Studer Professional Audio AG
+MM_ZEFIRO = 0xAA
+# Fraunhofer IIS
+MM_STUDER = 0xAB
+# Quicknet Technologies
+MM_FRAUNHOFER_IIS = 0xAC
+# Alaris, Inc.
+MM_QUICKNET = 0xAD
+# SIC Resource Inc.
+MM_ALARIS = 0xAE
+# NeoMagic Corporation
+MM_SICRESOURCE = 0xAF
+# Merging Technologies S.A.
+MM_NEOMAGIC = 0xB0
+# Xirlink, Inc.
+MM_MERGING_TECHNOLOGIES = 0xB1
+# Colorgraph (UK) Ltd
+MM_XIRLINK = 0xB2
+# Oak Technology, Inc.
+MM_COLORGRAPH = 0xB3
+# Aureal Semiconductor
+MM_OTI = 0xB4
+# Vivo Software
+MM_AUREAL = 0xB5
+# Sharp
+MM_VIVO = 0xB6
+# Lucent Technologies
+MM_SHARP = 0xB7
+# AT&T Labs, Inc.
+MM_LUCENT = 0xB8
+# Sun Communications, Inc.
+MM_ATT = 0xB9
+# Sorenson Vision
+MM_SUNCOM = 0xBA
+# InVision Interactive
+MM_SORVIS = 0xBB
+# Deutsche Telekom Berkom GmbH
+MM_INVISION = 0xBC
+# Marian GbR Leipzig
+MM_BERKOM = 0xBD
+# Digital Processing Systems, Inc.
+MM_MARIAN = 0xBE
+# BCB Holdings Inc.
+MM_DPSINC = 0xBF
+# Motion Pixels
+MM_BCB = 0xC0
+# QDesign Corporation
+MM_MOTIONPIXELS = 0xC1
+# Nokia Mobile Phones
+MM_QDESIGN = 0xC2
+# DataFusion Systems (Pty) (Ltd)
+MM_NMP = 0xC3
+# The Duck Corporation
+MM_DATAFUSION = 0xC4
+# Future Technology Resources Pty Ltd
+MM_DUCK = 0xC5
+# BERCOS GmbH
+MM_FTR = 0xC6
+# OnLive! Technologies, Inc.
+MM_BERCOS = 0xC7
+# Siemens Business Communications Systems
+MM_ONLIVE = 0xC8
+# TeraLogic, Inc.
+MM_SIEMENS_SBC = 0xC9
+# PhoNet Communications Ltd.
+MM_TERALOGIC = 0xCA
+# Winbond Electronics Corp
+MM_PHONET = 0xCB
+# Virtual Music, Inc.
+MM_WINBOND = 0xCC
+# e-Net, Inc.
+MM_VIRTUALMUSIC = 0xCD
+# Guillemot International
+MM_ENET = 0xCE
+# Emagic Soft- und Hardware GmbH
+MM_GUILLEMOT = 0xCF
+# MWM Acoustics LLC
+MM_EMAGIC = 0xD0
+# Pacific Research and Engineering Corporation
+MM_MWM = 0xD1
+# Sipro Lab Telecom Inc.
+MM_PACIFICRESEARCH = 0xD2
+# Lynx Studio Technology, Inc.
+MM_SIPROLAB = 0xD3
+# Spectrum Productions
+MM_LYNX = 0xD4
+# Dictaphone Corporation
+MM_SPECTRUM_PRODUCTIONS = 0xD5
+# QUALCOMM, Inc.
+MM_DICTAPHONE = 0xD6
+# Ring Zero Systems, Inc
+MM_QUALCOMM = 0xD7
+# AudioScience Inc.
+MM_RZS = 0xD8
+# Pinnacle Systems, Inc.
+MM_AUDIOSCIENCE = 0xD9
+# EES Technik fuer Musik GmbH
+MM_PINNACLE = 0xDA
+# haftmann#software
+MM_EES = 0xDB
+# Lucid Technology, Symetrix Inc.
+MM_HAFTMANN = 0xDC
+# Headspace, Inc
+MM_LUCID = 0xDD
+# UNISYS CORPORATION
+MM_HEADSPACE = 0xDE
+# Luminositi, Inc.
+MM_UNISYS = 0xDF
+# ACTIVE VOICE CORPORATION
+MM_LUMINOSITI = 0xE0
+# Digital Theater Systems, Inc.
+MM_ACTIVEVOICE = 0xE1
+# DIGIGRAM
+MM_DTS = 0xE2
+# Softlab-Nsk
+MM_DIGIGRAM = 0xE3
+# ForteMedia, Inc
+MM_SOFTLAB_NSK = 0xE4
+# Sonorus, Inc.
+MM_FORTEMEDIA = 0xE5
+# Array Microsystems, Inc.
+MM_SONORUS = 0xE6
+# Data Translation, Inc.
+MM_ARRAY = 0xE7
+# I-link Worldwide
+MM_DATARAN = 0xE8
+# Selsius Systems Inc.
+MM_I_LINK = 0xE9
+# AdMOS Technology, Inc.
+MM_SELSIUS_SYSTEMS = 0xEA
+# Lexicon Inc.
+MM_ADMOS = 0xEB
+# Silicon Graphics Inc.
+MM_LEXICON = 0xEC
+# Interactive Product Inc.
+MM_SGI = 0xED
+# IC Ensemble, Inc.
+MM_IPI = 0xEE
+# ViewQuest Technologies Inc.
+MM_ICE = 0xEF
+# eTEK Labs Inc.
+MM_VQST = 0xF0
+# Consistent Software
+MM_ETEK = 0xF1
+# Alesis Studio Electronics
+MM_CS = 0xF2
+# INTERNET Corporation
+MM_ALESIS = 0xF3
+# Sony Corporation
+MM_INTERNET = 0xF4
+# Hyperactive Audio Systems, Inc.
+MM_SONY = 0xF5
+# UHER informatic GmbH
+MM_HYPERACTIVE = 0xF6
+# Sydec NV
+MM_UHER_INFORMATIC = 0xF7
+# Flexion Systems Ltd.
+MM_SYDEC_NV = 0xF8
+# Via Technologies, Inc.
+MM_FLEXION = 0xF9
+# Micronas Semiconductors, Inc.
+MM_VIA = 0xFA
+# Analog Devices, Inc.
+MM_MICRONAS = 0xFB
+# Hewlett Packard Company
+MM_ANALOGDEVICES = 0xFC
+# Matrox
+MM_HP = 0xFD
+# Quick Audio, GbR
+MM_MATROX_DIV = 0xFE
+# You/Com Audiocommunicatie BV
+MM_QUICKAUDIO = 0xFF
+# Richmond Sound Design Ltd.
+MM_YOUCOM = 0x100
+# I-O Data Device, Inc.
+MM_RICHMOND = 0x101
+# ICCC A/S
+MM_IODD = 0x102
+# 3COM Corporation
+MM_ICCC = 0x103
+# Malden Electronics Ltd.
+MM_3COM = 0x104
+# 3Dfx Interactive, Inc.
+MM_MALDEN = 0x105
+# Mindmaker, Inc.
+MM_3DFX = 0x106
+# Telekol Corp.
+MM_MINDMAKER = 0x107
+# ST Microelectronics
+MM_TELEKOL = 0x108
+# Algo Vision Systems GmbH
+MM_ST_MICROELECTRONICS = 0x109
+MM_ALGOVISION = 0x10A
+# extensible MID mapping
+MM_UNMAPPED = 0xffff
+# extensible PID mapping
+MM_PID_UNMAPPED = MM_UNMAPPED
+# {d5a47fa7-6d98-11d1-a21a-00a0c9223196}
+
+
+def INIT_MMREG_MID(guid, id):
+    guid.Data1 = 0xd5a47fa7 + id
+    guid.Data2 = 0x6d98
+    guid.Data3 = 0x11d1
+    guid.Data4[0] = 0xa2
+    guid.Data4[1] = 0x1a
+    guid.Data4[2] = 0x00
+    guid.Data4[3] = 0xa0
+    guid.Data4[4] = 0xc9
+    guid.Data4[5] = 0x22
+    guid.Data4[6] = 0x31
+    guid.Data4[7] = 0x96
+    return guid
+
+
+def EXTRACT_MMREG_MID(guid):
+    return guid.Data1 - 0xd5a47fa7
+
+
+def DEFINE_MMREG_MID_GUID(id):
+    return (
+        0xd5a47fa7 + id,
+        0x6d98,
+        0x11d1,
+        0xa2,
+        0x1a,
+        0x00,
+        0xa0,
+        0xc9,
+        0x22,
+        0x31,
+        0x96
+    )
+
+
+def IS_COMPATIBLE_MMREG_MID(guid):
+    return (
+        (guid.Data1 >= 0xd5a47fa7) and
+        (guid.Data1 < 0xd5a47fa7 + 0xffff) and
+        (guid.Data2 == 0x6d98) and
+        (guid.Data3 == 0x11d1) and
+        (guid.Data4[0] == 0xa2) and
+        (guid.Data4[1] == 0x1a) and
+        (guid.Data4[2] == 0x00) and
+        (guid.Data4[3] == 0xa0) and
+        (guid.Data4[4] == 0xc9) and
+        (guid.Data4[5] == 0x22) and
+        (guid.Data4[6] == 0x31) and
+        (guid.Data4[7] == 0x96)
+    )
+# !defined(INIT_MMREG_MID)
+# {e36dc2ac-6d9a-11d1-a21a-00a0c9223196}
+
+
+def INIT_MMREG_PID(guid, id):
+    guid.Data1 = 0xe36dc2ac + id
+    guid.Data2 = 0x6d9a
+    guid.Data3 = 0x11d1
+    guid.Data4[0] = 0xa2
+    guid.Data4[1] = 0x1a
+    guid.Data4[2] = 0x00
+    guid.Data4[3] = 0xa0
+    guid.Data4[4] = 0xc9
+    guid.Data4[5] = 0x22
+    guid.Data4[6] = 0x31
+    guid.Data4[7] = 0x96
+    return guid
+
+
+def EXTRACT_MMREG_PID(guid):
+    return guid.Data1 - 0xe36dc2ac
+
+
+def DEFINE_MMREG_PID_GUID(id):
+    return (
+        0xe36dc2ac + id,
+        0x6d9a,
+        0x11d1,
+        0xa2,
+        0x1a,
+        0x00,
+        0xa0,
+        0xc9,
+        0x22,
+        0x31,
+        0x96
+    )
+
+
+def IS_COMPATIBLE_MMREG_PID(guid):
+    return (
+        (guid.Data1 >= 0xe36dc2ac) and
+        (guid.Data1 < 0xe36dc2ac + 0xffff) and
+        (guid.Data2 == 0x6d9a) and
+        (guid.Data3 == 0x11d1) and
+        (guid.Data4[0] == 0xa2) and
+        (guid.Data4[1] == 0x1a) and
+        (guid.Data4[2] == 0x00) and
+        (guid.Data4[3] == 0xa0) and
+        (guid.Data4[4] == 0xc9) and
+        (guid.Data4[5] == 0x22) and
+        (guid.Data4[6] == 0x31) and
+        (guid.Data4[7] == 0x96)
+    )
+# !defined(INIT_MMREG_PID)
+# GUID_DEFINED
+# MM_MICROSOFT product IDs
+# Midi Mapper
+# Wave Mapper
+MM_MIDI_MAPPER = 0x1
+# Sound Blaster MIDI output port
+MM_WAVE_MAPPER = 0x2
+# Sound Blaster MIDI input port
+MM_SNDBLST_MIDIOUT = 0x3
+# Sound Blaster INTernal synth
+MM_SNDBLST_MIDIIN = 0x4
+# Sound Blaster waveform output
+MM_SNDBLST_SYNTH = 0x5
+# Sound Blaster waveform input
+MM_SNDBLST_WAVEOUT = 0x6
+# Ad Lib Compatible synth
+MM_SNDBLST_WAVEIN = 0x7
+# MPU 401 compatible MIDI output port
+MM_ADLIB = 0x9
+# MPU 401 compatible MIDI input port
+MM_MPU401_MIDIOUT = 0xA
+# Joystick adapter
+MM_MPU401_MIDIIN = 0xB
+MM_PC_JOYSTICK = 0xC
+# PC speaker waveform output
+# MS Audio Board waveform input
+MM_PCSPEAKER_WAVEOUT = 0xD
+# MS Audio Board waveform output
+MM_MSFT_WSS_WAVEIN = 0xE
+# MS Audio Board  Stereo FM synth
+MM_MSFT_WSS_WAVEOUT = 0xF
+# MS Audio Board Mixer Driver
+MM_MSFT_WSS_FMSYNTH_STEREO = 0x10
+# MS OEM Audio Board waveform input
+MM_MSFT_WSS_MIXER = 0x11
+# MS OEM Audio Board waveform output
+MM_MSFT_WSS_OEM_WAVEIN = 0x12
+# MS OEM Audio Board Stereo FM Synth
+MM_MSFT_WSS_OEM_WAVEOUT = 0x13
+# MS Audio Board Aux. Port
+MM_MSFT_WSS_OEM_FMSYNTH_STEREO = 0x14
+# MS OEM Audio Aux Port
+MM_MSFT_WSS_AUX = 0x15
+# MS Vanilla driver waveform input
+MM_MSFT_WSS_OEM_AUX = 0x16
+# MS Vanilla driver wavefrom output
+MM_MSFT_GENERIC_WAVEIN = 0x17
+# MS Vanilla driver MIDI in
+MM_MSFT_GENERIC_WAVEOUT = 0x18
+# MS Vanilla driver MIDI  external out
+MM_MSFT_GENERIC_MIDIIN = 0x19
+# MS Vanilla driver MIDI synthesizer
+MM_MSFT_GENERIC_MIDIOUT = 0x1A
+# MS Vanilla driver aux (line in)
+MM_MSFT_GENERIC_MIDISYNTH = 0x1B
+# MS Vanilla driver aux (mic)
+MM_MSFT_GENERIC_AUX_LINE = 0x1C
+# MS Vanilla driver aux (CD)
+MM_MSFT_GENERIC_AUX_MIC = 0x1D
+# MS OEM Audio Board Mixer Driver
+MM_MSFT_GENERIC_AUX_CD = 0x1E
+# MS Audio Compression Manager
+MM_MSFT_WSS_OEM_MIXER = 0x1F
+# MS ADPCM Codec
+MM_MSFT_MSACM = 0x20
+# IMA ADPCM Codec
+MM_MSFT_ACM_MSADPCM = 0x21
+# MS Filter
+MM_MSFT_ACM_IMAADPCM = 0x22
+# GSM 610 codec
+MM_MSFT_ACM_MSFILTER = 0x23
+# G.711 codec
+MM_MSFT_ACM_GSM610 = 0x24
+# PCM converter
+MM_MSFT_ACM_G711 = 0x25
+MM_MSFT_ACM_PCM = 0x26
+# Microsoft Windows Sound System drivers
+# Sound Blaster 16 waveform input
+# Sound Blaster 16  waveform output
+MM_WSS_SB16_WAVEIN = 0x27
+# Sound Blaster 16 midi-in
+MM_WSS_SB16_WAVEOUT = 0x28
+# Sound Blaster 16 midi out
+MM_WSS_SB16_MIDIIN = 0x29
+# Sound Blaster 16 FM Synthesis
+MM_WSS_SB16_MIDIOUT = 0x2A
+# Sound Blaster 16 aux (line in)
+MM_WSS_SB16_SYNTH = 0x2B
+# Sound Blaster 16 aux (CD)
+MM_WSS_SB16_AUX_LINE = 0x2C
+# Sound Blaster 16 mixer device
+MM_WSS_SB16_AUX_CD = 0x2D
+# Sound Blaster Pro waveform input
+MM_WSS_SB16_MIXER = 0x2E
+# Sound Blaster Pro waveform output
+MM_WSS_SBPRO_WAVEIN = 0x2F
+# Sound Blaster Pro midi in
+MM_WSS_SBPRO_WAVEOUT = 0x30
+# Sound Blaster Pro midi out
+MM_WSS_SBPRO_MIDIIN = 0x31
+# Sound Blaster Pro FM synthesis
+MM_WSS_SBPRO_MIDIOUT = 0x32
+# Sound Blaster Pro aux (line in )
+MM_WSS_SBPRO_SYNTH = 0x33
+# Sound Blaster Pro aux (CD)
+MM_WSS_SBPRO_AUX_LINE = 0x34
+# Sound Blaster Pro mixer
+MM_WSS_SBPRO_AUX_CD = 0x35
+# WSS NT wave in
+MM_WSS_SBPRO_MIXER = 0x36
+# WSS NT wave out
+MM_MSFT_WSS_NT_WAVEIN = 0x37
+# WSS NT FM synth
+MM_MSFT_WSS_NT_WAVEOUT = 0x38
+# WSS NT mixer
+MM_MSFT_WSS_NT_FMSYNTH_STEREO = 0x39
+# WSS NT aux
+MM_MSFT_WSS_NT_MIXER = 0x3A
+# Sound Blaster 16 waveform input
+MM_MSFT_WSS_NT_AUX = 0x3B
+# Sound Blaster 16  waveform output
+MM_MSFT_SB16_WAVEIN = 0x3C
+# Sound Blaster 16 midi-in
+MM_MSFT_SB16_WAVEOUT = 0x3D
+# Sound Blaster 16 midi out
+MM_MSFT_SB16_MIDIIN = 0x3E
+# Sound Blaster 16 FM Synthesis
+MM_MSFT_SB16_MIDIOUT = 0x3F
+# Sound Blaster 16 aux (line in)
+MM_MSFT_SB16_SYNTH = 0x40
+# Sound Blaster 16 aux (CD)
+MM_MSFT_SB16_AUX_LINE = 0x41
+# Sound Blaster 16 mixer device
+MM_MSFT_SB16_AUX_CD = 0x42
+# Sound Blaster Pro waveform input
+MM_MSFT_SB16_MIXER = 0x43
+# Sound Blaster Pro waveform output
+MM_MSFT_SBPRO_WAVEIN = 0x44
+# Sound Blaster Pro midi in
+MM_MSFT_SBPRO_WAVEOUT = 0x45
+# Sound Blaster Pro midi out
+MM_MSFT_SBPRO_MIDIIN = 0x46
+# Sound Blaster Pro FM synthesis
+MM_MSFT_SBPRO_MIDIOUT = 0x47
+# Sound Blaster Pro aux (line in)
+MM_MSFT_SBPRO_SYNTH = 0x48
+# Sound Blaster Pro aux (CD)
+MM_MSFT_SBPRO_AUX_LINE = 0x49
+# Sound Blaster Pro mixer
+MM_MSFT_SBPRO_AUX_CD = 0x4A
+MM_MSFT_SBPRO_MIXER = 0x4B
+# Yamaha OPL2/OPL3 compatible FM synthesis
+MM_MSFT_MSOPL_SYNTH = 0x4C
+# Voice Modem Serial Line Wave Input
+# Voice Modem Serial Line Wave Output
+MM_MSFT_VMDMS_LINE_WAVEIN = 0x50
+# Voice Modem Serial Handset Wave Input
+MM_MSFT_VMDMS_LINE_WAVEOUT = 0x51
+# Voice Modem Serial Handset Wave Output
+MM_MSFT_VMDMS_HANDSET_WAVEIN = 0x52
+# Voice Modem Wrapper Line Wave Input
+MM_MSFT_VMDMS_HANDSET_WAVEOUT = 0x53
+# Voice Modem Wrapper Line Wave Output
+MM_MSFT_VMDMW_LINE_WAVEIN = 0x54
+# Voice Modem Wrapper Handset Wave Input
+MM_MSFT_VMDMW_LINE_WAVEOUT = 0x55
+# Voice Modem Wrapper Handset Wave Output
+MM_MSFT_VMDMW_HANDSET_WAVEIN = 0x56
+# Voice Modem Wrapper Mixer
+MM_MSFT_VMDMW_HANDSET_WAVEOUT = 0x57
+# Voice Modem Game Compatible Wave Device
+MM_MSFT_VMDMW_MIXER = 0x58
+# Voice Modem Game Compatible Wave Device
+MM_MSFT_VMDM_GAME_WAVEOUT = 0x59
+MM_MSFT_VMDM_GAME_WAVEIN = 0x5A
+MM_MSFT_ACM_MSNAUDIO = 0x5B
+MM_MSFT_ACM_MSG723 = 0x5C
+MM_MSFT_ACM_MSRT24 = 0x5D
+# Generic id for WDM Audio drivers
+# Generic id for WDM Audio drivers
+MM_MSFT_WDMAUDIO_WAVEOUT = 0x64
+# Generic id for WDM Audio drivers
+MM_MSFT_WDMAUDIO_WAVEIN = 0x65
+# Generic id for WDM Audio drivers
+MM_MSFT_WDMAUDIO_MIDIOUT = 0x66
+# Generic id for WDM Audio drivers
+MM_MSFT_WDMAUDIO_MIDIIN = 0x67
+# Generic id for WDM Audio drivers
+MM_MSFT_WDMAUDIO_MIXER = 0x68
+MM_MSFT_WDMAUDIO_AUX = 0x69
+# MM_CREATIVE product IDs
+# SB (r) 1.5 waveform input
+MM_CREATIVE_SB15_WAVEIN = 0x1
+MM_CREATIVE_SB20_WAVEIN = 0x2
+MM_CREATIVE_SBPRO_WAVEIN = 0x3
+MM_CREATIVE_SBP16_WAVEIN = 0x4
+MM_CREATIVE_PHNBLST_WAVEIN = 0x5
+MM_CREATIVE_SB15_WAVEOUT = 0x65
+MM_CREATIVE_SB20_WAVEOUT = 0x66
+MM_CREATIVE_SBPRO_WAVEOUT = 0x67
+MM_CREATIVE_SBP16_WAVEOUT = 0x68
+# SB (r)
+MM_CREATIVE_PHNBLST_WAVEOUT = 0x69
+# SB (r)
+MM_CREATIVE_MIDIOUT = 0xC9
+# SB (r)
+MM_CREATIVE_MIDIIN = 0xCA
+# SB Pro (r) stereo synthesizer
+MM_CREATIVE_FMSYNTH_MONO = 0x12D
+MM_CREATIVE_FMSYNTH_STEREO = 0x12E
+# SB Pro (r) aux (CD)
+MM_CREATIVE_MIDI_AWE32 = 0x12F
+# SB Pro (r) aux (Line in )
+MM_CREATIVE_AUX_CD = 0x191
+# SB Pro (r) aux (mic)
+MM_CREATIVE_AUX_LINE = 0x192
+MM_CREATIVE_AUX_MIC = 0x193
+MM_CREATIVE_AUX_MASTER = 0x194
+MM_CREATIVE_AUX_PCSPK = 0x195
+MM_CREATIVE_AUX_WAVE = 0x196
+MM_CREATIVE_AUX_MIDI = 0x197
+MM_CREATIVE_SBPRO_MIXER = 0x198
+MM_CREATIVE_SB16_MIXER = 0x199
+# MM_MEDIAVISION product IDs
+# Pro Audio Spectrum
+MM_MEDIAVISION_PROAUDIO = 0x10
+MM_PROAUD_MIDIOUT = MM_MEDIAVISION_PROAUDIO+1
+MM_PROAUD_MIDIIN = MM_MEDIAVISION_PROAUDIO+2
+MM_PROAUD_SYNTH = MM_MEDIAVISION_PROAUDIO+3
+MM_PROAUD_WAVEOUT = MM_MEDIAVISION_PROAUDIO+4
+MM_PROAUD_WAVEIN = MM_MEDIAVISION_PROAUDIO+5
+MM_PROAUD_MIXER = MM_MEDIAVISION_PROAUDIO+6
+MM_PROAUD_AUX = MM_MEDIAVISION_PROAUDIO+7
+# Thunder Board
+MM_MEDIAVISION_THUNDER = 0x20
+MM_THUNDER_SYNTH = MM_MEDIAVISION_THUNDER+3
+MM_THUNDER_WAVEOUT = MM_MEDIAVISION_THUNDER+4
+MM_THUNDER_WAVEIN = MM_MEDIAVISION_THUNDER+5
+MM_THUNDER_AUX = MM_MEDIAVISION_THUNDER+7
+# Audio Port
+MM_MEDIAVISION_TPORT = 0x40
+MM_TPORT_WAVEOUT = MM_MEDIAVISION_TPORT+1
+MM_TPORT_WAVEIN = MM_MEDIAVISION_TPORT+2
+MM_TPORT_SYNTH = MM_MEDIAVISION_TPORT+3
+# Pro Audio Spectrum Plus
+MM_MEDIAVISION_PROAUDIO_PLUS = 0x50
+MM_PROAUD_PLUS_MIDIOUT = MM_MEDIAVISION_PROAUDIO_PLUS+1
+MM_PROAUD_PLUS_MIDIIN = MM_MEDIAVISION_PROAUDIO_PLUS+2
+MM_PROAUD_PLUS_SYNTH = MM_MEDIAVISION_PROAUDIO_PLUS+3
+MM_PROAUD_PLUS_WAVEOUT = MM_MEDIAVISION_PROAUDIO_PLUS+4
+MM_PROAUD_PLUS_WAVEIN = MM_MEDIAVISION_PROAUDIO_PLUS+5
+MM_PROAUD_PLUS_MIXER = MM_MEDIAVISION_PROAUDIO_PLUS+6
+MM_PROAUD_PLUS_AUX = MM_MEDIAVISION_PROAUDIO_PLUS+7
+# Pro Audio Spectrum 16
+MM_MEDIAVISION_PROAUDIO_16 = 0x60
+MM_PROAUD_16_MIDIOUT = MM_MEDIAVISION_PROAUDIO_16+1
+MM_PROAUD_16_MIDIIN = MM_MEDIAVISION_PROAUDIO_16+2
+MM_PROAUD_16_SYNTH = MM_MEDIAVISION_PROAUDIO_16+3
+MM_PROAUD_16_WAVEOUT = MM_MEDIAVISION_PROAUDIO_16+4
+MM_PROAUD_16_WAVEIN = MM_MEDIAVISION_PROAUDIO_16+5
+MM_PROAUD_16_MIXER = MM_MEDIAVISION_PROAUDIO_16+6
+MM_PROAUD_16_AUX = MM_MEDIAVISION_PROAUDIO_16+7
+# Pro Audio Studio 16
+MM_MEDIAVISION_PROSTUDIO_16 = 0x60
+MM_STUDIO_16_MIDIOUT = MM_MEDIAVISION_PROSTUDIO_16+1
+MM_STUDIO_16_MIDIIN = MM_MEDIAVISION_PROSTUDIO_16+2
+MM_STUDIO_16_SYNTH = MM_MEDIAVISION_PROSTUDIO_16+3
+MM_STUDIO_16_WAVEOUT = MM_MEDIAVISION_PROSTUDIO_16+4
+MM_STUDIO_16_WAVEIN = MM_MEDIAVISION_PROSTUDIO_16+5
+MM_STUDIO_16_MIXER = MM_MEDIAVISION_PROSTUDIO_16+6
+MM_STUDIO_16_AUX = MM_MEDIAVISION_PROSTUDIO_16+7
+# CDPC
+MM_MEDIAVISION_CDPC = 0x70
+MM_CDPC_MIDIOUT = MM_MEDIAVISION_CDPC+1
+MM_CDPC_MIDIIN = MM_MEDIAVISION_CDPC+2
+MM_CDPC_SYNTH = MM_MEDIAVISION_CDPC+3
+MM_CDPC_WAVEOUT = MM_MEDIAVISION_CDPC+4
+MM_CDPC_WAVEIN = MM_MEDIAVISION_CDPC+5
+MM_CDPC_MIXER = MM_MEDIAVISION_CDPC+6
+MM_CDPC_AUX = MM_MEDIAVISION_CDPC+7
+# Opus MV 1208 Chipsent
+MM_MEDIAVISION_OPUS1208 = 0x80
+MM_OPUS401_MIDIOUT = MM_MEDIAVISION_OPUS1208+1
+MM_OPUS401_MIDIIN = MM_MEDIAVISION_OPUS1208+2
+MM_OPUS1208_SYNTH = MM_MEDIAVISION_OPUS1208+3
+MM_OPUS1208_WAVEOUT = MM_MEDIAVISION_OPUS1208+4
+MM_OPUS1208_WAVEIN = MM_MEDIAVISION_OPUS1208+5
+MM_OPUS1208_MIXER = MM_MEDIAVISION_OPUS1208+6
+MM_OPUS1208_AUX = MM_MEDIAVISION_OPUS1208+7
+# Opus MV 1216 chipset
+MM_MEDIAVISION_OPUS1216 = 0x90
+MM_OPUS1216_MIDIOUT = MM_MEDIAVISION_OPUS1216+1
+MM_OPUS1216_MIDIIN = MM_MEDIAVISION_OPUS1216+2
+MM_OPUS1216_SYNTH = MM_MEDIAVISION_OPUS1216+3
+MM_OPUS1216_WAVEOUT = MM_MEDIAVISION_OPUS1216+4
+MM_OPUS1216_WAVEIN = MM_MEDIAVISION_OPUS1216+5
+MM_OPUS1216_MIXER = MM_MEDIAVISION_OPUS1216+6
+MM_OPUS1216_AUX = MM_MEDIAVISION_OPUS1216+7
+# MM_CYRIX product IDs
+MM_CYRIX_XASYNTH = 0x1
+MM_CYRIX_XAMIDIIN = 0x2
+MM_CYRIX_XAMIDIOUT = 0x3
+MM_CYRIX_XAWAVEIN = 0x4
+MM_CYRIX_XAWAVEOUT = 0x5
+MM_CYRIX_XAAUX = 0x6
+MM_CYRIX_XAMIXER = 0x7
+# MM_PHILIPS_SPEECH_PROCESSING products IDs
+MM_PHILIPS_ACM_LPCBB = 0x1
+# MM_NETXL product IDs
+MM_NETXL_XLVIDEO = 0x1
+# MM_ZYXEL product IDs
+MM_ZYXEL_ACM_ADPCM = 0x1
+# MM_AARDVARK product IDs
+MM_AARDVARK_STUDIO12_WAVEOUT = 0x1
+MM_AARDVARK_STUDIO12_WAVEIN = 0x2
+MM_AARDVARK_STUDIO88_WAVEOUT = 0x3
+MM_AARDVARK_STUDIO88_WAVEIN = 0x4
+# MM_BINTEC product IDs
+MM_BINTEC_TAPI_WAVE = 0x1
+# MM_HEWLETT_PACKARD product IDs
+MM_HEWLETT_PACKARD_CU_CODEC = 0x1
+# MM_MITEL product IDs
+MM_MITEL_TALKTO_LINE_WAVEOUT = 0x64
+MM_MITEL_TALKTO_LINE_WAVEIN = 0x65
+MM_MITEL_TALKTO_HANDSET_WAVEOUT = 0x66
+MM_MITEL_TALKTO_HANDSET_WAVEIN = 0x67
+MM_MITEL_TALKTO_BRIDGED_WAVEOUT = 0x68
+MM_MITEL_TALKTO_BRIDGED_WAVEIN = 0x69
+MM_MITEL_MPA_HANDSET_WAVEOUT = 0xC8
+MM_MITEL_MPA_HANDSET_WAVEIN = 0xC9
+MM_MITEL_MPA_HANDSFREE_WAVEOUT = 0xCA
+MM_MITEL_MPA_HANDSFREE_WAVEIN = 0xCB
+MM_MITEL_MPA_LINE1_WAVEOUT = 0xCC
+MM_MITEL_MPA_LINE1_WAVEIN = 0xCD
+MM_MITEL_MPA_LINE2_WAVEOUT = 0xCE
+MM_MITEL_MPA_LINE2_WAVEIN = 0xCF
+MM_MITEL_MEDIAPATH_WAVEOUT = 0x12C
+MM_MITEL_MEDIAPATH_WAVEIN = 0x12D
+# MM_SNI product IDs
+MM_SNI_ACM_G721 = 0x1
+# MM_EMU product IDs
+MM_EMU_APSSYNTH = 0x1
+MM_EMU_APSMIDIIN = 0x2
+MM_EMU_APSMIDIOUT = 0x3
+MM_EMU_APSWAVEIN = 0x4
+MM_EMU_APSWAVEOUT = 0x5
+# MM_ARTISOFT product IDs
+# Artisoft sounding Board waveform input
+# Artisoft sounding Board waveform output
+MM_ARTISOFT_SBWAVEIN = 0x1
+MM_ARTISOFT_SBWAVEOUT = 0x2
+# MM_TURTLE_BEACH product IDs
+MM_TBS_TROPEZ_WAVEIN = 0x25
+MM_TBS_TROPEZ_WAVEOUT = 0x26
+MM_TBS_TROPEZ_AUX1 = 0x27
+MM_TBS_TROPEZ_AUX2 = 0x28
+MM_TBS_TROPEZ_LINE = 0x29
+# MM_IBM product IDs
+# IBM M-Motion Auxiliary Device
+# IBM M-Motion Waveform output
+MM_MMOTION_WAVEAUX = 0x1
+# IBM M-Motion  Waveform Input
+MM_MMOTION_WAVEOUT = 0x2
+# IBM waveform input
+MM_MMOTION_WAVEIN = 0x3
+# IBM Waveform output
+MM_IBM_PCMCIA_WAVEIN = 0xB
+# IBM Midi Synthesis
+MM_IBM_PCMCIA_WAVEOUT = 0xC
+# IBM external MIDI in
+MM_IBM_PCMCIA_SYNTH = 0xD
+# IBM external MIDI out
+MM_IBM_PCMCIA_MIDIIN = 0xE
+# IBM auxiliary control
+MM_IBM_PCMCIA_MIDIOUT = 0xF
+MM_IBM_PCMCIA_AUX = 0x10
+MM_IBM_THINKPAD200 = 0x11
+MM_IBM_MWAVE_WAVEIN = 0x12
+MM_IBM_MWAVE_WAVEOUT = 0x13
+MM_IBM_MWAVE_MIXER = 0x14
+MM_IBM_MWAVE_MIDIIN = 0x15
+MM_IBM_MWAVE_MIDIOUT = 0x16
+MM_IBM_MWAVE_AUX = 0x17
+MM_IBM_WC_MIDIOUT = 0x1E
+MM_IBM_WC_WAVEOUT = 0x1F
+MM_IBM_WC_MIXEROUT = 0x21
+# MM_VOCALTEC product IDs
+MM_VOCALTEC_WAVEOUT = 0x1
+MM_VOCALTEC_WAVEIN = 0x2
+# MM_ROLAND product IDs
+# MM_ROLAND_RAP10
+# MM_ROLAND_RAP10
+MM_ROLAND_RAP10_MIDIOUT = 0xA
+# MM_ROLAND_RAP10
+MM_ROLAND_RAP10_MIDIIN = 0xB
+# MM_ROLAND_RAP10
+MM_ROLAND_RAP10_SYNTH = 0xC
+# MM_ROLAND_RAP10
+MM_ROLAND_RAP10_WAVEOUT = 0xD
+MM_ROLAND_RAP10_WAVEIN = 0xE
+MM_ROLAND_MPU401_MIDIOUT = 0xF
+MM_ROLAND_MPU401_MIDIIN = 0x10
+MM_ROLAND_SMPU_MIDIOUTA = 0x11
+MM_ROLAND_SMPU_MIDIOUTB = 0x12
+MM_ROLAND_SMPU_MIDIINA = 0x13
+MM_ROLAND_SMPU_MIDIINB = 0x14
+MM_ROLAND_SC7_MIDIOUT = 0x15
+MM_ROLAND_SC7_MIDIIN = 0x16
+MM_ROLAND_SERIAL_MIDIOUT = 0x17
+MM_ROLAND_SERIAL_MIDIIN = 0x18
+MM_ROLAND_SCP_MIDIOUT = 0x26
+MM_ROLAND_SCP_MIDIIN = 0x27
+MM_ROLAND_SCP_WAVEOUT = 0x28
+MM_ROLAND_SCP_WAVEIN = 0x29
+MM_ROLAND_SCP_MIXER = 0x2A
+MM_ROLAND_SCP_AUX = 0x30
+# MM_DSP_SOLUTIONS product IDs
+MM_DSP_SOLUTIONS_WAVEOUT = 0x1
+MM_DSP_SOLUTIONS_WAVEIN = 0x2
+MM_DSP_SOLUTIONS_SYNTH = 0x3
+MM_DSP_SOLUTIONS_AUX = 0x4
+# MM_NEC product IDs
+MM_NEC_73_86_SYNTH = 0x5
+MM_NEC_73_86_WAVEOUT = 0x6
+MM_NEC_73_86_WAVEIN = 0x7
+MM_NEC_26_SYNTH = 0x9
+MM_NEC_MPU401_MIDIOUT = 0xA
+MM_NEC_MPU401_MIDIIN = 0xB
+MM_NEC_JOYSTICK = 0xC
+# MM_WANGLABS product IDs
+# Input audio wave on CPU board models: Exec 4010, 4030, 3450; PC 251/25c, pc
+# 461/25s , pc 461/33c
+MM_WANGLABS_WAVEIN1 = 0x1
+MM_WANGLABS_WAVEOUT1 = 0x2
+# MM_TANDY product IDs
+MM_TANDY_VISWAVEIN = 0x1
+MM_TANDY_VISWAVEOUT = 0x2
+MM_TANDY_VISBIOSSYNTH = 0x3
+MM_TANDY_SENS_MMAWAVEIN = 0x4
+MM_TANDY_SENS_MMAWAVEOUT = 0x5
+MM_TANDY_SENS_MMAMIDIIN = 0x6
+MM_TANDY_SENS_MMAMIDIOUT = 0x7
+MM_TANDY_SENS_VISWAVEOUT = 0x8
+MM_TANDY_PSSJWAVEIN = 0x9
+MM_TANDY_PSSJWAVEOUT = 0xA
+# MM_ANTEX product IDs
+MM_ANTEX_SX12_WAVEIN = 0x1
+MM_ANTEX_SX12_WAVEOUT = 0x2
+MM_ANTEX_SX15_WAVEIN = 0x3
+MM_ANTEX_SX15_WAVEOUT = 0x4
+MM_ANTEX_VP625_WAVEIN = 0x5
+MM_ANTEX_VP625_WAVEOUT = 0x6
+MM_ANTEX_AUDIOPORT22_WAVEIN = 0x7
+MM_ANTEX_AUDIOPORT22_WAVEOUT = 0x8
+MM_ANTEX_AUDIOPORT22_FEEDTHRU = 0x9
+# MM_INTEL product IDs
+# HID2 WaveAudio Driver
+# HID2
+MM_INTELOPD_WAVEIN = 0x1
+# HID2 for mixing
+MM_INTELOPD_WAVEOUT = 0x65
+MM_INTELOPD_AUX = 0x191
+MM_INTEL_NSPMODEMLINEIN = 0x1F5
+MM_INTEL_NSPMODEMLINEOUT = 0x1F6
+# MM_VAL product IDs
+MM_VAL_MICROKEY_AP_WAVEIN = 0x1
+MM_VAL_MICROKEY_AP_WAVEOUT = 0x2
+# MM_INTERACTIVE product IDs
+MM_INTERACTIVE_WAVEIN = 0x45
+MM_INTERACTIVE_WAVEOUT = 0x45
+# MM_YAMAHA product IDs
+MM_YAMAHA_GSS_SYNTH = 0x01
+MM_YAMAHA_GSS_WAVEOUT = 0x02
+MM_YAMAHA_GSS_WAVEIN = 0x03
+MM_YAMAHA_GSS_MIDIOUT = 0x04
+MM_YAMAHA_GSS_MIDIIN = 0x05
+MM_YAMAHA_GSS_AUX = 0x06
+MM_YAMAHA_SERIAL_MIDIOUT = 0x07
+MM_YAMAHA_SERIAL_MIDIIN = 0x08
+MM_YAMAHA_OPL3SA_WAVEOUT = 0x10
+MM_YAMAHA_OPL3SA_WAVEIN = 0x11
+MM_YAMAHA_OPL3SA_FMSYNTH = 0x12
+MM_YAMAHA_OPL3SA_YSYNTH = 0x13
+MM_YAMAHA_OPL3SA_MIDIOUT = 0x14
+MM_YAMAHA_OPL3SA_MIDIIN = 0x15
+MM_YAMAHA_OPL3SA_MIXER = 0x17
+MM_YAMAHA_OPL3SA_JOYSTICK = 0x18
+MM_YAMAHA_YMF724LEG_MIDIOUT = 0x19
+MM_YAMAHA_YMF724LEG_MIDIIN = 0x1a
+MM_YAMAHA_YMF724_WAVEOUT = 0x1b
+MM_YAMAHA_YMF724_WAVEIN = 0x1c
+MM_YAMAHA_YMF724_MIDIOUT = 0x1d
+MM_YAMAHA_YMF724_AUX = 0x1e
+MM_YAMAHA_YMF724_MIXER = 0x1f
+MM_YAMAHA_YMF724LEG_FMSYNTH = 0x20
+MM_YAMAHA_YMF724LEG_MIXER = 0x21
+MM_YAMAHA_SXG_MIDIOUT = 0x22
+MM_YAMAHA_SXG_WAVEOUT = 0x23
+MM_YAMAHA_SXG_MIXER = 0x24
+MM_YAMAHA_ACXG_WAVEIN = 0x25
+MM_YAMAHA_ACXG_WAVEOUT = 0x26
+MM_YAMAHA_ACXG_MIDIOUT = 0x27
+MM_YAMAHA_ACXG_MIXER = 0x28
+MM_YAMAHA_ACXG_AUX = 0x29
+# MM_EVEREX product IDs
+MM_EVEREX_CARRIER = 0x1
+# MM_ECHO product IDs
+MM_ECHO_SYNTH = 0x1
+MM_ECHO_WAVEOUT = 0x2
+MM_ECHO_WAVEIN = 0x3
+MM_ECHO_MIDIOUT = 0x4
+MM_ECHO_MIDIIN = 0x5
+MM_ECHO_AUX = 0x6
+# MM_SIERRA product IDs
+MM_SIERRA_ARIA_MIDIOUT = 0x14
+MM_SIERRA_ARIA_MIDIIN = 0x15
+MM_SIERRA_ARIA_SYNTH = 0x16
+MM_SIERRA_ARIA_WAVEOUT = 0x17
+MM_SIERRA_ARIA_WAVEIN = 0x18
+MM_SIERRA_ARIA_AUX = 0x19
+MM_SIERRA_ARIA_AUX2 = 0x20
+MM_SIERRA_QUARTET_WAVEIN = 0x50
+MM_SIERRA_QUARTET_WAVEOUT = 0x51
+MM_SIERRA_QUARTET_MIDIIN = 0x52
+MM_SIERRA_QUARTET_MIDIOUT = 0x53
+MM_SIERRA_QUARTET_SYNTH = 0x54
+MM_SIERRA_QUARTET_AUX_CD = 0x55
+MM_SIERRA_QUARTET_AUX_LINE = 0x56
+MM_SIERRA_QUARTET_AUX_MODEM = 0x57
+MM_SIERRA_QUARTET_MIXER = 0x58
+# MM_CAT product IDs
+MM_CAT_WAVEOUT = 0x1
+# MM_DSP_GROUP product IDs
+MM_DSP_GROUP_TRUESPEECH = 0x1
+# MM_MELABS product IDs
+MM_MELABS_MIDI2GO = 0x1
+# MM_ESS product IDs
+MM_ESS_AMWAVEOUT = 0x01
+MM_ESS_AMWAVEIN = 0x02
+MM_ESS_AMAUX = 0x03
+MM_ESS_AMSYNTH = 0x04
+MM_ESS_AMMIDIOUT = 0x05
+MM_ESS_AMMIDIIN = 0x06
+MM_ESS_MIXER = 0x07
+MM_ESS_AUX_CD = 0x08
+MM_ESS_MPU401_MIDIOUT = 0x09
+MM_ESS_MPU401_MIDIIN = 0x0A
+MM_ESS_ES488_WAVEOUT = 0x10
+MM_ESS_ES488_WAVEIN = 0x11
+MM_ESS_ES488_MIXER = 0x12
+MM_ESS_ES688_WAVEOUT = 0x13
+MM_ESS_ES688_WAVEIN = 0x14
+MM_ESS_ES688_MIXER = 0x15
+MM_ESS_ES1488_WAVEOUT = 0x16
+MM_ESS_ES1488_WAVEIN = 0x17
+MM_ESS_ES1488_MIXER = 0x18
+MM_ESS_ES1688_WAVEOUT = 0x19
+MM_ESS_ES1688_WAVEIN = 0x1A
+MM_ESS_ES1688_MIXER = 0x1B
+MM_ESS_ES1788_WAVEOUT = 0x1C
+MM_ESS_ES1788_WAVEIN = 0x1D
+MM_ESS_ES1788_MIXER = 0x1E
+MM_ESS_ES1888_WAVEOUT = 0x1F
+MM_ESS_ES1888_WAVEIN = 0x20
+MM_ESS_ES1888_MIXER = 0x21
+MM_ESS_ES1868_WAVEOUT = 0x22
+MM_ESS_ES1868_WAVEIN = 0x23
+MM_ESS_ES1868_MIXER = 0x24
+MM_ESS_ES1878_WAVEOUT = 0x25
+MM_ESS_ES1878_WAVEIN = 0x26
+MM_ESS_ES1878_MIXER = 0x27
+# MM_CANOPUS product IDs
+MM_CANOPUS_ACM_DVREX = 0x1
+# MM_EPSON product IDs
+MM_EPS_FMSND = 0x1
+# MM_TRUEVISION product IDs
+MM_TRUEVISION_WAVEIN1 = 0x1
+MM_TRUEVISION_WAVEOUT1 = 0x2
+# MM_AZTECH product IDs
+MM_AZTECH_MIDIOUT = 0x3
+MM_AZTECH_MIDIIN = 0x4
+MM_AZTECH_WAVEIN = 0x11
+MM_AZTECH_WAVEOUT = 0x12
+MM_AZTECH_FMSYNTH = 0x14
+MM_AZTECH_MIXER = 0x15
+MM_AZTECH_PRO16_WAVEIN = 0x21
+MM_AZTECH_PRO16_WAVEOUT = 0x22
+MM_AZTECH_PRO16_FMSYNTH = 0x26
+MM_AZTECH_DSP16_WAVEIN = 0x41
+MM_AZTECH_DSP16_WAVEOUT = 0x42
+MM_AZTECH_DSP16_FMSYNTH = 0x44
+MM_AZTECH_DSP16_WAVESYNTH = 0x46
+MM_AZTECH_NOVA16_WAVEIN = 0x47
+MM_AZTECH_NOVA16_WAVEOUT = 0x48
+MM_AZTECH_NOVA16_MIXER = 0x49
+MM_AZTECH_WASH16_WAVEIN = 0x4A
+MM_AZTECH_WASH16_WAVEOUT = 0x4B
+MM_AZTECH_WASH16_MIXER = 0x4C
+MM_AZTECH_AUX_CD = 0x191
+MM_AZTECH_AUX_LINE = 0x192
+MM_AZTECH_AUX_MIC = 0x193
+MM_AZTECH_AUX = 0x194
+# MM_VIDEOLOGIC product IDs
+MM_VIDEOLOGIC_MSWAVEIN = 0x1
+MM_VIDEOLOGIC_MSWAVEOUT = 0x2
+# MM_KORG product IDs
+MM_KORG_PCIF_MIDIOUT = 0x1
+MM_KORG_PCIF_MIDIIN = 0x2
+MM_KORG_1212IO_MSWAVEIN = 0x3
+MM_KORG_1212IO_MSWAVEOUT = 0x4
+# MM_APT product IDs
+MM_APT_ACE100CD = 0x1
+# MM_ICS product IDs
+# MS WSS compatible card and driver
+MM_ICS_WAVEDECK_WAVEOUT = 0x1
+MM_ICS_WAVEDECK_WAVEIN = 0x2
+MM_ICS_WAVEDECK_MIXER = 0x3
+MM_ICS_WAVEDECK_AUX = 0x4
+MM_ICS_WAVEDECK_SYNTH = 0x5
+MM_ICS_WAVEDEC_SB_WAVEOUT = 0x6
+MM_ICS_WAVEDEC_SB_WAVEIN = 0x7
+MM_ICS_WAVEDEC_SB_FM_MIDIOUT = 0x8
+MM_ICS_WAVEDEC_SB_MPU401_MIDIOUT = 0x9
+MM_ICS_WAVEDEC_SB_MPU401_MIDIIN = 0xA
+MM_ICS_WAVEDEC_SB_MIXER = 0xB
+MM_ICS_WAVEDEC_SB_AUX = 0xC
+MM_ICS_2115_LITE_MIDIOUT = 0xD
+MM_ICS_2120_LITE_MIDIOUT = 0xE
+# MM_ITERATEDSYS product IDs
+MM_ITERATEDSYS_FUFCODEC = 0x1
+# MM_METHEUS product IDs
+MM_METHEUS_ZIPPER = 0x1
+# MM_WINNOV product IDs
+MM_WINNOV_CAVIAR_WAVEIN = 0x1
+MM_WINNOV_CAVIAR_WAVEOUT = 0x2
+# Fourcc is CHAM
+MM_WINNOV_CAVIAR_VIDC = 0x3
+# Fourcc is YUV8
+MM_WINNOV_CAVIAR_CHAMPAGNE = 0x4
+MM_WINNOV_CAVIAR_YUV8 = 0x5
+# MM_NCR product IDs
+MM_NCR_BA_WAVEIN = 0x1
+MM_NCR_BA_WAVEOUT = 0x2
+MM_NCR_BA_SYNTH = 0x3
+MM_NCR_BA_AUX = 0x4
+MM_NCR_BA_MIXER = 0x5
+# MM_AST product IDs
+MM_AST_MODEMWAVE_WAVEIN = 0xD
+MM_AST_MODEMWAVE_WAVEOUT = 0xE
+# MM_WILLOWPOND product IDs
+MM_WILLOWPOND_FMSYNTH_STEREO = 0x14
+MM_WILLOWPOND_MPU401 = 0x15
+MM_WILLOWPOND_SNDPORT_WAVEIN = 0x64
+MM_WILLOWPOND_SNDPORT_WAVEOUT = 0x65
+MM_WILLOWPOND_SNDPORT_MIXER = 0x66
+MM_WILLOWPOND_SNDPORT_AUX = 0x67
+MM_WILLOWPOND_PH_WAVEIN = 0x68
+MM_WILLOWPOND_PH_WAVEOUT = 0x69
+MM_WILLOWPOND_PH_MIXER = 0x6A
+MM_WILLOWPOND_PH_AUX = 0x6B
+MM_WILLOPOND_SNDCOMM_WAVEIN = 0x6C
+MM_WILLOWPOND_SNDCOMM_WAVEOUT = 0x6D
+MM_WILLOWPOND_SNDCOMM_MIXER = 0x6E
+MM_WILLOWPOND_SNDCOMM_AUX = 0x6F
+MM_WILLOWPOND_GENERIC_WAVEIN = 0x70
+MM_WILLOWPOND_GENERIC_WAVEOUT = 0x71
+MM_WILLOWPOND_GENERIC_MIXER = 0x72
+MM_WILLOWPOND_GENERIC_AUX = 0x73
+# MM_VITEC product IDs
+MM_VITEC_VMAKER = 0x1
+MM_VITEC_VMPRO = 0x2
+# MM_MOSCOM product IDs
+# Four Port Voice Processing / Voice Recognition Board
+# VPC2400
+MM_MOSCOM_VPC2400_IN = 0x1
+MM_MOSCOM_VPC2400_OUT = 0x2
+# MM_SILICONSOFT product IDs
+# Waveform in , high sample rate
+# Waveform out , high sample rate
+MM_SILICONSOFT_SC1_WAVEIN = 0x1
+# Waveform in 2 channels, high sample rate
+MM_SILICONSOFT_SC1_WAVEOUT = 0x2
+# Waveform out 2 channels, high sample rate
+MM_SILICONSOFT_SC2_WAVEIN = 0x3
+# Waveform out, self powered, efficient
+MM_SILICONSOFT_SC2_WAVEOUT = 0x4
+# Waveform in, self powered, efficient
+MM_SILICONSOFT_SOUNDJR2_WAVEOUT = 0x5
+# Waveform out 2 channels, self powered, efficient
+MM_SILICONSOFT_SOUNDJR2PR_WAVEIN = 0x6
+# Waveform in 2 channels, self powered, efficient
+MM_SILICONSOFT_SOUNDJR2PR_WAVEOUT = 0x7
+MM_SILICONSOFT_SOUNDJR3_WAVEOUT = 0x8
+# MM_TERRATEC product IDs
+MM_TTEWS_WAVEIN = 0x1
+MM_TTEWS_WAVEOUT = 0x2
+MM_TTEWS_MIDIIN = 0x3
+MM_TTEWS_MIDIOUT = 0x4
+MM_TTEWS_MIDISYNTH = 0x5
+MM_TTEWS_MIDIMONITOR = 0x6
+MM_TTEWS_VMIDIIN = 0x7
+MM_TTEWS_VMIDIOUT = 0x8
+MM_TTEWS_AUX = 0x9
+MM_TTEWS_MIXER = 0xA
+# MM_MEDIASONIC product IDs
+MM_MEDIASONIC_ACM_G723 = 0x1
+MM_MEDIASONIC_ICOM = 0x2
+MM_ICOM_WAVEIN = 0x3
+MM_ICOM_WAVEOUT = 0x4
+MM_ICOM_MIXER = 0x5
+MM_ICOM_AUX = 0x6
+MM_ICOM_LINE = 0x7
+# MM_SANYO product IDs
+MM_SANYO_ACM_LD_ADPCM = 0x1
+# MM_AHEAD product IDs
+MM_AHEAD_MULTISOUND = 0x1
+MM_AHEAD_SOUNDBLASTER = 0x2
+MM_AHEAD_PROAUDIO = 0x3
+MM_AHEAD_GENERIC = 0x4
+# MM_OLIVETTI product IDs
+MM_OLIVETTI_WAVEIN = 0x1
+MM_OLIVETTI_WAVEOUT = 0x2
+MM_OLIVETTI_MIXER = 0x3
+MM_OLIVETTI_AUX = 0x4
+MM_OLIVETTI_MIDIIN = 0x5
+MM_OLIVETTI_MIDIOUT = 0x6
+MM_OLIVETTI_SYNTH = 0x7
+MM_OLIVETTI_JOYSTICK = 0x8
+MM_OLIVETTI_ACM_GSM = 0x9
+MM_OLIVETTI_ACM_ADPCM = 0xA
+MM_OLIVETTI_ACM_CELP = 0xB
+MM_OLIVETTI_ACM_SBC = 0xC
+MM_OLIVETTI_ACM_OPR = 0xD
+# MM_IOMAGIC product IDs
+MM_IOMAGIC_TEMPO_WAVEOUT = 0x1
+MM_IOMAGIC_TEMPO_WAVEIN = 0x2
+MM_IOMAGIC_TEMPO_SYNTH = 0x3
+MM_IOMAGIC_TEMPO_MIDIOUT = 0x4
+MM_IOMAGIC_TEMPO_MXDOUT = 0x5
+MM_IOMAGIC_TEMPO_AUXOUT = 0x6
+# MM_MATSUSHITA product IDs
+MM_MATSUSHITA_WAVEIN = 0x1
+MM_MATSUSHITA_WAVEOUT = 0x2
+MM_MATSUSHITA_FMSYNTH_STEREO = 0x3
+MM_MATSUSHITA_MIXER = 0x4
+MM_MATSUSHITA_AUX = 0x5
+# MM_NEWMEDIA product IDs
+# WSS Compatible sound card.
+MM_NEWMEDIA_WAVJAMMER = 0x1
+# MM_LYRRUS product IDs
+MM_LYRRUS_BRIDGE_GUITAR = 0x1
+# MM_OPTI product IDs
+MM_OPTI_M16_FMSYNTH_STEREO = 0x0001
+MM_OPTI_M16_MIDIIN = 0x0002
+MM_OPTI_M16_MIDIOUT = 0x0003
+MM_OPTI_M16_WAVEIN = 0x0004
+MM_OPTI_M16_WAVEOUT = 0x0005
+MM_OPTI_M16_MIXER = 0x0006
+MM_OPTI_M16_AUX = 0x0007
+MM_OPTI_P16_FMSYNTH_STEREO = 0x0010
+MM_OPTI_P16_MIDIIN = 0x0011
+MM_OPTI_P16_MIDIOUT = 0x0012
+MM_OPTI_P16_WAVEIN = 0x0013
+MM_OPTI_P16_WAVEOUT = 0x0014
+MM_OPTI_P16_MIXER = 0x0015
+MM_OPTI_P16_AUX = 0x0016
+MM_OPTI_M32_WAVEIN = 0x0020
+MM_OPTI_M32_WAVEOUT = 0x0021
+MM_OPTI_M32_MIDIIN = 0x0022
+MM_OPTI_M32_MIDIOUT = 0x0023
+MM_OPTI_M32_SYNTH_STEREO = 0x0024
+MM_OPTI_M32_MIXER = 0x0025
+MM_OPTI_M32_AUX = 0x0026
+# MM_COMPAQ product IDs
+MM_COMPAQ_BB_WAVEIN = 0x1
+MM_COMPAQ_BB_WAVEOUT = 0x2
+MM_COMPAQ_BB_WAVEAUX = 0x3
+# MM_MPTUS product IDs
+# Sound Pallette
+MM_MPTUS_SPWAVEOUT = 0x1
+# MM_LERNOUT_AND_HAUSPIE product IDs
+MM_LERNOUT_ANDHAUSPIE_LHCODECACM = 0x1
+# MM_DIGITAL product IDs
+# Digital Audio Video Compression Board
+# Digital Audio Video Compression Board
+MM_DIGITAL_AV320_WAVEIN = 0x1
+MM_DIGITAL_AV320_WAVEOUT = 0x2
+MM_DIGITAL_ACM_G723 = 0x3
+MM_DIGITAL_ICM_H263 = 0x4
+MM_DIGITAL_ICM_H261 = 0x5
+# MM_MOTU product IDs
+MM_MOTU_MTP_MIDIOUT_ALL = 0x64
+MM_MOTU_MTP_MIDIIN_1 = 0x65
+MM_MOTU_MTP_MIDIOUT_1 = 0x65
+MM_MOTU_MTP_MIDIIN_2 = 0x66
+MM_MOTU_MTP_MIDIOUT_2 = 0x66
+MM_MOTU_MTP_MIDIIN_3 = 0x67
+MM_MOTU_MTP_MIDIOUT_3 = 0x67
+MM_MOTU_MTP_MIDIIN_4 = 0x68
+MM_MOTU_MTP_MIDIOUT_4 = 0x68
+MM_MOTU_MTP_MIDIIN_5 = 0x69
+MM_MOTU_MTP_MIDIOUT_5 = 0x69
+MM_MOTU_MTP_MIDIIN_6 = 0x6A
+MM_MOTU_MTP_MIDIOUT_6 = 0x6A
+MM_MOTU_MTP_MIDIIN_7 = 0x6B
+MM_MOTU_MTP_MIDIOUT_7 = 0x6B
+MM_MOTU_MTP_MIDIIN_8 = 0x6C
+MM_MOTU_MTP_MIDIOUT_8 = 0x6C
+MM_MOTU_MTPII_MIDIOUT_ALL = 0xC8
+MM_MOTU_MTPII_MIDIIN_SYNC = 0xC8
+MM_MOTU_MTPII_MIDIIN_1 = 0xC9
+MM_MOTU_MTPII_MIDIOUT_1 = 0xC9
+MM_MOTU_MTPII_MIDIIN_2 = 0xCA
+MM_MOTU_MTPII_MIDIOUT_2 = 0xCA
+MM_MOTU_MTPII_MIDIIN_3 = 0xCB
+MM_MOTU_MTPII_MIDIOUT_3 = 0xCB
+MM_MOTU_MTPII_MIDIIN_4 = 0xCC
+MM_MOTU_MTPII_MIDIOUT_4 = 0xCC
+MM_MOTU_MTPII_MIDIIN_5 = 0xCD
+MM_MOTU_MTPII_MIDIOUT_5 = 0xCD
+MM_MOTU_MTPII_MIDIIN_6 = 0xCE
+MM_MOTU_MTPII_MIDIOUT_6 = 0xCE
+MM_MOTU_MTPII_MIDIIN_7 = 0xCF
+MM_MOTU_MTPII_MIDIOUT_7 = 0xCF
+MM_MOTU_MTPII_MIDIIN_8 = 0xD0
+MM_MOTU_MTPII_MIDIOUT_8 = 0xD0
+MM_MOTU_MTPII_NET_MIDIIN_1 = 0xD1
+MM_MOTU_MTPII_NET_MIDIOUT_1 = 0xD1
+MM_MOTU_MTPII_NET_MIDIIN_2 = 0xD2
+MM_MOTU_MTPII_NET_MIDIOUT_2 = 0xD2
+MM_MOTU_MTPII_NET_MIDIIN_3 = 0xD3
+MM_MOTU_MTPII_NET_MIDIOUT_3 = 0xD3
+MM_MOTU_MTPII_NET_MIDIIN_4 = 0xD4
+MM_MOTU_MTPII_NET_MIDIOUT_4 = 0xD4
+MM_MOTU_MTPII_NET_MIDIIN_5 = 0xD5
+MM_MOTU_MTPII_NET_MIDIOUT_5 = 0xD5
+MM_MOTU_MTPII_NET_MIDIIN_6 = 0xD6
+MM_MOTU_MTPII_NET_MIDIOUT_6 = 0xD6
+MM_MOTU_MTPII_NET_MIDIIN_7 = 0xD7
+MM_MOTU_MTPII_NET_MIDIOUT_7 = 0xD7
+MM_MOTU_MTPII_NET_MIDIIN_8 = 0xD8
+MM_MOTU_MTPII_NET_MIDIOUT_8 = 0xD8
+MM_MOTU_MXP_MIDIIN_MIDIOUT_ALL = 0x12C
+MM_MOTU_MXP_MIDIIN_SYNC = 0x12C
+MM_MOTU_MXP_MIDIIN_MIDIIN_1 = 0x12D
+MM_MOTU_MXP_MIDIIN_MIDIOUT_1 = 0x12D
+MM_MOTU_MXP_MIDIIN_MIDIIN_2 = 0x12E
+MM_MOTU_MXP_MIDIIN_MIDIOUT_2 = 0x12E
+MM_MOTU_MXP_MIDIIN_MIDIIN_3 = 0x12F
+MM_MOTU_MXP_MIDIIN_MIDIOUT_3 = 0x12F
+MM_MOTU_MXP_MIDIIN_MIDIIN_4 = 0x130
+MM_MOTU_MXP_MIDIIN_MIDIOUT_4 = 0x130
+MM_MOTU_MXP_MIDIIN_MIDIIN_5 = 0x131
+MM_MOTU_MXP_MIDIIN_MIDIOUT_5 = 0x131
+MM_MOTU_MXP_MIDIIN_MIDIIN_6 = 0x132
+MM_MOTU_MXP_MIDIIN_MIDIOUT_6 = 0x132
+MM_MOTU_MXPMPU_MIDIOUT_ALL = 0x190
+MM_MOTU_MXPMPU_MIDIIN_SYNC = 0x190
+MM_MOTU_MXPMPU_MIDIIN_1 = 0x191
+MM_MOTU_MXPMPU_MIDIOUT_1 = 0x191
+MM_MOTU_MXPMPU_MIDIIN_2 = 0x192
+MM_MOTU_MXPMPU_MIDIOUT_2 = 0x192
+MM_MOTU_MXPMPU_MIDIIN_3 = 0x193
+MM_MOTU_MXPMPU_MIDIOUT_3 = 0x193
+MM_MOTU_MXPMPU_MIDIIN_4 = 0x194
+MM_MOTU_MXPMPU_MIDIOUT_4 = 0x194
+MM_MOTU_MXPMPU_MIDIIN_5 = 0x195
+MM_MOTU_MXPMPU_MIDIOUT_5 = 0x195
+MM_MOTU_MXPMPU_MIDIIN_6 = 0x196
+MM_MOTU_MXPMPU_MIDIOUT_6 = 0x196
+MM_MOTU_MXN_MIDIOUT_ALL = 0x1F4
+MM_MOTU_MXN_MIDIIN_SYNC = 0x1F4
+MM_MOTU_MXN_MIDIIN_1 = 0x1F5
+MM_MOTU_MXN_MIDIOUT_1 = 0x1F5
+MM_MOTU_MXN_MIDIIN_2 = 0x1F6
+MM_MOTU_MXN_MIDIOUT_2 = 0x1F6
+MM_MOTU_MXN_MIDIIN_3 = 0x1F7
+MM_MOTU_MXN_MIDIOUT_3 = 0x1F7
+MM_MOTU_MXN_MIDIIN_4 = 0x1F8
+MM_MOTU_MXN_MIDIOUT_4 = 0x1F8
+MM_MOTU_FLYER_MIDI_IN_SYNC = 0x258
+MM_MOTU_FLYER_MIDI_IN_A = 0x259
+MM_MOTU_FLYER_MIDI_OUT_A = 0x259
+MM_MOTU_FLYER_MIDI_IN_B = 0x25A
+MM_MOTU_FLYER_MIDI_OUT_B = 0x25A
+MM_MOTU_PKX_MIDI_IN_SYNC = 0x2BC
+MM_MOTU_PKX_MIDI_IN_A = 0x2BD
+MM_MOTU_PKX_MIDI_OUT_A = 0x2BD
+MM_MOTU_PKX_MIDI_IN_B = 0x2BE
+MM_MOTU_PKX_MIDI_OUT_B = 0x2BE
+MM_MOTU_DTX_MIDI_IN_SYNC = 0x320
+MM_MOTU_DTX_MIDI_IN_A = 0x321
+MM_MOTU_DTX_MIDI_OUT_A = 0x321
+MM_MOTU_DTX_MIDI_IN_B = 0x322
+MM_MOTU_DTX_MIDI_OUT_B = 0x322
+MM_MOTU_MTPAV_MIDIOUT_ALL = 0x384
+MM_MOTU_MTPAV_MIDIIN_SYNC = 0x384
+MM_MOTU_MTPAV_MIDIIN_1 = 0x385
+MM_MOTU_MTPAV_MIDIOUT_1 = 0x385
+MM_MOTU_MTPAV_MIDIIN_2 = 0x386
+MM_MOTU_MTPAV_MIDIOUT_2 = 0x386
+MM_MOTU_MTPAV_MIDIIN_3 = 0x387
+MM_MOTU_MTPAV_MIDIOUT_3 = 0x387
+MM_MOTU_MTPAV_MIDIIN_4 = 0x388
+MM_MOTU_MTPAV_MIDIOUT_4 = 0x388
+MM_MOTU_MTPAV_MIDIIN_5 = 0x389
+MM_MOTU_MTPAV_MIDIOUT_5 = 0x389
+MM_MOTU_MTPAV_MIDIIN_6 = 0x38A
+MM_MOTU_MTPAV_MIDIOUT_6 = 0x38A
+MM_MOTU_MTPAV_MIDIIN_7 = 0x38B
+MM_MOTU_MTPAV_MIDIOUT_7 = 0x38B
+MM_MOTU_MTPAV_MIDIIN_8 = 0x38C
+MM_MOTU_MTPAV_MIDIOUT_8 = 0x38C
+MM_MOTU_MTPAV_NET_MIDIIN_1 = 0x38D
+MM_MOTU_MTPAV_NET_MIDIOUT_1 = 0x38D
+MM_MOTU_MTPAV_NET_MIDIIN_2 = 0x38E
+MM_MOTU_MTPAV_NET_MIDIOUT_2 = 0x38E
+MM_MOTU_MTPAV_NET_MIDIIN_3 = 0x38F
+MM_MOTU_MTPAV_NET_MIDIOUT_3 = 0x38F
+MM_MOTU_MTPAV_NET_MIDIIN_4 = 0x390
+MM_MOTU_MTPAV_NET_MIDIOUT_4 = 0x390
+MM_MOTU_MTPAV_NET_MIDIIN_5 = 0x391
+MM_MOTU_MTPAV_NET_MIDIOUT_5 = 0x391
+MM_MOTU_MTPAV_NET_MIDIIN_6 = 0x392
+MM_MOTU_MTPAV_NET_MIDIOUT_6 = 0x392
+MM_MOTU_MTPAV_NET_MIDIIN_7 = 0x393
+MM_MOTU_MTPAV_NET_MIDIOUT_7 = 0x393
+MM_MOTU_MTPAV_NET_MIDIIN_8 = 0x394
+MM_MOTU_MTPAV_NET_MIDIOUT_8 = 0x394
+MM_MOTU_MTPAV_MIDIIN_ADAT = 0x395
+MM_MOTU_MTPAV_MIDIOUT_ADAT = 0x395
+MM_MOTU_MXPXT_MIDIIN_SYNC = 0x3E8
+MM_MOTU_MXPXT_MIDIOUT_ALL = 0x3E8
+MM_MOTU_MXPXT_MIDIIN_1 = 0x3E9
+MM_MOTU_MXPXT_MIDIOUT_1 = 0x3E9
+MM_MOTU_MXPXT_MIDIOUT_2 = 0x3EA
+MM_MOTU_MXPXT_MIDIIN_2 = 0x3EA
+MM_MOTU_MXPXT_MIDIIN_3 = 0x3EB
+MM_MOTU_MXPXT_MIDIOUT_3 = 0x3EB
+MM_MOTU_MXPXT_MIDIIN_4 = 0x3EC
+MM_MOTU_MXPXT_MIDIOUT_4 = 0x3EC
+MM_MOTU_MXPXT_MIDIIN_5 = 0x3ED
+MM_MOTU_MXPXT_MIDIOUT_5 = 0x3ED
+MM_MOTU_MXPXT_MIDIOUT_6 = 0x3EE
+MM_MOTU_MXPXT_MIDIIN_6 = 0x3EE
+MM_MOTU_MXPXT_MIDIOUT_7 = 0x3EF
+MM_MOTU_MXPXT_MIDIIN_7 = 0x3EF
+MM_MOTU_MXPXT_MIDIOUT_8 = 0x3F0
+MM_MOTU_MXPXT_MIDIIN_8 = 0x3F0
+# MM_WORKBIT product IDs
+# Harmony Mixer
+# Harmony Mixer
+MM_WORKBIT_MIXER = 0x1
+# Harmony Mixer
+MM_WORKBIT_WAVEOUT = 0x2
+# Harmony Mixer
+MM_WORKBIT_WAVEIN = 0x3
+# Harmony Mixer
+MM_WORKBIT_MIDIIN = 0x4
+# Harmony Mixer
+MM_WORKBIT_MIDIOUT = 0x5
+# Harmony Mixer
+MM_WORKBIT_FMSYNTH = 0x6
+MM_WORKBIT_AUX = 0x7
+MM_WORKBIT_JOYSTICK = 0x8
+# MM_OSITECH product IDs
+# Trumpcard
+MM_OSITECH_TRUMPCARD = 0x1
+# MM_MIRO product IDs
+# miroMOVIE pro
+# miroVIDEO D1
+MM_MIRO_MOVIEPRO = 0x1
+# miroVIDEO DC1 tv
+MM_MIRO_VIDEOD1 = 0x2
+# miroVIDEO 10/20 TD
+MM_MIRO_VIDEODC1TV = 0x3
+MM_MIRO_VIDEOTD = 0x4
+MM_MIRO_DC30_WAVEOUT = 0x5
+MM_MIRO_DC30_WAVEIN = 0x6
+MM_MIRO_DC30_MIX = 0x7
+# MM_ISOLUTION product IDs
+MM_ISOLUTION_PASCAL = 0x1
+# MM_ROCKWELL product IDs
+MM_VOICEMIXER = 0x1
+ROCKWELL_WA1_WAVEIN = 0x64
+ROCKWELL_WA1_WAVEOUT = 0x65
+ROCKWELL_WA1_SYNTH = 0x66
+ROCKWELL_WA1_MIXER = 0x67
+ROCKWELL_WA1_MPU401_IN = 0x68
+ROCKWELL_WA1_MPU401_OUT = 0x69
+ROCKWELL_WA2_WAVEIN = 0xC8
+ROCKWELL_WA2_WAVEOUT = 0xC9
+ROCKWELL_WA2_SYNTH = 0xCA
+ROCKWELL_WA2_MIXER = 0xCB
+ROCKWELL_WA2_MPU401_IN = 0xCC
+ROCKWELL_WA2_MPU401_OUT = 0xCD
+# MM_VOXWARE product IDs
+MM_VOXWARE_CODEC = 0x1
+# MM_NORTHERN_TELECOM product IDs
+# MPX Audio Card Wave Input Device
+# MPX Audio Card Wave Output Device
+MM_NORTEL_MPXAC_WAVEIN = 0x1
+MM_NORTEL_MPXAC_WAVEOUT = 0x2
+# MM_ADDX product IDs
+# MM_ADDX_PCTV_DIGITALMIX
+# MM_ADDX_PCTV_WAVEIN
+MM_ADDX_PCTV_DIGITALMIX = 0x1
+# MM_ADDX_PCTV_WAVEOUT
+MM_ADDX_PCTV_WAVEIN = 0x2
+# MM_ADDX_PCTV_MIXER
+MM_ADDX_PCTV_WAVEOUT = 0x3
+# MM_ADDX_PCTV_AUX_CD
+MM_ADDX_PCTV_MIXER = 0x4
+# MM_ADDX_PCTV_AUX_LINE
+MM_ADDX_PCTV_AUX_CD = 0x5
+MM_ADDX_PCTV_AUX_LINE = 0x6
+# MM_WILDCAT product IDs
+# Autoscore
+MM_WILDCAT_AUTOSCOREMIDIIN = 0x1
+# MM_RHETOREX product IDs
+MM_RHETOREX_WAVEIN = 0x1
+MM_RHETOREX_WAVEOUT = 0x2
+# MM_BROOKTREE product IDs
+# Brooktree PCM Wave Audio In
+# Brooktree PCM Wave Audio Out
+MM_BTV_WAVEIN = 0x1
+# Brooktree MIDI In
+MM_BTV_WAVEOUT = 0x2
+# Brooktree MIDI out
+MM_BTV_MIDIIN = 0x3
+# Brooktree MIDI FM synth
+MM_BTV_MIDIOUT = 0x4
+# Brooktree Line Input
+MM_BTV_MIDISYNTH = 0x5
+# Brooktree Microphone Input
+MM_BTV_AUX_LINE = 0x6
+# Brooktree CD Input
+MM_BTV_AUX_MIC = 0x7
+# Brooktree PCM Wave in with subcode information
+MM_BTV_AUX_CD = 0x8
+# Brooktree PCM Wave out with subcode information
+MM_BTV_DIGITALIN = 0x9
+# Brooktree WaveStream
+MM_BTV_DIGITALOUT = 0xA
+# Brooktree WSS Mixer driver
+MM_BTV_MIDIWAVESTREAM = 0xB
+MM_BTV_MIXER = 0xC
+# MM_ENSONIQ product IDs
+# ENSONIQ Soundscape
+MM_ENSONIQ_SOUNDSCAPE = 0x10
+MM_SOUNDSCAPE_WAVEOUT = MM_ENSONIQ_SOUNDSCAPE+1
+MM_SOUNDSCAPE_WAVEOUT_AUX = MM_ENSONIQ_SOUNDSCAPE+2
+MM_SOUNDSCAPE_WAVEIN = MM_ENSONIQ_SOUNDSCAPE+3
+MM_SOUNDSCAPE_MIDIOUT = MM_ENSONIQ_SOUNDSCAPE+4
+MM_SOUNDSCAPE_MIDIIN = MM_ENSONIQ_SOUNDSCAPE+5
+MM_SOUNDSCAPE_SYNTH = MM_ENSONIQ_SOUNDSCAPE+6
+MM_SOUNDSCAPE_MIXER = MM_ENSONIQ_SOUNDSCAPE+7
+MM_SOUNDSCAPE_AUX = MM_ENSONIQ_SOUNDSCAPE+8
+# MM_NVIDIA product IDs
+MM_NVIDIA_WAVEOUT = 0x1
+MM_NVIDIA_WAVEIN = 0x2
+MM_NVIDIA_MIDIOUT = 0x3
+MM_NVIDIA_MIDIIN = 0x4
+MM_NVIDIA_GAMEPORT = 0x5
+MM_NVIDIA_MIXER = 0x6
+MM_NVIDIA_AUX = 0x7
+# MM_OKSORI product IDs
+# Oksori Base
+# Oksori 8bit Wave out
+MM_OKSORI_BASE = 0x0
+# Oksori 8bit Wave in
+MM_OKSORI_OSR8_WAVEOUT = MM_OKSORI_BASE+1
+# Oksori 16 bit Wave out
+MM_OKSORI_OSR8_WAVEIN = MM_OKSORI_BASE+2
+# Oksori 16 bit Wave in
+MM_OKSORI_OSR16_WAVEOUT = MM_OKSORI_BASE+3
+# Oksori FM Synth Yamaha OPL4
+MM_OKSORI_OSR16_WAVEIN = MM_OKSORI_BASE+4
+# Oksori DSP Mixer - Master Volume
+MM_OKSORI_FM_OPL4 = MM_OKSORI_BASE+5
+# Oksori DSP Mixer - Wave Volume
+MM_OKSORI_MIX_MASTER = MM_OKSORI_BASE+6
+# Oksori DSP Mixer - FM Volume
+MM_OKSORI_MIX_WAVE = MM_OKSORI_BASE+7
+# Oksori DSP Mixer - Line Volume
+MM_OKSORI_MIX_FM = MM_OKSORI_BASE+8
+# Oksori DSP Mixer - CD Volume
+MM_OKSORI_MIX_LINE = MM_OKSORI_BASE+9
+# Oksori DSP Mixer - MIC Volume
+MM_OKSORI_MIX_CD = MM_OKSORI_BASE+10
+# Oksori DSP Mixer - Echo Volume
+MM_OKSORI_MIX_MIC = MM_OKSORI_BASE+11
+# Oksori AD1848 - AUX1 Volume
+MM_OKSORI_MIX_ECHO = MM_OKSORI_BASE+12
+# Oksori AD1848 - LINE1 Volume
+MM_OKSORI_MIX_AUX1 = MM_OKSORI_BASE+13
+# Oksori External - One Mic Connect
+MM_OKSORI_MIX_LINE1 = MM_OKSORI_BASE+14
+# Oksori External - Two Mic Connect
+MM_OKSORI_EXT_MIC1 = MM_OKSORI_BASE+15
+# Oksori MIDI Out Device
+MM_OKSORI_EXT_MIC2 = MM_OKSORI_BASE+16
+# Oksori MIDI In Device
+MM_OKSORI_MIDIOUT = MM_OKSORI_BASE+17
+# Oksori CD-Vision MPEG Decoder
+MM_OKSORI_MIDIIN = MM_OKSORI_BASE+18
+MM_OKSORI_MPEG_CDVISION = MM_OKSORI_BASE+19
+# MM_DIACOUSTICS product IDs
+# Drum Action
+MM_DIACOUSTICS_DRUM_ACTION = 0x1
+# MM_KAY_ELEMETRICS product IDs
+MM_KAY_ELEMETRICS_CSL = 0x4300
+MM_KAY_ELEMETRICS_CSL_DAT = 0x4308
+MM_KAY_ELEMETRICS_CSL_4CHANNEL = 0x4309
+# MM_CRYSTAL product IDs
+MM_CRYSTAL_CS4232_WAVEIN = 0x1
+MM_CRYSTAL_CS4232_WAVEOUT = 0x2
+MM_CRYSTAL_CS4232_WAVEMIXER = 0x3
+MM_CRYSTAL_CS4232_WAVEAUX_AUX1 = 0x4
+MM_CRYSTAL_CS4232_WAVEAUX_AUX2 = 0x5
+MM_CRYSTAL_CS4232_WAVEAUX_LINE = 0x6
+MM_CRYSTAL_CS4232_WAVEAUX_MONO = 0x7
+MM_CRYSTAL_CS4232_WAVEAUX_MASTER = 0x8
+MM_CRYSTAL_CS4232_MIDIIN = 0x9
+MM_CRYSTAL_CS4232_MIDIOUT = 0xA
+MM_CRYSTAL_CS4232_INPUTGAIN_AUX1 = 0xD
+MM_CRYSTAL_CS4232_INPUTGAIN_LOOP = 0xE
+MM_CRYSTAL_SOUND_FUSION_WAVEIN = 0x15
+MM_CRYSTAL_SOUND_FUSION_WAVEOUT = 0x16
+MM_CRYSTAL_SOUND_FUSION_MIXER = 0x17
+MM_CRYSTAL_SOUND_FUSION_MIDIIN = 0x18
+MM_CRYSTAL_SOUND_FUSION_MIDIOUT = 0x19
+MM_CRYSTAL_SOUND_FUSION_JOYSTICK = 0x1A
+# MM_QUARTERDECK product IDs
+# Quarterdeck L&H Codec Wave In
+# Quarterdeck L&H Codec Wave Out
+MM_QUARTERDECK_LHWAVEIN = 0x0
+MM_QUARTERDECK_LHWAVEOUT = 0x1
+# MM_TDK product IDs
+MM_TDK_MW_MIDI_SYNTH = 0x1
+MM_TDK_MW_MIDI_IN = 0x2
+MM_TDK_MW_MIDI_OUT = 0x3
+MM_TDK_MW_WAVE_IN = 0x4
+MM_TDK_MW_WAVE_OUT = 0x5
+MM_TDK_MW_AUX = 0x6
+MM_TDK_MW_MIXER = 0xA
+MM_TDK_MW_AUX_MASTER = 0x64
+MM_TDK_MW_AUX_BASS = 0x65
+MM_TDK_MW_AUX_TREBLE = 0x66
+MM_TDK_MW_AUX_MIDI_VOL = 0x67
+MM_TDK_MW_AUX_WAVE_VOL = 0x68
+MM_TDK_MW_AUX_WAVE_RVB = 0x69
+MM_TDK_MW_AUX_WAVE_CHR = 0x6A
+MM_TDK_MW_AUX_VOL = 0x6B
+MM_TDK_MW_AUX_RVB = 0x6C
+MM_TDK_MW_AUX_CHR = 0x6D
+# MM_DIGITAL_AUDIO_LABS product IDs
+MM_DIGITAL_AUDIO_LABS_TC = 0x01
+MM_DIGITAL_AUDIO_LABS_DOC = 0x02
+MM_DIGITAL_AUDIO_LABS_V8 = 0x10
+MM_DIGITAL_AUDIO_LABS_CPRO = 0x11
+MM_DIGITAL_AUDIO_LABS_VP = 0x12
+MM_DIGITAL_AUDIO_LABS_CDLX = 0x13
+MM_DIGITAL_AUDIO_LABS_CTDIF = 0x14
+# MM_SEERSYS product IDs
+MM_SEERSYS_SEERSYNTH = 0x1
+MM_SEERSYS_SEERWAVE = 0x2
+MM_SEERSYS_SEERMIX = 0x3
+MM_SEERSYS_WAVESYNTH = 0x4
+MM_SEERSYS_WAVESYNTH_WG = 0x5
+MM_SEERSYS_REALITY = 0x6
+# MM_OSPREY product IDs
+MM_OSPREY_1000WAVEIN = 0x1
+MM_OSPREY_1000WAVEOUT = 0x2
+# MM_SOUNDESIGNS product IDs
+MM_SOUNDESIGNS_WAVEIN = 0x1
+MM_SOUNDESIGNS_WAVEOUT = 0x2
+# MM_SPECTRUM_SIGNAL_PROCESSING product IDs
+# Sound Festa Wave In Device
+# Sound Festa Wave Out Device
+MM_SSP_SNDFESWAVEIN = 0x1
+# Sound Festa MIDI In Device
+MM_SSP_SNDFESWAVEOUT = 0x2
+# Sound Festa MIDI Out Device
+MM_SSP_SNDFESMIDIIN = 0x3
+# Sound Festa MIDI Synth Device
+MM_SSP_SNDFESMIDIOUT = 0x4
+# Sound Festa Mixer Device
+MM_SSP_SNDFESSYNTH = 0x5
+# Sound Festa Auxilliary Device
+MM_SSP_SNDFESMIX = 0x6
+MM_SSP_SNDFESAUX = 0x7
+# MM_ECS product IDs
+MM_ECS_AADF_MIDI_IN = 0xA
+MM_ECS_AADF_MIDI_OUT = 0xB
+MM_ECS_AADF_WAVE2MIDI_IN = 0xC
+# MM_AMD product IDs
+MM_AMD_INTERWAVE_WAVEIN = 0x1
+MM_AMD_INTERWAVE_WAVEOUT = 0x2
+MM_AMD_INTERWAVE_SYNTH = 0x3
+MM_AMD_INTERWAVE_MIXER1 = 0x4
+MM_AMD_INTERWAVE_MIXER2 = 0x5
+MM_AMD_INTERWAVE_JOYSTICK = 0x6
+MM_AMD_INTERWAVE_EX_CD = 0x7
+MM_AMD_INTERWAVE_MIDIIN = 0x8
+MM_AMD_INTERWAVE_MIDIOUT = 0x9
+MM_AMD_INTERWAVE_AUX1 = 0xA
+MM_AMD_INTERWAVE_AUX2 = 0xB
+MM_AMD_INTERWAVE_AUX_MIC = 0xC
+MM_AMD_INTERWAVE_AUX_CD = 0xD
+MM_AMD_INTERWAVE_MONO_IN = 0xE
+MM_AMD_INTERWAVE_MONO_OUT = 0xF
+MM_AMD_INTERWAVE_EX_TELEPHONY = 0x10
+MM_AMD_INTERWAVE_WAVEOUT_BASE = 0x11
+MM_AMD_INTERWAVE_WAVEOUT_TREBLE = 0x12
+MM_AMD_INTERWAVE_STEREO_ENHANCED = 0x13
+# MM_COREDYNAMICS product IDs
+# DynaMax Hi-Rez
+# DynaSonix
+MM_COREDYNAMICS_DYNAMIXHR = 0x1
+MM_COREDYNAMICS_DYNASONIX_SYNTH = 0x2
+MM_COREDYNAMICS_DYNASONIX_MIDI_IN = 0x3
+MM_COREDYNAMICS_DYNASONIX_MIDI_OUT = 0x4
+MM_COREDYNAMICS_DYNASONIX_WAVE_IN = 0x5
+MM_COREDYNAMICS_DYNASONIX_WAVE_OUT = 0x6
+MM_COREDYNAMICS_DYNASONIX_AUDIO_IN = 0x7
+# DynaGrfx
+MM_COREDYNAMICS_DYNASONIX_AUDIO_OUT = 0x8
+MM_COREDYNAMICS_DYNAGRAFX_VGA = 0x9
+MM_COREDYNAMICS_DYNAGRAFX_WAVE_IN = 0xA
+MM_COREDYNAMICS_DYNAGRAFX_WAVE_OUT = 0xB
+# MM_CANAM product IDs
+MM_CANAM_CBXWAVEOUT = 0x1
+MM_CANAM_CBXWAVEIN = 0x2
+# MM_SOFTSOUND product IDs
+MM_SOFTSOUND_CODEC = 0x1
+# MM_NORRIS product IDs
+MM_NORRIS_VOICELINK = 0x1
+# MM_DDD product IDs
+MM_DDD_MIDILINK_MIDIIN = 0x1
+MM_DDD_MIDILINK_MIDIOUT = 0x2
+# MM_EUPHONICS product IDs
+MM_EUPHONICS_AUX_CD = 0x1
+MM_EUPHONICS_AUX_LINE = 0x2
+MM_EUPHONICS_AUX_MASTER = 0x3
+MM_EUPHONICS_AUX_MIC = 0x4
+MM_EUPHONICS_AUX_MIDI = 0x5
+MM_EUPHONICS_AUX_WAVE = 0x6
+MM_EUPHONICS_FMSYNTH_MONO = 0x7
+MM_EUPHONICS_FMSYNTH_STEREO = 0x8
+MM_EUPHONICS_MIDIIN = 0x9
+MM_EUPHONICS_MIDIOUT = 0xA
+MM_EUPHONICS_MIXER = 0xB
+MM_EUPHONICS_WAVEIN = 0xC
+MM_EUPHONICS_WAVEOUT = 0xD
+MM_EUPHONICS_EUSYNTH = 0xE
+# MM_CRYSTAL_NET product IDs
+CRYSTAL_NET_SFM_CODEC = 0x1
+# MM_CHROMATIC product IDs
+MM_CHROMATIC_M1 = 0x0001
+MM_CHROMATIC_M1_WAVEIN = 0x0002
+MM_CHROMATIC_M1_WAVEOUT = 0x0003
+MM_CHROMATIC_M1_FMSYNTH = 0x0004
+MM_CHROMATIC_M1_MIXER = 0x0005
+MM_CHROMATIC_M1_AUX = 0x0006
+MM_CHROMATIC_M1_AUX_CD = 0x0007
+MM_CHROMATIC_M1_MIDIIN = 0x0008
+MM_CHROMATIC_M1_MIDIOUT = 0x0009
+MM_CHROMATIC_M1_WTSYNTH = 0x0010
+MM_CHROMATIC_M1_MPEGWAVEIN = 0x0011
+MM_CHROMATIC_M1_MPEGWAVEOUT = 0x0012
+MM_CHROMATIC_M2 = 0x0013
+MM_CHROMATIC_M2_WAVEIN = 0x0014
+MM_CHROMATIC_M2_WAVEOUT = 0x0015
+MM_CHROMATIC_M2_FMSYNTH = 0x0016
+MM_CHROMATIC_M2_MIXER = 0x0017
+MM_CHROMATIC_M2_AUX = 0x0018
+MM_CHROMATIC_M2_AUX_CD = 0x0019
+MM_CHROMATIC_M2_MIDIIN = 0x0020
+MM_CHROMATIC_M2_MIDIOUT = 0x0021
+MM_CHROMATIC_M2_WTSYNTH = 0x0022
+MM_CHROMATIC_M2_MPEGWAVEIN = 0x0023
+MM_CHROMATIC_M2_MPEGWAVEOUT = 0x0024
+# MM_VIENNASYS product IDs
+MM_VIENNASYS_TSP_WAVE_DRIVER = 0x1
+# MM_CONNECTIX product IDs
+MM_CONNECTIX_VIDEC_CODEC = 0x1
+# MM_GADGETLABS product IDs
+MM_GADGETLABS_WAVE44_WAVEIN = 0x1
+MM_GADGETLABS_WAVE44_WAVEOUT = 0x2
+MM_GADGETLABS_WAVE42_WAVEIN = 0x3
+MM_GADGETLABS_WAVE42_WAVEOUT = 0x4
+MM_GADGETLABS_WAVE4_MIDIIN = 0x5
+MM_GADGETLABS_WAVE4_MIDIOUT = 0x6
+# MM_FRONTIER product IDs
+# WaveCenter
+MM_FRONTIER_WAVECENTER_MIDIIN = 0x1
+MM_FRONTIER_WAVECENTER_MIDIOUT = 0x2
+MM_FRONTIER_WAVECENTER_WAVEIN = 0x3
+MM_FRONTIER_WAVECENTER_WAVEOUT = 0x4
+# MM_VIONA product IDs
+# Q-Motion PCI II/Bravado 2000
+MM_VIONA_QVINPCI_MIXER = 0x1
+MM_VIONA_QVINPCI_WAVEIN = 0x2
+# Buster
+MM_VIONAQVINPCI_WAVEOUT = 0x3
+# Cinemaster
+MM_VIONA_BUSTER_MIXER = 0x4
+# Concerto
+MM_VIONA_CINEMASTER_MIXER = 0x5
+MM_VIONA_CONCERTO_MIXER = 0x6
+# MM_CASIO product IDs
+# wp150
+MM_CASIO_WP150_MIDIOUT = 0x1
+MM_CASIO_WP150_MIDIIN = 0x2
+MM_CASIO_LSG_MIDIOUT = 0x3
+# MM_DIAMONDMM product IDs
+# Freedom Audio
+MM_DIMD_PLATFORM = 0x0
+MM_DIMD_DIRSOUND = 0x1
+MM_DIMD_VIRTMPU = 0x2
+MM_DIMD_VIRTSB = 0x3
+MM_DIMD_VIRTJOY = 0x4
+MM_DIMD_WAVEIN = 0x5
+MM_DIMD_WAVEOUT = 0x6
+MM_DIMD_MIDIIN = 0x7
+MM_DIMD_MIDIOUT = 0x8
+MM_DIMD_AUX_LINE = 0x9
+MM_DIMD_MIXER = 0xA
+MM_DIMD_WSS_WAVEIN = 0xE
+MM_DIMD_WSS_WAVEOUT = 0xF
+MM_DIMD_WSS_MIXER = 0x11
+MM_DIMD_WSS_AUX = 0x15
+MM_DIMD_WSS_SYNTH = 0x4C
+# MM_S3 product IDs
+MM_S3_WAVEOUT = 0x1
+MM_S3_WAVEIN = 0x2
+MM_S3_MIDIOUT = 0x3
+MM_S3_MIDIIN = 0x4
+MM_S3_FMSYNTH = 0x5
+MM_S3_MIXER = 0x6
+MM_S3_AUX = 0x7
+# MM_VANKOEVERING product IDs
+MM_VKC_MPU401_MIDIIN = 0x0100
+MM_VKC_SERIAL_MIDIIN = 0x0101
+MM_VKC_MPU401_MIDIOUT = 0x0200
+MM_VKC_SERIAL_MIDIOUT = 0x0201
+# MM_ZEFIRO product IDs
+MM_ZEFIRO_ZA2 = 0x2
+# MM_FRAUNHOFER_IIS product IDs
+MM_FHGIIS_MPEGLAYER3_DECODE = 0x9
+MM_FHGIIS_MPEGLAYER3 = 0xA
+MM_FHGIIS_MPEGLAYER3_LITE = 0xA
+MM_FHGIIS_MPEGLAYER3_BASIC = 0xB
+MM_FHGIIS_MPEGLAYER3_ADVANCED = 0xC
+MM_FHGIIS_MPEGLAYER3_PROFESSIONAL = 0xD
+MM_FHGIIS_MPEGLAYER3_ADVANCEDPLUS = 0xE
+# MM_QUICKNET product IDs
+MM_QUICKNET_PJWAVEIN = 0x1
+MM_QUICKNET_PJWAVEOUT = 0x2
+# MM_SICRESOURCE product IDs
+MM_SICRESOURCE_SSO3D = 0x2
+MM_SICRESOURCE_SSOW3DI = 0x3
+# MM_NEOMAGIC product IDs
+MM_NEOMAGIC_SYNTH = 0x1
+MM_NEOMAGIC_WAVEOUT = 0x2
+MM_NEOMAGIC_WAVEIN = 0x3
+MM_NEOMAGIC_MIDIOUT = 0x4
+MM_NEOMAGIC_MIDIIN = 0x5
+MM_NEOMAGIC_AUX = 0x6
+MM_NEOMAGIC_MW3DX_WAVEOUT = 0xA
+MM_NEOMAGIC_MW3DX_WAVEIN = 0xB
+MM_NEOMAGIC_MW3DX_MIDIOUT = 0xC
+MM_NEOMAGIC_MW3DX_MIDIIN = 0xD
+MM_NEOMAGIC_MW3DX_FMSYNTH = 0xE
+MM_NEOMAGIC_MW3DX_GMSYNTH = 0xF
+MM_NEOMAGIC_MW3DX_MIXER = 0x10
+MM_NEOMAGIC_MW3DX_AUX = 0x11
+MM_NEOMAGIC_MWAVE_WAVEOUT = 0x14
+MM_NEOMAGIC_MWAVE_WAVEIN = 0x15
+MM_NEOMAGIC_MWAVE_MIDIOUT = 0x16
+MM_NEOMAGIC_MWAVE_MIDIIN = 0x17
+MM_NEOMAGIC_MWAVE_MIXER = 0x18
+MM_NEOMAGIC_MWAVE_AUX = 0x19
+# MM_MERGING_TECHNOLOGIES product IDs
+MM_MERGING_MPEGL3 = 0x1
+# MM_XIRLINK product IDs
+MM_XIRLINK_VISIONLINK = 0x1
+# MM_OTI product IDs
+MM_OTI_611WAVEIN = 0x5
+MM_OTI_611WAVEOUT = 0x6
+MM_OTI_611MIXER = 0x7
+MM_OTI_611MIDIN = 0x12
+MM_OTI_611MIDIOUT = 0x13
+# MM_AUREAL product IDs
+MM_AUREAL_AU8820 = 0x10
+MM_AU8820_SYNTH = 0x11
+MM_AU8820_WAVEOUT = 0x12
+MM_AU8820_WAVEIN = 0x13
+MM_AU8820_MIXER = 0x14
+MM_AU8820_AUX = 0x15
+MM_AU8820_MIDIOUT = 0x16
+MM_AU8820_MIDIIN = 0x17
+MM_AUREAL_AU8830 = 0x20
+MM_AU8830_SYNTH = 0x21
+MM_AU8830_WAVEOUT = 0x22
+MM_AU8830_WAVEIN = 0x23
+MM_AU8830_MIXER = 0x24
+MM_AU8830_AUX = 0x25
+MM_AU8830_MIDIOUT = 0x26
+MM_AU8830_MIDIIN = 0x27
+# MM_VIVO product IDs
+MM_VIVO_AUDIO_CODEC = 0x1
+# MM_SHARP product IDs
+MM_SHARP_MDC_MIDI_SYNTH = 0x1
+MM_SHARP_MDC_MIDI_IN = 0x2
+MM_SHARP_MDC_MIDI_OUT = 0x3
+MM_SHARP_MDC_WAVE_IN = 0x4
+MM_SHARP_MDC_WAVE_OUT = 0x5
+MM_SHARP_MDC_AUX = 0x6
+MM_SHARP_MDC_MIXER = 0xA
+MM_SHARP_MDC_AUX_MASTER = 0x64
+MM_SHARP_MDC_AUX_BASS = 0x65
+MM_SHARP_MDC_AUX_TREBLE = 0x66
+MM_SHARP_MDC_AUX_MIDI_VOL = 0x67
+MM_SHARP_MDC_AUX_WAVE_VOL = 0x68
+MM_SHARP_MDC_AUX_WAVE_RVB = 0x69
+MM_SHARP_MDC_AUX_WAVE_CHR = 0x6A
+MM_SHARP_MDC_AUX_VOL = 0x6B
+MM_SHARP_MDC_AUX_RVB = 0x6C
+MM_SHARP_MDC_AUX_CHR = 0x6D
+# MM_LUCENT product IDs
+MM_LUCENT_ACM_G723 = 0x0
+# MM_ATT product IDs
+MM_ATT_G729A = 0x1
+# MM_MARIAN product IDs
+MM_MARIAN_ARC44WAVEIN = 0x1
+MM_MARIAN_ARC44WAVEOUT = 0x2
+MM_MARIAN_PRODIF24WAVEIN = 0x3
+MM_MARIAN_PRODIF24WAVEOUT = 0x4
+MM_MARIAN_ARC88WAVEIN = 0x5
+MM_MARIAN_ARC88WAVEOUT = 0x6
+# MM_BCB product IDs
+MM_BCB_NETBOARD_10 = 0x1
+MM_BCB_TT75_10 = 0x2
+# MM_MOTIONPIXELS product IDs
+MM_MOTIONPIXELS_MVI2 = 0x1
+# MM_QDESIGN product IDs
+MM_QDESIGN_ACM_MPEG = 0x1
+MM_QDESIGN_ACM_QDESIGN_MUSIC = 0x2
+# MM_NMP product IDs
+MM_NMP_CCP_WAVEIN = 0x1
+MM_NMP_CCP_WAVEOUT = 0x2
+MM_NMP_ACM_AMR = 0xA
+# MM_DATAFUSION product IDs
+MM_DF_ACM_G726 = 0x1
+MM_DF_ACM_GSM610 = 0x2
+# MM_BERCOS product IDs
+MM_BERCOS_WAVEIN = 0x1
+MM_BERCOS_MIXER = 0x2
+MM_BERCOS_WAVEOUT = 0x3
+# MM_ONLIVE product IDs
+MM_ONLIVE_MPCODEC = 0x1
+# MM_PHONET product IDs
+MM_PHONET_PP_WAVEOUT = 0x1
+MM_PHONET_PP_WAVEIN = 0x2
+MM_PHONET_PP_MIXER = 0x3
+# MM_FTR product IDs
+MM_FTR_ENCODER_WAVEIN = 0x1
+MM_FTR_ACM = 0x2
+# MM_ENET product IDs
+MM_ENET_T2000_LINEIN = 0x1
+MM_ENET_T2000_LINEOUT = 0x2
+MM_ENET_T2000_HANDSETIN = 0x3
+MM_ENET_T2000_HANDSETOUT = 0x4
+# MM_EMAGIC product IDs
+MM_EMAGIC_UNITOR8 = 0x1
+# MM_SIPROLAB product IDs
+MM_SIPROLAB_ACELPNET = 0x1
+# MM_DICTAPHONE product IDs
+# G726 ACM codec (g726pcm.acm)
+MM_DICTAPHONE_G726 = 0x1
+# MM_RZS product IDs
+# GSM 06.10 CODEC
+MM_RZS_ACM_TUBGSM = 0x1
+# MM_EES product IDs
+MM_EES_PCMIDI14 = 0x1
+MM_EES_PCMIDI14_IN = 0x2
+MM_EES_PCMIDI14_OUT1 = 0x3
+MM_EES_PCMIDI14_OUT2 = 0x4
+MM_EES_PCMIDI14_OUT3 = 0x5
+MM_EES_PCMIDI14_OUT4 = 0x6
+# MM_HAFTMANN product IDs
+MM_HAFTMANN_LPTDAC2 = 0x1
+# MM_LUCID product IDs
+MM_LUCID_PCI24WAVEIN = 0x1
+MM_LUCID_PCI24WAVEOUT = 0x2
+# MM_HEADSPACE product IDs
+MM_HEADSPACE_HAESYNTH = 0x1
+MM_HEADSPACE_HAEWAVEOUT = 0x2
+MM_HEADSPACE_HAEWAVEIN = 0x3
+MM_HEADSPACE_HAEMIXER = 0x4
+# MM_UNISYS product IDs
+MM_UNISYS_ACM_NAP = 0x1
+# MM_LUMINOSITI product IDs
+MM_LUMINOSITI_SCWAVEIN = 0x1
+MM_LUMINOSITI_SCWAVEOUT = 0x2
+MM_LUMINOSITI_SCWAVEMIX = 0x3
+# MM_ACTIVEVOICE product IDs
+MM_ACTIVEVOICE_ACM_VOXADPCM = 0x1
+# MM_DTS product IDs
+MM_DTS_DS = 0x1
+# MM_SOFTLAB_NSK product IDs
+MM_SOFTLAB_NSK_FRW_WAVEIN = 0x1
+MM_SOFTLAB_NSK_FRW_WAVEOUT = 0x2
+MM_SOFTLAB_NSK_FRW_MIXER = 0x3
+MM_SOFTLAB_NSK_FRW_AUX = 0x4
+# MM_FORTEMEDIA product IDs
+MM_FORTEMEDIA_WAVEIN = 0x1
+MM_FORTEMEDIA_WAVEOUT = 0x2
+MM_FORTEMEDIA_FMSYNC = 0x3
+MM_FORTEMEDIA_MIXER = 0x4
+MM_FORTEMEDIA_AUX = 0x5
+# MM_SONORUS product IDs
+MM_SONORUS_STUDIO = 0x1
+# MM_I_LINK product IDs
+MM_I_LINK_VOICE_CODER = 0x1
+# MM_SELSIUS_SYSTEMS product IDs
+MM_SELSIUS_SYSTEMS_RTPWAVEOUT = 0x1
+MM_SELSIUS_SYSTEMS_RTPWAVEIN = 0x2
+# MM_ADMOS product IDs
+MM_ADMOS_FM_SYNTH = 0x1
+MM_ADMOS_QS3AMIDIOUT = 0x2
+MM_ADMOS_QS3AMIDIIN = 0x3
+MM_ADMOS_QS3AWAVEOUT = 0x4
+MM_ADMOS_QS3AWAVEIN = 0x5
+# MM_LEXICON product IDs
+MM_LEXICON_STUDIO_WAVE_OUT = 0x1
+MM_LEXICON_STUDIO_WAVE_IN = 0x2
+# MM_SGI product IDs
+MM_SGI_320_WAVEIN = 0x1
+MM_SGI_320_WAVEOUT = 0x2
+MM_SGI_320_MIXER = 0x3
+MM_SGI_540_WAVEIN = 0x4
+MM_SGI_540_WAVEOUT = 0x5
+MM_SGI_540_MIXER = 0x6
+MM_SGI_RAD_ADATMONO1_WAVEIN = 0x7
+MM_SGI_RAD_ADATMONO2_WAVEIN = 0x8
+MM_SGI_RAD_ADATMONO3_WAVEIN = 0x9
+MM_SGI_RAD_ADATMONO4_WAVEIN = 0xA
+MM_SGI_RAD_ADATMONO5_WAVEIN = 0xB
+MM_SGI_RAD_ADATMONO6_WAVEIN = 0xC
+MM_SGI_RAD_ADATMONO7_WAVEIN = 0xD
+MM_SGI_RAD_ADATMONO8_WAVEIN = 0xE
+MM_SGI_RAD_ADATSTEREO12_WAVEIN = 0xF
+MM_SGI_RAD_ADATSTEREO34_WAVEIN = 0x10
+MM_SGI_RAD_ADATSTEREO56_WAVEIN = 0x11
+MM_SGI_RAD_ADATSTEREO78_WAVEIN = 0x12
+MM_SGI_RAD_ADAT8CHAN_WAVEIN = 0x13
+MM_SGI_RAD_ADATMONO1_WAVEOUT = 0x14
+MM_SGI_RAD_ADATMONO2_WAVEOUT = 0x15
+MM_SGI_RAD_ADATMONO3_WAVEOUT = 0x16
+MM_SGI_RAD_ADATMONO4_WAVEOUT = 0x17
+MM_SGI_RAD_ADATMONO5_WAVEOUT = 0x18
+MM_SGI_RAD_ADATMONO6_WAVEOUT = 0x19
+MM_SGI_RAD_ADATMONO7_WAVEOUT = 0x1A
+MM_SGI_RAD_ADATMONO8_WAVEOUT = 0x1B
+MM_SGI_RAD_ADATSTEREO12_WAVEOUT = 0x1C
+MM_SGI_RAD_ADATSTEREO32_WAVEOUT = 0x1D
+MM_SGI_RAD_ADATSTEREO56_WAVEOUT = 0x1E
+MM_SGI_RAD_ADATSTEREO78_WAVEOUT = 0x1F
+MM_SGI_RAD_ADAT8CHAN_WAVEOUT = 0x20
+MM_SGI_RAD_AESMONO1_WAVEIN = 0x21
+MM_SGI_RAD_AESMONO2_WAVEIN = 0x22
+MM_SGI_RAD_AESSTEREO_WAVEIN = 0x23
+MM_SGI_RAD_AESMONO1_WAVEOUT = 0x24
+MM_SGI_RAD_AESMONO2_WAVEOUT = 0x25
+MM_SGI_RAD_AESSTEREO_WAVEOUT = 0x26
+# MM_IPI product IDs
+MM_IPI_ACM_HSX = 0x1
+MM_IPI_ACM_RPELP = 0x2
+MM_IPI_WF_ASSS = 0x3
+MM_IPI_AT_WAVEOUT = 0x4
+MM_IPI_AT_WAVEIN = 0x5
+MM_IPI_AT_MIXER = 0x6
+# MM_ICE product IDs
+MM_ICE_WAVEOUT = 0x1
+MM_ICE_WAVEIN = 0x2
+MM_ICE_MTWAVEOUT = 0x3
+MM_ICE_MTWAVEIN = 0x4
+MM_ICE_MIDIOUT1 = 0x5
+MM_ICE_MIDIIN1 = 0x6
+MM_ICE_MIDIOUT2 = 0x7
+MM_ICE_MIDIIN2 = 0x8
+MM_ICE_SYNTH = 0x9
+MM_ICE_MIXER = 0xA
+MM_ICE_AUX = 0xB
+# MM_VQST product IDs
+MM_VQST_VQC1 = 0x1
+MM_VQST_VQC2 = 0x2
+# MM_ETEK product IDs
+MM_ETEK_KWIKMIDI_MIDIIN = 0x1
+MM_ETEK_KWIKMIDI_MIDIOUT = 0x2
+# MM_INTERNET product IDs
+MM_INTERNET_SSW_MIDIOUT = 0xA
+MM_INTERNET_SSW_MIDIIN = 0xB
+MM_INTERNET_SSW_WAVEOUT = 0xC
+MM_INTERNET_SSW_WAVEIN = 0xD
+# MM_SONY product IDs
+MM_SONY_ACM_SCX = 0x1
+# MM_UHER_INFORMATIC product IDs
+MM_UH_ACM_ADPCM = 0x1
+# MM_SYDEC_NV product IDs
+MM_SYDEC_NV_WAVEIN = 0x1
+MM_SYDEC_NV_WAVEOUT = 0x2
+# MM_FLEXION product IDs
+MM_FLEXION_X300_WAVEIN = 0x1
+MM_FLEXION_X300_WAVEOUT = 0x2
+# MM_VIA product IDs
+MM_VIA_WAVEOUT = 0x1
+MM_VIA_WAVEIN = 0x2
+MM_VIA_MIXER = 0x3
+MM_VIA_AUX = 0x4
+MM_VIA_MPU401_MIDIOUT = 0x5
+MM_VIA_MPU401_MIDIIN = 0x6
+MM_VIA_SWFM_SYNTH = 0x7
+MM_VIA_WDM_WAVEOUT = 0x8
+MM_VIA_WDM_WAVEIN = 0x9
+MM_VIA_WDM_MIXER = 0xA
+MM_VIA_WDM_MPU401_MIDIOUT = 0xB
+MM_VIA_WDM_MPU401_MIDIIN = 0xC
+# MM_MICRONAS product IDs
+MM_MICRONAS_SC4 = 0x1
+MM_MICRONAS_CLP833 = 0x2
+# MM_HP product IDs
+MM_HP_WAVEOUT = 0x1
+MM_HP_WAVEIN = 0x2
+# MM_QUICKAUDIO product IDs
+MM_QUICKAUDIO_MINIMIDI = 0x1
+MM_QUICKAUDIO_MAXIMIDI = 0x2
+# MM_ICCC product IDs
+MM_ICCC_UNA3_WAVEIN = 0x1
+MM_ICCC_UNA3_WAVEOUT = 0x2
+MM_ICCC_UNA3_AUX = 0x3
+MM_ICCC_UNA3_MIXER = 0x4
+# MM_3COM product IDs
+MM_3COM_CB_MIXER = 0x1
+MM_3COM_CB_WAVEIN = 0x2
+MM_3COM_CB_WAVEOUT = 0x3
+# MM_MINDMAKER product IDs
+MM_MINDMAKER_GC_WAVEIN = 0x1
+MM_MINDMAKER_GC_WAVEOUT = 0x2
+MM_MINDMAKER_GC_MIXER = 0x3
+# MM_TELEKOL product IDs
+MM_TELEKOL_WAVEOUT = 0x1
+MM_TELEKOL_WAVEIN = 0x2
+# MM_ALGOVISION product IDs
+MM_ALGOVISION_VB80WAVEOUT = 0x1
+MM_ALGOVISION_VB80WAVEIN = 0x2
+MM_ALGOVISION_VB80MIXER = 0x3
+MM_ALGOVISION_VB80AUX = 0x4
+MM_ALGOVISION_VB80AUX2 = 0x5
+# !NOMMIDS
+# ------------------------------------------------------------------------------
+# INFO LIST CHUNKS (from the Multimedia Programmer's Reference
+# plus new ones)
+# Archival location
+# Artist
+RIFFINFO_IARL = mmioFOURCC('I', 'A', 'R', 'L')
+# Commissioned
+RIFFINFO_IART = mmioFOURCC('I', 'A', 'R', 'T')
+# Comments
+RIFFINFO_ICMS = mmioFOURCC('I', 'C', 'M', 'S')
+# Copyright
+RIFFINFO_ICMT = mmioFOURCC('I', 'C', 'M', 'T')
+# Creation date of subject
+RIFFINFO_ICOP = mmioFOURCC('I', 'C', 'O', 'P')
+# Cropped
+RIFFINFO_ICRD = mmioFOURCC('I', 'C', 'R', 'D')
+# Dimensions
+RIFFINFO_ICRP = mmioFOURCC('I', 'C', 'R', 'P')
+# Dots per inch
+RIFFINFO_IDIM = mmioFOURCC('I', 'D', 'I', 'M')
+# Engineer
+RIFFINFO_IDPI = mmioFOURCC('I', 'D', 'P', 'I')
+# Genre
+RIFFINFO_IENG = mmioFOURCC('I', 'E', 'N', 'G')
+# Keywords
+RIFFINFO_IGNR = mmioFOURCC('I', 'G', 'N', 'R')
+# Lightness settings
+RIFFINFO_IKEY = mmioFOURCC('I', 'K', 'E', 'Y')
+# Medium
+RIFFINFO_ILGT = mmioFOURCC('I', 'L', 'G', 'T')
+# Name of subject
+RIFFINFO_IMED = mmioFOURCC('I', 'M', 'E', 'D')
+# Palette Settings. No. of colors requested.
+RIFFINFO_INAM = mmioFOURCC('I', 'N', 'A', 'M')
+# Product
+RIFFINFO_IPLT = mmioFOURCC('I', 'P', 'L', 'T')
+# Subject description
+RIFFINFO_IPRD = mmioFOURCC('I', 'P', 'R', 'D')
+# Software. Name of package used to create file.
+RIFFINFO_ISBJ = mmioFOURCC('I', 'S', 'B', 'J')
+# Sharpness.
+RIFFINFO_ISFT = mmioFOURCC('I', 'S', 'F', 'T')
+# Source.
+RIFFINFO_ISHP = mmioFOURCC('I', 'S', 'H', 'P')
+# Source Form. ie slide, paper
+RIFFINFO_ISRC = mmioFOURCC('I', 'S', 'R', 'C')
+# Technician who digitized the subject.
+RIFFINFO_ISRF = mmioFOURCC('I', 'S', 'R', 'F')
+RIFFINFO_ITCH = mmioFOURCC('I', 'T', 'C', 'H')
+# New INFO Chunks as of August 30, 1993:
+# SMPTE time code
+RIFFINFO_ISMP = mmioFOURCC('I', 'S', 'M', 'P')
+# ISMP: SMPTE time code of digitization start poINT expressed as a NULL
+# terminated
+# text string "HH:MM:SS:FF". If performing MCI capture in AVICAP, this
+# chunk will be automatically set based on the MCI start time.
+# Digitization Time
+RIFFINFO_IDIT = mmioFOURCC('I', 'D', 'I', 'T')
+# IDIT: "Digitization Time" Specifies the time and date that the digitization
+# commenced.
+# The digitization time is contained in an ASCII string which
+# contains exactly 26 CHARacters and is in the format
+# "Wed Jan 02 02:03:55 1990\n\0".
+# The ctime(), asctime(), functions can be used to create strings
+# in this format. This chunk is automatically added to the capture
+# file based on the current system time at the moment capture is initiated.
+# ASCIIZ representation of the 1-based track number of the content.
+# A dump of the table of contents from the CD the content originated from.
+RIFFINFO_ITRK = mmioFOURCC('I', 'T', 'R', 'K')
+RIFFINFO_ITOC = mmioFOURCC('I', 'T', 'O', 'C')
+# Template line for new additions
+# #define RIFFINFO_I      mmioFOURCC ('I', '', '', '')
+# ------------------------------------------------------------------------------
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+# WAVE form wFormatTag IDs
+# Microsoft Corporation
+# Microsoft Corporation
+WAVE_FORMAT_UNKNOWN = 0x0000
+# Microsoft Corporation
+WAVE_FORMAT_ADPCM = 0x0002
+# Compaq Computer Corp.
+WAVE_FORMAT_IEEE_FLOAT = 0x0003
+# IBM Corporation
+WAVE_FORMAT_VSELP = 0x0004
+# Microsoft Corporation
+WAVE_FORMAT_IBM_CVSD = 0x0005
+# Microsoft Corporation
+WAVE_FORMAT_ALAW = 0x0006
+# Microsoft Corporation
+WAVE_FORMAT_MULAW = 0x0007
+# Microsoft Corporation
+WAVE_FORMAT_DTS = 0x0008
+# Microsoft Corporation
+WAVE_FORMAT_DRM = 0x0009
+# Microsoft Corporation
+WAVE_FORMAT_WMAVOICE9 = 0x000A
+# OKI
+WAVE_FORMAT_WMAVOICE10 = 0x000B
+# Intel Corporation
+WAVE_FORMAT_OKI_ADPCM = 0x0010
+# Intel Corporation
+WAVE_FORMAT_DVI_ADPCM = 0x0011
+# Videologic
+WAVE_FORMAT_IMA_ADPCM = WAVE_FORMAT_DVI_ADPCM
+# Sierra Semiconductor Corp
+WAVE_FORMAT_MEDIASPACE_ADPCM = 0x0012
+# Antex Electronics Corporation
+WAVE_FORMAT_SIERRA_ADPCM = 0x0013
+# DSP Solutions, Inc.
+WAVE_FORMAT_G723_ADPCM = 0x0014
+# DSP Solutions, Inc.
+WAVE_FORMAT_DIGISTD = 0x0015
+# Dialogic Corporation
+WAVE_FORMAT_DIGIFIX = 0x0016
+# Media Vision, Inc.
+WAVE_FORMAT_DIALOGIC_OKI_ADPCM = 0x0017
+# Hewlett-Packard Company
+WAVE_FORMAT_MEDIAVISION_ADPCM = 0x0018
+# Hewlett-Packard Company
+WAVE_FORMAT_CU_CODEC = 0x0019
+# Yamaha Corporation of America
+WAVE_FORMAT_HP_DYN_VOICE = 0x001A
+# Speech Compression
+WAVE_FORMAT_YAMAHA_ADPCM = 0x0020
+# DSP Group, Inc
+WAVE_FORMAT_SONARC = 0x0021
+# Echo Speech Corporation
+WAVE_FORMAT_DSPGROUP_TRUESPEECH = 0x0022
+# Virtual Music, Inc.
+WAVE_FORMAT_ECHOSC1 = 0x0023
+# Audio Processing Technology
+WAVE_FORMAT_AUDIOFILE_AF36 = 0x0024
+# Virtual Music, Inc.
+WAVE_FORMAT_APTX = 0x0025
+# Aculab plc
+WAVE_FORMAT_AUDIOFILE_AF10 = 0x0026
+# Merging Technologies S.A.
+WAVE_FORMAT_PROSODY_1612 = 0x0027
+# Dolby Laboratories
+WAVE_FORMAT_LRC = 0x0028
+# Microsoft Corporation
+WAVE_FORMAT_DOLBY_AC2 = 0x0030
+# Microsoft Corporation
+WAVE_FORMAT_GSM610 = 0x0031
+# Antex Electronics Corporation
+WAVE_FORMAT_MSNAUDIO = 0x0032
+# Control Resources Limited
+WAVE_FORMAT_ANTEX_ADPCME = 0x0033
+# DSP Solutions, Inc.
+WAVE_FORMAT_CONTROL_RES_VQLPC = 0x0034
+# DSP Solutions, Inc.
+WAVE_FORMAT_DIGIREAL = 0x0035
+# Control Resources Limited
+WAVE_FORMAT_DIGIADPCM = 0x0036
+# Natural MicroSystems
+WAVE_FORMAT_CONTROL_RES_CR10 = 0x0037
+# Crystal Semiconductor IMA ADPCM
+WAVE_FORMAT_NMS_VBXADPCM = 0x0038
+# Echo Speech Corporation
+WAVE_FORMAT_CS_IMAADPCM = 0x0039
+# Rockwell International
+WAVE_FORMAT_ECHOSC3 = 0x003A
+# Rockwell International
+WAVE_FORMAT_ROCKWELL_ADPCM = 0x003B
+# Xebec Multimedia Solutions Limited
+WAVE_FORMAT_ROCKWELL_DIGITALK = 0x003C
+# Antex Electronics Corporation
+WAVE_FORMAT_XEBEC = 0x003D
+# Antex Electronics Corporation
+WAVE_FORMAT_G721_ADPCM = 0x0040
+# Microsoft Corporation
+WAVE_FORMAT_G728_CELP = 0x0041
+# Intel Corp.
+WAVE_FORMAT_MSG723 = 0x0042
+# Intel Corp.
+WAVE_FORMAT_INTEL_G723_1 = 0x0043
+# Sharp
+WAVE_FORMAT_INTEL_G729 = 0x0044
+# Microsoft Corporation
+WAVE_FORMAT_SHARP_G726 = 0x0045
+# InSoft, Inc.
+WAVE_FORMAT_MPEG = 0x0050
+# InSoft, Inc.
+WAVE_FORMAT_RT24 = 0x0052
+# ISO/MPEG Layer3 Format Tag
+WAVE_FORMAT_PAC = 0x0053
+# Lucent Technologies
+WAVE_FORMAT_MPEGLAYER3 = 0x0055
+# Cirrus Logic
+WAVE_FORMAT_LUCENT_G723 = 0x0059
+# ESS Technology
+WAVE_FORMAT_CIRRUS = 0x0060
+# Voxware Inc
+WAVE_FORMAT_ESPCM = 0x0061
+# Canopus, co., Ltd.
+WAVE_FORMAT_VOXWARE = 0x0062
+# APICOM
+WAVE_FORMAT_CANOPUS_ATRAC = 0x0063
+# APICOM
+WAVE_FORMAT_G726_ADPCM = 0x0064
+# Microsoft Corporation
+WAVE_FORMAT_G722_ADPCM = 0x0065
+# Microsoft Corporation
+WAVE_FORMAT_DSAT = 0x0066
+# Voxware Inc
+WAVE_FORMAT_DSAT_DISPLAY = 0x0067
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_BYTE_ALIGNED = 0x0069
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_AC8 = 0x0070
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_AC10 = 0x0071
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_AC16 = 0x0072
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_AC20 = 0x0073
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_RT24 = 0x0074
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_RT29 = 0x0075
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_RT29HW = 0x0076
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_VR12 = 0x0077
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_VR18 = 0x0078
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_TQ40 = 0x0079
+# Voxware Inc
+WAVE_FORMAT_VOXWARE_SC3 = 0x007A
+# Softsound, Ltd.
+WAVE_FORMAT_VOXWARE_SC3_1 = 0x007B
+# Voxware Inc
+WAVE_FORMAT_SOFTSOUND = 0x0080
+# Microsoft Corporation
+WAVE_FORMAT_VOXWARE_TQ60 = 0x0081
+# AT&T Labs, Inc.
+WAVE_FORMAT_MSRT24 = 0x0082
+# Motion Pixels
+WAVE_FORMAT_G729A = 0x0083
+# DataFusion Systems (Pty) (Ltd)
+WAVE_FORMAT_MVI_MVI2 = 0x0084
+# DataFusion Systems (Pty) (Ltd)
+WAVE_FORMAT_DF_G726 = 0x0085
+# Iterated Systems, Inc.
+WAVE_FORMAT_DF_GSM610 = 0x0086
+# OnLive! Technologies, Inc.
+WAVE_FORMAT_ISIAUDIO = 0x0088
+# Multitude Inc.
+WAVE_FORMAT_ONLIVE = 0x0089
+# Infocom
+WAVE_FORMAT_MULTITUDE_FT_SX20 = 0x008A
+# Convedia Corp.
+WAVE_FORMAT_INFOCOM_ITS_G721_ADPCM = 0x008B
+# Congruency Inc.
+WAVE_FORMAT_CONVEDIA_G729 = 0x008C
+# Siemens Business Communications Sys
+WAVE_FORMAT_CONGRUENCY = 0x008D
+# Sonic Foundry
+WAVE_FORMAT_SBC24 = 0x0091
+# MediaSonic
+WAVE_FORMAT_DOLBY_AC3_SPDIF = 0x0092
+# Aculab plc
+WAVE_FORMAT_MEDIASONIC_G723 = 0x0093
+# ZyXEL Communications, Inc.
+WAVE_FORMAT_PROSODY_8KBPS = 0x0094
+# Philips Speech Processing
+WAVE_FORMAT_ZYXEL_ADPCM = 0x0097
+# Studer Professional Audio AG
+WAVE_FORMAT_PHILIPS_LPCBB = 0x0098
+# Malden Electronics Ltd.
+WAVE_FORMAT_PACKED = 0x0099
+# Racal recorders
+WAVE_FORMAT_MALDEN_PHONYTALK = 0x00A0
+# Racal recorders
+WAVE_FORMAT_RACAL_RECORDER_GSM = 0x00A1
+# Racal recorders
+WAVE_FORMAT_RACAL_RECORDER_G720_A = 0x00A2
+# Racal recorders
+WAVE_FORMAT_RACAL_RECORDER_G723_1 = 0x00A3
+# NEC Corp.
+WAVE_FORMAT_RACAL_RECORDER_TETRA_ACELP = 0x00A4
+# For Raw AAC, with format block AudioSpecificConfig() (as defined by MPEG-4),
+# that follows WAVEFORMATEX
+WAVE_FORMAT_NEC_AAC = 0x00B0
+# Rhetorex Inc.
+WAVE_FORMAT_RAW_AAC1 = 0x00FF
+# BeCubed Software Inc.
+WAVE_FORMAT_RHETOREX_ADPCM = 0x0100
+# Vivo Software
+WAVE_FORMAT_IRAT = 0x0101
+# Vivo Software
+WAVE_FORMAT_VIVO_G723 = 0x0111
+# Philips Speech Processing
+WAVE_FORMAT_VIVO_SIREN = 0x0112
+# Philips Speech Processing
+WAVE_FORMAT_PHILIPS_CELP = 0x0120
+# Digital Equipment Corporation
+WAVE_FORMAT_PHILIPS_GRUNDIG = 0x0121
+# Sanyo Electric Co., Ltd.
+WAVE_FORMAT_DIGITAL_G723 = 0x0123
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SANYO_LD_ADPCM = 0x0125
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SIPROLAB_ACEPLNET = 0x0130
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SIPROLAB_ACELP4800 = 0x0131
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SIPROLAB_ACELP8V3 = 0x0132
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SIPROLAB_G729 = 0x0133
+# Sipro Lab Telecom Inc.
+WAVE_FORMAT_SIPROLAB_G729A = 0x0134
+# VoiceAge Corp.
+WAVE_FORMAT_SIPROLAB_KELVIN = 0x0135
+# Dictaphone Corporation
+WAVE_FORMAT_VOICEAGE_AMR = 0x0136
+# Dictaphone Corporation
+WAVE_FORMAT_G726ADPCM = 0x0140
+# Dictaphone Corporation
+WAVE_FORMAT_DICTAPHONE_CELP68 = 0x0141
+# Qualcomm, Inc.
+WAVE_FORMAT_DICTAPHONE_CELP54 = 0x0142
+# Qualcomm, Inc.
+WAVE_FORMAT_QUALCOMM_PUREVOICE = 0x0150
+# Ring Zero Systems, Inc.
+WAVE_FORMAT_QUALCOMM_HALFRATE = 0x0151
+# Microsoft Corporation
+WAVE_FORMAT_TUBGSM = 0x0155
+# Microsoft Corporation
+WAVE_FORMAT_MSAUDIO1 = 0x0160
+# Microsoft Corporation
+WAVE_FORMAT_WMAUDIO2 = 0x0161
+# Microsoft Corporation
+WAVE_FORMAT_WMAUDIO3 = 0x0162
+# Microsoft Corporation
+WAVE_FORMAT_WMAUDIO_LOSSLESS = 0x0163
+# Unisys Corp.
+WAVE_FORMAT_WMASPDIF = 0x0164
+# Unisys Corp.
+WAVE_FORMAT_UNISYS_NAP_ADPCM = 0x0170
+# Unisys Corp.
+WAVE_FORMAT_UNISYS_NAP_ULAW = 0x0171
+# Unisys Corp.
+WAVE_FORMAT_UNISYS_NAP_ALAW = 0x0172
+# SyCom Technologies
+WAVE_FORMAT_UNISYS_NAP_16K = 0x0173
+# SyCom Technologies
+WAVE_FORMAT_SYCOM_ACM_SYC008 = 0x0174
+# SyCom Technologies
+WAVE_FORMAT_SYCOM_ACM_SYC701_G726L = 0x0175
+# SyCom Technologies
+WAVE_FORMAT_SYCOM_ACM_SYC701_CELP54 = 0x0176
+# Knowledge Adventure, Inc.
+WAVE_FORMAT_SYCOM_ACM_SYC701_CELP68 = 0x0177
+# Fraunhofer IIS
+WAVE_FORMAT_KNOWLEDGE_ADVENTURE_ADPCM = 0x0178
+# Digital Theatre Systems, Inc.
+WAVE_FORMAT_FRAUNHOFER_IIS_MPEG2_AAC = 0x0180
+# Creative Labs, Inc
+WAVE_FORMAT_DTS_DS = 0x0190
+# Creative Labs, Inc
+WAVE_FORMAT_CREATIVE_ADPCM = 0x0200
+# Creative Labs, Inc
+WAVE_FORMAT_CREATIVE_FASTSPEECH8 = 0x0202
+# UHER informatic GmbH
+WAVE_FORMAT_CREATIVE_FASTSPEECH10 = 0x0203
+# Ulead Systems, Inc.
+WAVE_FORMAT_UHER_ADPCM = 0x0210
+# Ulead Systems, Inc.
+WAVE_FORMAT_ULEAD_DV_AUDIO = 0x0215
+# Quarterdeck Corporation
+WAVE_FORMAT_ULEAD_DV_AUDIO_1 = 0x0216
+# I-link Worldwide
+WAVE_FORMAT_QUARTERDECK = 0x0220
+# Aureal Semiconductor
+WAVE_FORMAT_ILINK_VC = 0x0230
+# ESS Technology, Inc.
+WAVE_FORMAT_RAW_SPORT = 0x0240
+WAVE_FORMAT_ESST_AC3 = 0x0241
+# Interactive Products, Inc.
+WAVE_FORMAT_GENERIC_PASSTHRU = 0x0249
+# Interactive Products, Inc.
+WAVE_FORMAT_IPI_HSX = 0x0250
+# Consistent Software
+WAVE_FORMAT_IPI_RPELP = 0x0251
+# Sony Corp.
+WAVE_FORMAT_CS2 = 0x0260
+# Sony Corp.
+WAVE_FORMAT_SONY_SCX = 0x0270
+# Sony Corp.
+WAVE_FORMAT_SONY_SCY = 0x0271
+# Sony Corp.
+WAVE_FORMAT_SONY_ATRAC3 = 0x0272
+# Telum Inc.
+WAVE_FORMAT_SONY_SPC = 0x0273
+# Telum Inc.
+WAVE_FORMAT_TELUM_AUDIO = 0x0280
+# Norcom Electronics Corp.
+WAVE_FORMAT_TELUM_IA_AUDIO = 0x0281
+# Fujitsu Corp.
+WAVE_FORMAT_NORCOM_VOICE_SYSTEMS_ADPCM = 0x0285
+# Micronas Semiconductors, Inc.
+WAVE_FORMAT_FM_TOWNS_SND = 0x0300
+# Micronas Semiconductors, Inc.
+WAVE_FORMAT_MICRONAS = 0x0350
+# Brooktree Corporation
+WAVE_FORMAT_MICRONAS_CELP833 = 0x0351
+# Intel Corp.
+WAVE_FORMAT_BTV_DIGITAL = 0x0400
+# Ligos
+WAVE_FORMAT_INTEL_MUSIC_CODER = 0x0401
+# QDesign Corporation
+WAVE_FORMAT_INDEO_AUDIO = 0x0402
+# On2 Technologies
+WAVE_FORMAT_QDESIGN_MUSIC = 0x0450
+# On2 Technologies
+WAVE_FORMAT_ON2_VP7_AUDIO = 0x0500
+# AT&T Labs, Inc.
+WAVE_FORMAT_ON2_VP6_AUDIO = 0x0501
+# AT&T Labs, Inc.
+WAVE_FORMAT_VME_VMPCM = 0x0680
+# Clearjump
+WAVE_FORMAT_TPC = 0x0681
+# Ing C. Olivetti & C., S.p.A.
+WAVE_FORMAT_LIGHTWAVE_LOSSLESS = 0x08AE
+# Ing C. Olivetti & C., S.p.A.
+WAVE_FORMAT_OLIGSM = 0x1000
+# Ing C. Olivetti & C., S.p.A.
+WAVE_FORMAT_OLIADPCM = 0x1001
+# Ing C. Olivetti & C., S.p.A.
+WAVE_FORMAT_OLICELP = 0x1002
+# Ing C. Olivetti & C., S.p.A.
+WAVE_FORMAT_OLISBC = 0x1003
+# Lernout & Hauspie
+WAVE_FORMAT_OLIOPR = 0x1004
+# Lernout & Hauspie
+WAVE_FORMAT_LH_CODEC = 0x1100
+# Lernout & Hauspie
+WAVE_FORMAT_LH_CODEC_CELP = 0x1101
+# Lernout & Hauspie
+WAVE_FORMAT_LH_CODEC_SBC8 = 0x1102
+# Lernout & Hauspie
+WAVE_FORMAT_LH_CODEC_SBC12 = 0x1103
+# Norris Communications, Inc.
+WAVE_FORMAT_LH_CODEC_SBC16 = 0x1104
+# ISIAudio
+WAVE_FORMAT_NORRIS = 0x1400
+# AT&T Labs, Inc.
+WAVE_FORMAT_ISIAUDIO_2 = 0x1401
+# Microsoft Corporation
+WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS = 0x1500
+# Microsoft Corporation
+WAVE_FORMAT_MPEG_ADTS_AAC = 0x1600
+# Microsoft Corporation (MPEG-4 Audio Transport Streams (LOAS/LATM)
+WAVE_FORMAT_MPEG_RAW_AAC = 0x1601
+# Microsoft Corporation
+WAVE_FORMAT_MPEG_LOAS = 0x1602
+# Microsoft Corporation
+WAVE_FORMAT_NOKIA_MPEG_ADTS_AAC = 0x1608
+# Microsoft Corporation
+WAVE_FORMAT_NOKIA_MPEG_RAW_AAC = 0x1609
+# Microsoft Corporation
+WAVE_FORMAT_VODAFONE_MPEG_ADTS_AAC = 0x160A
+# Microsoft Corporation (MPEG-2 AAC or MPEG-4 HE-AAC v1/v2 streams with any
+# payload (ADTS, ADIF, LOAS/LATM, RAW). Format block includes MP4
+# AudioSpecificConfig() -- see HEAACWAVEFORMAT below
+WAVE_FORMAT_VODAFONE_MPEG_RAW_AAC = 0x160B
+# Voxware Inc.
+WAVE_FORMAT_MPEG_HEAAC = 0x1610
+# Sonic Foundry
+WAVE_FORMAT_VOXWARE_RT24_SPEECH = 0x181C
+# Innings Telecom Inc.
+WAVE_FORMAT_SONICFOUNDRY_LOSSLESS = 0x1971
+# Lucent Technologies
+WAVE_FORMAT_INNINGS_TELECOM_ADPCM = 0x1979
+# Lucent Technologies
+WAVE_FORMAT_LUCENT_SX8300P = 0x1C07
+# CUSeeMe
+WAVE_FORMAT_LUCENT_SX5363S = 0x1C0C
+# NTCSoft
+WAVE_FORMAT_CUSEEME = 0x1F03
+# FAST Multimedia AG
+WAVE_FORMAT_NTCSOFT_ALF2CM_ACM = 0x1FC4
+WAVE_FORMAT_DVM = 0x2000
+WAVE_FORMAT_DTS2 = 0x2001
+# Divio, Inc.
+WAVE_FORMAT_MAKEAVIS = 0x3313
+# Nokia
+WAVE_FORMAT_DIVIO_MPEG4_AAC = 0x4143
+# Divio, Inc.
+WAVE_FORMAT_NOKIA_ADAPTIVE_MULTIRATE = 0x4201
+# LEAD Technologies
+WAVE_FORMAT_DIVIO_G726 = 0x4243
+# LEAD Technologies
+WAVE_FORMAT_LEAD_SPEECH = 0x434C
+# xiph.org
+WAVE_FORMAT_LEAD_VORBIS = 0x564C
+# Apple Lossless
+WAVE_FORMAT_WAVPACK_AUDIO = 0x5756
+# Ogg Vorbis
+WAVE_FORMAT_ALAC = 0x6C61
+# Ogg Vorbis
+WAVE_FORMAT_OGG_VORBIS_MODE_1 = 0x674F
+# Ogg Vorbis
+WAVE_FORMAT_OGG_VORBIS_MODE_2 = 0x6750
+# Ogg Vorbis
+WAVE_FORMAT_OGG_VORBIS_MODE_3 = 0x6751
+# Ogg Vorbis
+WAVE_FORMAT_OGG_VORBIS_MODE_1_PLUS = 0x676F
+# Ogg Vorbis
+WAVE_FORMAT_OGG_VORBIS_MODE_2_PLUS = 0x6770
+# 3COM Corp.
+WAVE_FORMAT_OGG_VORBIS_MODE_3_PLUS = 0x6771
+# Opus
+WAVE_FORMAT_3COM_NBX = 0x7000
+WAVE_FORMAT_OPUS = 0x704F
+# AMR Narrowband
+WAVE_FORMAT_FAAD_AAC = 0x706D
+# AMR Wideband
+WAVE_FORMAT_AMR_NB = 0x7361
+# AMR Wideband Plus
+WAVE_FORMAT_AMR_WB = 0x7362
+# GSMA/3GPP
+WAVE_FORMAT_AMR_WP = 0x7363
+# GSMA/3GPP
+WAVE_FORMAT_GSM_AMR_CBR = 0x7A21
+# Comverse Infosys
+WAVE_FORMAT_GSM_AMR_VBR_SID = 0x7A22
+# Comverse Infosys
+WAVE_FORMAT_COMVERSE_INFOSYS_G723_1 = 0xA100
+# Comverse Infosys
+WAVE_FORMAT_COMVERSE_INFOSYS_AVQSBC = 0xA101
+# Symbol Technologies
+WAVE_FORMAT_COMVERSE_INFOSYS_SBC = 0xA102
+# VoiceAge Corp.
+WAVE_FORMAT_SYMBOL_G729_A = 0xA103
+# Ingenient Technologies, Inc.
+WAVE_FORMAT_VOICEAGE_AMR_WB = 0xA104
+# ISO/MPEG-4
+WAVE_FORMAT_INGENIENT_G726 = 0xA105
+# Encore Software
+WAVE_FORMAT_MPEG4_AAC = 0xA106
+# ZOLL Medical Corp.
+WAVE_FORMAT_ENCORE_G726 = 0xA107
+# xiph.org
+WAVE_FORMAT_ZOLL_ASAO = 0xA108
+# Vianix LLC
+WAVE_FORMAT_SPEEX_VOICE = 0xA109
+# Microsoft
+WAVE_FORMAT_VIANIX_MASC = 0xA10A
+# Microsoft
+WAVE_FORMAT_WM9_SPECTRUM_ANALYZER = 0xA10B
+WAVE_FORMAT_WMF_SPECTRUM_ANAYZER = 0xA10C
+WAVE_FORMAT_GSM_610 = 0xA10D
+WAVE_FORMAT_GSM_620 = 0xA10E
+WAVE_FORMAT_GSM_660 = 0xA10F
+WAVE_FORMAT_GSM_690 = 0xA110
+# Polycom
+WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB = 0xA111
+# Polycom
+WAVE_FORMAT_POLYCOM_G722 = 0xA112
+# Polycom
+WAVE_FORMAT_POLYCOM_G728 = 0xA113
+# Polycom
+WAVE_FORMAT_POLYCOM_G729_A = 0xA114
+# Global IP
+WAVE_FORMAT_POLYCOM_SIREN = 0xA115
+# RadioTime
+WAVE_FORMAT_GLOBAL_IP_ILBC = 0xA116
+# Nice Systems
+WAVE_FORMAT_RADIOTIME_TIME_SHIFT_RADIO = 0xA117
+# Nice Systems
+WAVE_FORMAT_NICE_ACA = 0xA118
+# Vocord Telecom
+WAVE_FORMAT_NICE_ADPCM = 0xA119
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G721 = 0xA11A
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G726 = 0xA11B
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G722_1 = 0xA11C
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G728 = 0xA11D
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G729 = 0xA11E
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G729_A = 0xA11F
+# Vocord Telecom
+WAVE_FORMAT_VOCORD_G723_1 = 0xA120
+# Nice Systems
+WAVE_FORMAT_VOCORD_LBC = 0xA121
+# France Telecom
+WAVE_FORMAT_NICE_G728 = 0xA122
+# CODIAN
+WAVE_FORMAT_FRACE_TELECOM_G729 = 0xA123
+# flac.sourceforge.net
+WAVE_FORMAT_CODIAN = 0xA124
+WAVE_FORMAT_FLAC = 0xF1AC
+# Microsoft
+# !defined(WAVE_FORMAT_EXTENSIBLE)
+WAVE_FORMAT_EXTENSIBLE = 0xFFFE
+
+# New wave format development should be based on the
+# WAVEFORMATEXTENSIBLE structure. WAVEFORMATEXTENSIBLE allows you to
+# aVOID having to register a new format tag with Microsoft. However, if
+# you must still define a new format tag, the WAVE_FORMAT_DEVELOPMENT
+# format tag can be used during the development phase of a new wave
+# format.  Before shipping, you MUST acquire an official format tag from
+# Microsoft.
+
+WAVE_FORMAT_DEVELOPMENT = 0xFFFF
+# NONEWWAVE
+# general waveform format structure (information common to all formats)
+
+
+class waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wFormatTag', WORD),
+        ('nChannels', WORD),
+        ('nSamplesPerSec', DWORD),
+        ('nAvgBytesPerSec', DWORD),
+        ('nBlockAlign', WORD),
+    ]
+
+
+WAVEFORMAT = waveformat_tag
+
+
+# format type
+# number of channels (i.e. mono, stereo...)
+# sample rate
+# for buffer estimation
+# block size of data
+PWAVEFORMAT = POINTER(WAVEFORMAT)
+NPWAVEFORMAT = POINTER(WAVEFORMAT)
+LPWAVEFORMAT = POINTER(WAVEFORMAT)
+# specific waveform format structure for PCM data
+
+
+class pcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wf', WAVEFORMAT),
+        ('wBitsPerSample', WORD),
+    ]
+
+
+PCMWAVEFORMAT = pcmwaveformat_tag
+
+
+PPCMWAVEFORMAT = POINTER(PCMWAVEFORMAT)
+NPPCMWAVEFORMAT = POINTER(PCMWAVEFORMAT)
+LPPCMWAVEFORMAT = POINTER(PCMWAVEFORMAT)
+# WAVE_FORMAT_PCM
+WAVE_FORMAT_PCM = 0x1
+# general extended waveform format structure
+# Use this for all NON PCM formats
+# (information common to all formats)
+
+
+class tWAVEFORMATEX(ctypes.Structure):
+    _fields_ = [
+        ('wFormatTag', WORD),
+        ('nChannels', WORD),
+        ('nSamplesPerSec', DWORD),
+        ('nAvgBytesPerSec', DWORD),
+        ('nBlockAlign', WORD),
+        ('wBitsPerSample', WORD),
+        ('cbSize', WORD),
+    ]
+
+
+WAVEFORMATEX = tWAVEFORMATEX
+
+
+# format type
+# number of channels (i.e. mono, stereo...)
+# sample rate
+# for buffer estimation
+# block size of data
+# Number of bits per sample of mono data
+# The count in bytes of the size of
+# extra information (after cbSize)
+PWAVEFORMATEX = POINTER(WAVEFORMATEX)
+NPWAVEFORMATEX = POINTER(WAVEFORMATEX)
+# _WAVEFORMATEX_
+LPWAVEFORMATEX = POINTER(WAVEFORMATEX)
+# !defined(DEFINE_GUIDEX)
+# !defined(STATICGUIDOF)
+# !defined ( DEFINE_GUIDEX )
+# !defined(_NTRTL_)
+
+
+def DEFINE_WAVEFORMATEX_GUID(x):
+    return (
+        x,
+        0x0000,
+        0x0010,
+        0x80,
+        0x00,
+        0x00,
+        0xaa,
+        0x00,
+        0x38,
+        0x9b,
+        0x71
+    )
+
+
+STATIC_KSDATAFORMAT_SUBTYPE_PCM = DEFINE_WAVEFORMATEX_GUID(WAVE_FORMAT_PCM)
+KSDATAFORMAT_SUBTYPE_PCM = DEFINE_GUIDSTRUCT(
+    "00000001-0000-0010-8000-00aa00389b71"
+)
+KSDATAFORMAT_SUBTYPE_PCM = DEFINE_GUIDNAMED(
+    KSDATAFORMAT_SUBTYPE_PCM
+)
+# RC complains about LONG symbols in #ifs
+STATIC_KSDATAFORMAT_SUBTYPE_IEEE_FLOAT = (
+    DEFINE_WAVEFORMATEX_GUID(WAVE_FORMAT_IEEE_FLOAT)
+)
+KSDATAFORMAT_SUBTYPE_IEEE_FLOAT = DEFINE_GUIDSTRUCT(
+    "00000003-0000-0010-8000-00aa00389b71"
+)
+KSDATAFORMAT_SUBTYPE_IEEE_FLOAT = DEFINE_GUIDNAMED(
+    KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
+)
+STATIC_KSDATAFORMAT_SUBTYPE_WAVEFORMATEX = (
+    0x00000000,
+    0x0000,
+    0x0010,
+    0x80,
+    0x00,
+    0x00,
+    0xAA,
+    0x00,
+    0x38,
+    0x9B,
+    0x71,
+)
+KSDATAFORMAT_SUBTYPE_WAVEFORMATEX = DEFINE_GUIDSTRUCT(
+    "00000000-0000-0010-8000-00aa00389b71"
+)
+KSDATAFORMAT_SUBTYPE_WAVEFORMATEX = DEFINE_GUIDNAMED(
+    KSDATAFORMAT_SUBTYPE_WAVEFORMATEX
+)
+
+
+def INIT_WAVEFORMATEX_GUID(Guid, x):
+    Guid = KSDATAFORMAT_SUBTYPE_WAVEFORMATEX
+    Guid.Data1 = x
+    return Guid
+
+
+def EXTRACT_WAVEFORMATEX_ID(Guid):
+    return Guid.Data1
+
+
+def IS_VALID_WAVEFORMATEX_GUID(Guid):
+    pass
+# New wave format development should be based on the
+# WAVEFORMATEXTENSIBLE structure. WAVEFORMATEXTENSIBLE allows you to
+# aVOID having to register a new format tag with Microsoft. Simply
+# define a new GUID value for the WAVEFORMATEXTENSIBLE.SubFormat field
+# and use WAVE_FORMAT_EXTENSIBLE in the
+# WAVEFORMATEXTENSIBLE.Format.wFormatTag field.
+
+
+class WAVEFORMATEXTENSIBLE(ctypes.Structure):
+
+    class Samples(ctypes.Union):
+        _fields_ = [
+            ('wValidBitsPerSample', WORD),
+            ('wSamplesPerBlock', WORD),
+            ('wReserved', WORD),
+        ]
+
+    _fields_ = [
+        ('Format', WAVEFORMATEX),
+        ('Samples', Samples),
+        ('dwChannelMask', DWORD),
+        ('SubFormat', GUID),
+    ]
+
+
+PWAVEFORMATEXTENSIBLE = POINTER(WAVEFORMATEXTENSIBLE)
+
+
+# bits of precision
+# valid if wBitsPerSample==0
+# If neither applies, set to zero.
+# which channels are
+# present in stream
+# !_WAVEFORMATEXTENSIBLE_
+
+# Extended PCM waveform format structure based on WAVEFORMATEXTENSIBLE.
+# Use this for multiple channel and hi-resolution PCM data
+
+# Format.cbSize = 22
+WAVEFORMATPCMEX = WAVEFORMATEXTENSIBLE
+PWAVEFORMATPCMEX = POINTER(WAVEFORMATPCMEX)
+NPWAVEFORMATPCMEX = POINTER(WAVEFORMATPCMEX)
+LPWAVEFORMATPCMEX = POINTER(WAVEFORMATPCMEX)
+
+# Extended format structure using IEEE Float data and based
+# on WAVEFORMATEXTENSIBLE.  Use this for multiple channel
+# and hi-resolution PCM data in IEEE FLOATing poINT format.
+
+# Format.cbSize = 22
+WAVEFORMATIEEEFLOATEX = WAVEFORMATEXTENSIBLE
+PWAVEFORMATIEEEFLOATEX = POINTER(WAVEFORMATIEEEFLOATEX)
+NPWAVEFORMATIEEEFLOATEX = POINTER(WAVEFORMATIEEEFLOATEX)
+LPWAVEFORMATIEEEFLOATEX = POINTER(WAVEFORMATIEEEFLOATEX)
+# GUID_DEFINED
+# Speaker Positions for dwChannelMask in WAVEFORMATEXTENSIBLE:
+SPEAKER_FRONT_LEFT = 0x1
+SPEAKER_FRONT_RIGHT = 0x2
+SPEAKER_FRONT_CENTER = 0x4
+SPEAKER_LOW_FREQUENCY = 0x8
+SPEAKER_BACK_LEFT = 0x10
+SPEAKER_BACK_RIGHT = 0x20
+SPEAKER_FRONT_LEFT_OF_CENTER = 0x40
+SPEAKER_FRONT_RIGHT_OF_CENTER = 0x80
+SPEAKER_BACK_CENTER = 0x100
+SPEAKER_SIDE_LEFT = 0x200
+SPEAKER_SIDE_RIGHT = 0x400
+SPEAKER_TOP_CENTER = 0x800
+SPEAKER_TOP_FRONT_LEFT = 0x1000
+SPEAKER_TOP_FRONT_CENTER = 0x2000
+SPEAKER_TOP_FRONT_RIGHT = 0x4000
+SPEAKER_TOP_BACK_LEFT = 0x8000
+SPEAKER_TOP_BACK_CENTER = 0x10000
+SPEAKER_TOP_BACK_RIGHT = 0x20000
+# Bit mask locations reserved for future use
+SPEAKER_RESERVED = 0x7FFC0000
+# Used to specify that any possible permutation of speaker configurations
+# _SPEAKER_POSITIONS_
+SPEAKER_ALL = 0x80000000
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+# Define data for MS ADPCM
+
+
+class adpcmcoef_tag(ctypes.Structure):
+    _fields_ = [
+        ('iCoef1', SHORT),
+        ('iCoef2', SHORT),
+    ]
+
+
+ADPCMCOEFSET = adpcmcoef_tag
+
+
+PADPCMCOEFSET = POINTER(ADPCMCOEFSET)
+NPADPCMCOEFSET = POINTER(ADPCMCOEFSET)
+LPADPCMCOEFSET = POINTER(ADPCMCOEFSET)
+# *  this pragma disables the warning issued by the Microsoft C compiler
+# *  when using a zero size array as place holder when compiling for
+# *  C++ or with -W4.
+# *
+
+
+class adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+        ('wNumCoef', WORD),
+        ('aCoef', ADPCMCOEFSET * 1),
+    ]
+
+
+ADPCMWAVEFORMAT = adpcmwaveformat_tag
+
+
+PADPCMWAVEFORMAT = POINTER(ADPCMWAVEFORMAT)
+NPADPCMWAVEFORMAT = POINTER(ADPCMWAVEFORMAT)
+LPADPCMWAVEFORMAT = POINTER(ADPCMWAVEFORMAT)
+
+# Microsoft's DRM structure definitions
+
+
+class drmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wReserved', WORD),
+        ('ulContentId', ULONG),
+        ('wfxSecure', WAVEFORMATEX),
+    ]
+
+
+DRMWAVEFORMAT = drmwaveformat_tag
+
+
+PDRMWAVEFORMAT = POINTER(DRMWAVEFORMAT)
+NPDRMWAVEFORMAT = POINTER(DRMWAVEFORMAT)
+LPDRMWAVEFORMAT = POINTER(DRMWAVEFORMAT)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+
+# Intel's DVI ADPCM structure definitions
+
+# for WAVE_FORMAT_DVI_ADPCM   (0x0011)
+
+
+class dvi_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+DVIADPCMWAVEFORMAT = dvi_adpcmwaveformat_tag
+
+
+PDVIADPCMWAVEFORMAT = POINTER(DVIADPCMWAVEFORMAT)
+NPDVIADPCMWAVEFORMAT = POINTER(DVIADPCMWAVEFORMAT)
+LPDVIADPCMWAVEFORMAT = POINTER(DVIADPCMWAVEFORMAT)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
+# IMA endorsed ADPCM structure definitions--note that this is exactly
+# the same format as Intel's DVI ADPCM.
+
+# for WAVE_FORMAT_IMA_ADPCM   (0x0011)
+
+
+class ima_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+IMAADPCMWAVEFORMAT = ima_adpcmwaveformat_tag
+
+
+PIMAADPCMWAVEFORMAT = POINTER(IMAADPCMWAVEFORMAT)
+NPIMAADPCMWAVEFORMAT = POINTER(IMAADPCMWAVEFORMAT)
+LPIMAADPCMWAVEFORMAT = POINTER(IMAADPCMWAVEFORMAT)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+# VideoLogic's Media Space ADPCM Structure definitions
+# for  WAVE_FORMAT_MEDIASPACE_ADPCM    (0x0012)
+
+
+# VideoLogic's Media Space ADPCM Structure definitions
+# for  WAVE_FORMAT_MEDIASPACE_ADPCM    (0x0012)
+
+class mediaspace_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+MEDIASPACEADPCMWAVEFORMAT = mediaspace_adpcmwaveformat_tag
+
+
+PMEDIASPACEADPCMWAVEFORMAT = POINTER(MEDIASPACEADPCMWAVEFORMAT)
+NPMEDIASPACEADPCMWAVEFORMAT = POINTER(MEDIASPACEADPCMWAVEFORMAT)
+LPMEDIASPACEADPCMWAVEFORMAT = POINTER(MEDIASPACEADPCMWAVEFORMAT)
+
+# Sierra Semiconductor
+
+# for WAVE_FORMAT_SIERRA_ADPCM   (0x0013)
+
+
+class sierra_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+SIERRAADPCMWAVEFORMAT = sierra_adpcmwaveformat_tag
+
+
+PSIERRAADPCMWAVEFORMAT = POINTER(SIERRAADPCMWAVEFORMAT)
+NPSIERRAADPCMWAVEFORMAT = POINTER(SIERRAADPCMWAVEFORMAT)
+LPSIERRAADPCMWAVEFORMAT = POINTER(SIERRAADPCMWAVEFORMAT)
+
+# Antex Electronics  structure definitions
+
+# for WAVE_FORMAT_G723_ADPCM   (0x0014)
+
+
+class g723_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('cbExtraSize', WORD),
+        ('nAuxBlockSize', WORD),
+    ]
+
+
+G723_ADPCMWAVEFORMAT = g723_adpcmwaveformat_tag
+
+
+PG723_ADPCMWAVEFORMAT = POINTER(G723_ADPCMWAVEFORMAT)
+NPG723_ADPCMWAVEFORMAT = POINTER(G723_ADPCMWAVEFORMAT)
+LPG723_ADPCMWAVEFORMAT = POINTER(G723_ADPCMWAVEFORMAT)
+
+# DSP Solutions (formerly DIGISPEECH) structure definitions
+
+# for WAVE_FORMAT_DIGISTD   (0x0015)
+
+
+class digistdwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+DIGISTDWAVEFORMAT = digistdwaveformat_tag
+
+
+PDIGISTDWAVEFORMAT = POINTER(DIGISTDWAVEFORMAT)
+NPDIGISTDWAVEFORMAT = POINTER(DIGISTDWAVEFORMAT)
+LPDIGISTDWAVEFORMAT = POINTER(DIGISTDWAVEFORMAT)
+
+# DSP Solutions (formerly DIGISPEECH) structure definitions
+
+# for WAVE_FORMAT_DIGIFIX   (0x0016)
+
+
+class digifixwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+DIGIFIXWAVEFORMAT = digifixwaveformat_tag
+
+
+PDIGIFIXWAVEFORMAT = POINTER(DIGIFIXWAVEFORMAT)
+NPDIGIFIXWAVEFORMAT = POINTER(DIGIFIXWAVEFORMAT)
+LPDIGIFIXWAVEFORMAT = POINTER(DIGIFIXWAVEFORMAT)
+
+# Dialogic Corporation
+# WAVEFORMAT_DIALOGIC_OKI_ADPCM   (0x0017)
+
+
+class creative_fastspeechformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('ewf', WAVEFORMATEX),
+    ]
+
+
+DIALOGICOKIADPCMWAVEFORMAT = creative_fastspeechformat_tag
+
+
+PDIALOGICOKIADPCMWAVEFORMAT = POINTER(DIALOGICOKIADPCMWAVEFORMAT)
+NPDIALOGICOKIADPCMWAVEFORMAT = POINTER(DIALOGICOKIADPCMWAVEFORMAT)
+LPDIALOGICOKIADPCMWAVEFORMAT = POINTER(DIALOGICOKIADPCMWAVEFORMAT)
+
+# Yamaha Compression's ADPCM structure definitions
+
+# for WAVE_FORMAT_YAMAHA_ADPCM   (0x0020)
+
+
+class yamaha_adpmcwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+YAMAHA_ADPCMWAVEFORMAT = yamaha_adpmcwaveformat_tag
+
+
+PYAMAHA_ADPCMWAVEFORMAT = POINTER(YAMAHA_ADPCMWAVEFORMAT)
+NPYAMAHA_ADPCMWAVEFORMAT = POINTER(YAMAHA_ADPCMWAVEFORMAT)
+LPYAMAHA_ADPCMWAVEFORMAT = POINTER(YAMAHA_ADPCMWAVEFORMAT)
+
+# Speech Compression's Sonarc structure definitions
+
+# for WAVE_FORMAT_SONARC   (0x0021)
+
+
+class sonarcwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wCompType', WORD),
+    ]
+
+
+SONARCWAVEFORMAT = sonarcwaveformat_tag
+
+
+PSONARCWAVEFORMAT = POINTER(SONARCWAVEFORMAT)
+NPSONARCWAVEFORMAT = POINTER(SONARCWAVEFORMAT)
+LPSONARCWAVEFORMAT = POINTER(SONARCWAVEFORMAT)
+
+# DSP Groups's TRUESPEECH structure definitions
+
+# for WAVE_FORMAT_DSPGROUP_TRUESPEECH   (0x0022)
+
+
+class truespeechwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+        ('nSamplesPerBlock', WORD),
+        ('abReserved', BYTE * 28),
+    ]
+
+
+TRUESPEECHWAVEFORMAT = truespeechwaveformat_tag
+
+
+PTRUESPEECHWAVEFORMAT = POINTER(TRUESPEECHWAVEFORMAT)
+NPTRUESPEECHWAVEFORMAT = POINTER(TRUESPEECHWAVEFORMAT)
+LPTRUESPEECHWAVEFORMAT = POINTER(TRUESPEECHWAVEFORMAT)
+
+# Echo Speech Corp structure definitions
+
+# for WAVE_FORMAT_ECHOSC1   (0x0023)
+
+
+class echosc1waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+ECHOSC1WAVEFORMAT = echosc1waveformat_tag
+
+
+PECHOSC1WAVEFORMAT = POINTER(ECHOSC1WAVEFORMAT)
+NPECHOSC1WAVEFORMAT = POINTER(ECHOSC1WAVEFORMAT)
+LPECHOSC1WAVEFORMAT = POINTER(ECHOSC1WAVEFORMAT)
+
+# Audiofile Inc.structure definitions
+
+# for WAVE_FORMAT_AUDIOFILE_AF36   (0x0024)
+
+
+class audiofile_af36waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+AUDIOFILE_AF36WAVEFORMAT = audiofile_af36waveformat_tag
+
+
+PAUDIOFILE_AF36WAVEFORMAT = POINTER(AUDIOFILE_AF36WAVEFORMAT)
+NPAUDIOFILE_AF36WAVEFORMAT = POINTER(AUDIOFILE_AF36WAVEFORMAT)
+LPAUDIOFILE_AF36WAVEFORMAT = POINTER(AUDIOFILE_AF36WAVEFORMAT)
+
+# Audio Processing Technology structure definitions
+
+# for WAVE_FORMAT_APTX   (0x0025)
+
+
+class aptxwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+APTXWAVEFORMAT = aptxwaveformat_tag
+
+
+PAPTXWAVEFORMAT = POINTER(APTXWAVEFORMAT)
+NPAPTXWAVEFORMAT = POINTER(APTXWAVEFORMAT)
+LPAPTXWAVEFORMAT = POINTER(APTXWAVEFORMAT)
+
+# Audiofile Inc.structure definitions
+
+# for WAVE_FORMAT_AUDIOFILE_AF10   (0x0026)
+
+class audiofile_af10waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+AUDIOFILE_AF10WAVEFORMAT = audiofile_af10waveformat_tag
+
+
+PAUDIOFILE_AF10WAVEFORMAT = POINTER(AUDIOFILE_AF10WAVEFORMAT)
+NPAUDIOFILE_AF10WAVEFORMAT = POINTER(AUDIOFILE_AF10WAVEFORMAT)
+LPAUDIOFILE_AF10WAVEFORMAT = POINTER(AUDIOFILE_AF10WAVEFORMAT)
+
+# Dolby's AC-2 wave format structure definition
+# WAVE_FORMAT_DOLBY_AC2    (0x0030)
+
+
+class dolbyac2waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('nAuxBitsCode', WORD),
+    ]
+
+
+DOLBYAC2WAVEFORMAT = dolbyac2waveformat_tag
+
+
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+# Microsoft's
+# WAVE_FORMAT_GSM 610           0x0031
+
+
+class gsm610waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+GSM610WAVEFORMAT = gsm610waveformat_tag
+
+
+PGSM610WAVEFORMAT = POINTER(GSM610WAVEFORMAT)
+NPGSM610WAVEFORMAT = POINTER(GSM610WAVEFORMAT)
+LPGSM610WAVEFORMAT = POINTER(GSM610WAVEFORMAT)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+
+# Antex Electronics Corp
+
+# for WAVE_FORMAT_ADPCME                  (0x0033)
+
+
+class adpcmewaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+ADPCMEWAVEFORMAT = adpcmewaveformat_tag
+
+
+PADPCMEWAVEFORMAT = POINTER(ADPCMEWAVEFORMAT)
+NPADPCMEWAVEFORMAT = POINTER(ADPCMEWAVEFORMAT)
+LPADPCMEWAVEFORMAT = POINTER(ADPCMEWAVEFORMAT)
+# Control Resources Limited
+# WAVE_FORMAT_CONTROL_RES_VQLPC                 0x0034
+
+
+class contres_vqlpcwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+CONTRESVQLPCWAVEFORMAT = contres_vqlpcwaveformat_tag
+
+
+PCONTRESVQLPCWAVEFORMAT = POINTER(CONTRESVQLPCWAVEFORMAT)
+NPCONTRESVQLPCWAVEFORMAT = POINTER(CONTRESVQLPCWAVEFORMAT)
+LPCONTRESVQLPCWAVEFORMAT = POINTER(CONTRESVQLPCWAVEFORMAT)
+
+
+# for WAVE_FORMAT_DIGIREAL                   (0x0035)
+
+
+class digirealwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+DIGIREALWAVEFORMAT = digirealwaveformat_tag
+
+
+PDIGIREALWAVEFORMAT = POINTER(DIGIREALWAVEFORMAT)
+NPDIGIREALWAVEFORMAT = POINTER(DIGIREALWAVEFORMAT)
+LPDIGIREALWAVEFORMAT = POINTER(DIGIREALWAVEFORMAT)
+
+# DSP Solutions
+
+# for WAVE_FORMAT_DIGIADPCM   (0x0036)
+
+
+class digiadpcmmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+DIGIADPCMWAVEFORMAT = digiadpcmmwaveformat_tag
+
+
+PDIGIADPCMWAVEFORMAT = POINTER(DIGIADPCMWAVEFORMAT)
+NPDIGIADPCMWAVEFORMAT = POINTER(DIGIADPCMWAVEFORMAT)
+LPDIGIADPCMWAVEFORMAT = POINTER(DIGIADPCMWAVEFORMAT)
+# Control Resources Limited
+# WAVE_FORMAT_CONTROL_RES_CR10          0x0037
+
+
+class contres_cr10waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+CONTRESCR10WAVEFORMAT = contres_cr10waveformat_tag
+
+
+PCONTRESCR10WAVEFORMAT = POINTER(CONTRESCR10WAVEFORMAT)
+NPCONTRESCR10WAVEFORMAT = POINTER(CONTRESCR10WAVEFORMAT)
+LPCONTRESCR10WAVEFORMAT = POINTER(CONTRESCR10WAVEFORMAT)
+
+# Natural Microsystems
+
+# for WAVE_FORMAT_NMS_VBXADPCM   (0x0038)
+
+
+class nms_vbxadpcmmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+    ]
+
+
+NMS_VBXADPCMWAVEFORMAT = nms_vbxadpcmmwaveformat_tag
+
+
+PNMS_VBXADPCMWAVEFORMAT = POINTER(NMS_VBXADPCMWAVEFORMAT)
+NPNMS_VBXADPCMWAVEFORMAT = POINTER(NMS_VBXADPCMWAVEFORMAT)
+LPNMS_VBXADPCMWAVEFORMAT = POINTER(NMS_VBXADPCMWAVEFORMAT)
+
+# Antex Electronics  structure definitions
+
+# for WAVE_FORMAT_G721_ADPCM   (0x0040)
+
+
+class g721_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('nAuxBlockSize', WORD),
+    ]
+
+
+G721_ADPCMWAVEFORMAT = g721_adpcmwaveformat_tag
+
+
+PG721_ADPCMWAVEFORMAT = POINTER(G721_ADPCMWAVEFORMAT)
+NPG721_ADPCMWAVEFORMAT = POINTER(G721_ADPCMWAVEFORMAT)
+LPG721_ADPCMWAVEFORMAT = POINTER(G721_ADPCMWAVEFORMAT)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
+
+# Microsoft MPEG audio WAV definition
+
+# MPEG-1 audio wave format (audio layer only).   (0x0050)
+
+class mpeg1waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('fwHeadLayer', WORD),
+        ('dwHeadBitrate', DWORD),
+        ('fwHeadMode', WORD),
+        ('fwHeadModeExt', WORD),
+        ('wHeadEmphasis', WORD),
+        ('fwHeadFlags', WORD),
+        ('dwPTSLow', DWORD),
+        ('dwPTSHigh', DWORD),
+    ]
+
+
+MPEG1WAVEFORMAT = mpeg1waveformat_tag
+
+
+PMPEG1WAVEFORMAT = POINTER(MPEG1WAVEFORMAT)
+NPMPEG1WAVEFORMAT = POINTER(MPEG1WAVEFORMAT)
+LPMPEG1WAVEFORMAT = POINTER(MPEG1WAVEFORMAT)
+ACM_MPEG_LAYER1 = 0x0001
+ACM_MPEG_LAYER2 = 0x0002
+ACM_MPEG_LAYER3 = 0x0004
+ACM_MPEG_STEREO = 0x0001
+ACM_MPEG_JOINTSTEREO = 0x0002
+ACM_MPEG_DUALCHANNEL = 0x0004
+ACM_MPEG_SINGLECHANNEL = 0x0008
+ACM_MPEG_PRIVATEBIT = 0x0001
+ACM_MPEG_COPYRIGHT = 0x0002
+ACM_MPEG_ORIGINALHOME = 0x0004
+ACM_MPEG_PROTECTIONBIT = 0x0008
+ACM_MPEG_ID_MPEG1 = 0x0010
+
+# MPEG Layer3 WAVEFORMATEX structure
+# for WAVE_FORMAT_MPEGLAYER3 (0x0055)
+
+MPEGLAYER3_WFX_EXTRA_BYTES = 0xC
+# WAVE_FORMAT_MPEGLAYER3 format sructure
+
+
+class mpeglayer3waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wID', WORD),
+        ('fdwFlags', DWORD),
+        ('nBlockSize', WORD),
+        ('nFramesPerBlock', WORD),
+        ('nCodecDelay', WORD),
+    ]
+
+
+MPEGLAYER3WAVEFORMAT = mpeglayer3waveformat_tag
+
+
+PMPEGLAYER3WAVEFORMAT = POINTER(MPEGLAYER3WAVEFORMAT)
+NPMPEGLAYER3WAVEFORMAT = POINTER(MPEGLAYER3WAVEFORMAT)
+LPMPEGLAYER3WAVEFORMAT = POINTER(MPEGLAYER3WAVEFORMAT)
+# ==========================================================================;
+MPEGLAYER3_ID_UNKNOWN = 0x0
+MPEGLAYER3_ID_MPEG = 0x1
+MPEGLAYER3_ID_CONSTANTFRAMESIZE = 0x2
+MPEGLAYER3_FLAG_PADDING_ISO = 0x00000000
+MPEGLAYER3_FLAG_PADDING_ON = 0x00000001
+MPEGLAYER3_FLAG_PADDING_OFF = 0x00000002
+# All HEAACWAVEFORMAT fields can now be accessed through pwf
+# ...
+
+# To parse AudioSpecifiConfig(), write a function such as
+# ParseAudioSpecificConfig(BYTE *pbASC, DWORD dwASCLen),
+# and call:
+
+# Reserved
+# ==========================================================================
+# For WAVE_FORMAT_MPEG_HEAAC (0x1610)
+# "MPEG-2" in the comments below refers to ISO/IEC 13818-7 (MPEG-2 AAC spec).
+# "MPEG-4" in the comments below refers to ISO/IEC 14496-3 (MPEG-4 Audio spec).
+# The following defines the format block to be used for MPEG-2 AAC or MPEG-4
+# HE-AAC v1/v2 streams.
+# When setting media type attributes in Media Foundation (MF) objects, this
+# will appear in conjunction with
+# major type MFMediaType_Audio and sub type MFAudioFormat_AAC
+# (=MEDIASUBTYPE_MPEG_HEAAC).
+# The format block structure HEAACWAVEFORMAT is defined below.  It starts with
+# the structure
+# HEAACWAVEINFO (which is an extension of WAVEFORMATEX), followed by
+# AudioSpecificConfig() as
+# defined by ISO/IEC 14496-3 (MPEG-4 audio). Since the length of
+# AudioSpecificConfig() may vary
+# from one stream to another, this is a variable size format block.
+# The WAVEFORMATEX fields describe the properties of the core AAC stream,
+# without SBR/PS extensions (if exists). This is the description of the
+# WAVEFORMATEX fields:
+# wfx.wFormatTag - Set this to WAVE_FORMAT_MPEG_HEAAC (0x1610).
+# wfx.nChannels - Total number of channels in core AAC stream (including LFE
+# if exists).
+# This might be different than the decoded number of channels if the MPEG-4
+# Parametric Stereo (PS)
+# tool exists. If unknown, set to zero.
+# wfx.nSamplesPerSec - Sampling rate of core AAC stream. This will be one of
+# the 12 supported
+# sampling rate between 8000 and 96000 Hz, as defined in MPEG-2.  This might
+# be different than
+# the decoded sampling rate if the MPEG-4 Spectral Band Replication (SBR) tool
+# exists.
+# If not know in advance, the sampling rate can be extracted from:
+# - the 4-bit sampling_frequency_index field in adts_fixed_header(), or
+# - program_config_element() in adif_header for MPEG-2 streams, or
+# - the 4-bit samplingFrequencyIndex field in AudioSpecificConfig() for MPEG-4
+# streams.
+# wfx.nAvgBytesPerSec - The average bytes per second calculated based on the
+# average bit rate of
+# the compressed stream. This value may be used by parsers to seek INTo a
+# particular time offset
+# in the stream. It may also be used by applications to determine roughly how
+# much buffer length to allocate.
+# If this is not known in advance, this value can be estimated by parsing some
+# (or all) of the
+# compressed HE-AAC frames and calculating bit rate based on average
+# compressed frame size.
+# If unknown, set to zero.
+# wfx.nBlockAlign - Set this to 1.
+# wfx.wBitsPerSample - Desired bit depth of the decoded PCM. If unknown, set
+# to zero.
+# wfx.cbSize - Set this to 12
+# (=ctypes.sizeof(HEAACWAVEINFO)-ctypes.sizeof(WAVEFORMATEX)) plus the
+# size of AudioSpecificConfig() in bytes.
+# ===================================
+# How do we parse this format block? assume pbBuff is the address of the first
+# byte in the format block. We do the following:
+# HEAACWAVEINFO* pwfInfo = (HEAACWAVEINFO *)pbBuff;
+# if ( 0 == pwfInfo->wStructType)
+# {
+# HEAACWAVEFORMAT* pwf = (HEAACWAVEFORMAT*)pbBuff;
+# All HEAACWAVEFORMAT fields can now be accessed through pwf
+# ...
+# To parse AudioSpecifiConfig(), write a function such as
+# ParseAudioSpecificConfig(BYTE *pbASC, DWORD dwASCLen),
+# and call:
+# DWORD dwASCLen = pwf->wfInfo.wfx.cbSize - ctypes.sizeof(HEAACWAVEINFO) +
+# ctypes.sizeof(WAVEFORMATEX);
+# ParseAudioSpecificConfig(pwf->pbAudioSpecificConfig, dwASCLen);
+# }
+# else
+# {
+# Reserved
+# }
+
+
+class heaacwaveinfo_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wPayloadType', WORD),
+        ('wAudioProfileLevelIndication', WORD),
+        ('wStructType', WORD),
+        ('wReserved1', WORD),
+        ('dwReserved2', DWORD),
+    ]
+
+
+HEAACWAVEINFO = heaacwaveinfo_tag
+
+
+# Defines core AAC properties. See description above. WAVEFORMATEX is of size
+# 18 bytes.
+# Defines the payload type
+# 0-RAW.  The stream contains raw_data_block() elements only.
+# 1-ADTS. The stream contains an adts_sequence(), as defined by MPEG-2.
+# 2-ADIF. The stream contains an adif_sequence(), as defined by MPEG-2.
+# 3-LOAS. The stream contains an MPEG-4 audio transport stream with a
+# synchronization layer LOAS and a multiplex layer LATM.
+# All other codes are reserved.
+# This is the 8-bit field audioProfileLevelIndication available in the
+# MPEG-4 object descriptor.  It is an indication (as defined in MPEG-4 audio)
+# of the audio profile and level required to process the content associated
+# with this stream. For example values 0x28-0x2B correspond to AAC Profile,
+# values 0x2C-0x2F correspond to HE-AAC profile and 0x30-0x33 for HE-AAC v2
+# profile.
+# If unknown, set to zero or 0xFE ("no audio profile specified").
+# Defines the data that follows this structure. Currently only one data type
+# is supported:
+# 0- AudioSpecificConfig() (as defined by MPEG-4 Audio, ISO/IEC 14496-3) will
+# follow this structure.
+# wfx.cbSize will indicate the total length including AudioSpecificConfig().
+# Use HEAACWAVEFORMAT to gain easy access to the address of the first byte of
+# AudioSpecificConfig() for parsing.
+# Typical values for the size of AudioSpecificConfig (ASC) are:
+# - 2 bytes for AAC or HE-AAC v1/v2 with implicit signaling of SBR,
+# - 5 bytes for HE-AAC v1 with explicit signaling of SBR,
+# - 7 bytes for HE-AAC v2 with explicit signaling of SBR and PS.
+# The size may be LONGer than 7 bytes if the 4-bit channelConfiguration field
+# in ASC is zero,
+# which means program_config_element() is present in ASC.
+
+# All other codes are reserved.
+# Set these to zero
+# this structure has a size of 30 bytes
+PHEAACWAVEINFO = POINTER(HEAACWAVEINFO)
+NPHEAACWAVEINFO = POINTER(HEAACWAVEINFO)
+LPHEAACWAVEINFO = POINTER(HEAACWAVEINFO)
+
+# This structure describes the format block for wStructType=0
+
+
+class heaacwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfInfo', HEAACWAVEINFO),
+        ('pbAudioSpecificConfig', BYTE * 1),
+    ]
+
+
+HEAACWAVEFORMAT = heaacwaveformat_tag
+
+
+# This structure has a size of 30 bytes
+# First byte of AudioSpecificConfig()
+# This structure has a size of 31 bytes
+PHEAACWAVEFORMAT = POINTER(HEAACWAVEFORMAT)
+NPHEAACWAVEFORMAT = POINTER(HEAACWAVEFORMAT)
+LPHEAACWAVEFORMAT = POINTER(HEAACWAVEFORMAT)
+# ==========================================================================
+
+# Windows Media Audio (common)
+
+
+MM_MSFT_ACM_WMAUDIO = 0x27
+# just an uncompressed size...
+WMAUDIO_BITS_PER_SAMPLE = 0x10
+WMAUDIO_MAX_CHANNELS = 0x2
+
+# Windows Media Audio V1 (a.k.a. "MSAudio")
+
+# for WAVE_FORMAT_MSAUDIO1        (0x0160)
+
+
+MM_MSFT_ACM_MSAUDIO1 = 0x27
+
+
+class msaudio1waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wSamplesPerBlock', WORD),
+        ('wEncodeOptions', WORD),
+    ]
+
+
+MSAUDIO1WAVEFORMAT = msaudio1waveformat_tag
+
+
+# only counting "new" samples "= half of what will be used due to overlapping
+LPMSAUDIO1WAVEFORMAT = POINTER(MSAUDIO1WAVEFORMAT)
+MSAUDIO1_BITS_PER_SAMPLE = WMAUDIO_BITS_PER_SAMPLE
+MSAUDIO1_MAX_CHANNELS = WMAUDIO_MAX_CHANNELS
+MSAUDIO1_WFX_EXTRA_BYTES = (
+    ctypes.sizeof(MSAUDIO1WAVEFORMAT) - ctypes.sizeof(WAVEFORMATEX)
+)
+
+# Windows Media Audio V2
+
+# for WAVE_FORMAT_WMAUDIO2        (0x0161)
+
+
+MM_MSFT_ACM_WMAUDIO2 = 0x65
+
+
+class wmaudio2waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('dwSamplesPerBlock', DWORD),
+        ('wEncodeOptions', WORD),
+        ('dwSuperBlockAlign', DWORD),
+    ]
+
+
+WMAUDIO2WAVEFORMAT = wmaudio2waveformat_tag
+
+
+# only counting "new" samples "= half of what will be used due to overlapping
+# the big size...  should be multiples of wfx.nBlockAlign.
+LPWMAUDIO2WAVEFORMAT = POINTER(WMAUDIO2WAVEFORMAT)
+WMAUDIO2_BITS_PER_SAMPLE = WMAUDIO_BITS_PER_SAMPLE
+WMAUDIO2_MAX_CHANNELS = WMAUDIO_MAX_CHANNELS
+WMAUDIO2_WFX_EXTRA_BYTES = (
+    ctypes.sizeof(WMAUDIO2WAVEFORMAT) - ctypes.sizeof(WAVEFORMATEX)
+)
+
+# Windows Media Audio V3
+
+# for WAVE_FORMAT_WMAUDIO3        (0x0162)
+
+
+class wmaudio3waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wValidBitsPerSample', WORD),
+        ('dwChannelMask', DWORD),
+        ('dwReserved1', DWORD),
+        ('dwReserved2', DWORD),
+        ('wEncodeOptions', WORD),
+        ('wReserved3', WORD),
+    ]
+
+
+WMAUDIO3WAVEFORMAT = wmaudio3waveformat_tag
+
+
+# bits of precision
+# which channels are present in stream
+LPWMAUDIO3WAVEFORMAT = POINTER(WMAUDIO3WAVEFORMAT)
+WMAUDIO3_WFX_EXTRA_BYTES = (
+    ctypes.sizeof(WMAUDIO3WAVEFORMAT) - ctypes.sizeof(WAVEFORMATEX)
+)
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+
+# Creative's ADPCM structure definitions
+
+# for WAVE_FORMAT_CREATIVE_ADPCM   (0x0200)
+
+
+class creative_adpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+CREATIVEADPCMWAVEFORMAT = creative_adpcmwaveformat_tag
+
+
+PCREATIVEADPCMWAVEFORMAT = POINTER(CREATIVEADPCMWAVEFORMAT)
+NPCREATIVEADPCMWAVEFORMAT = POINTER(CREATIVEADPCMWAVEFORMAT)
+LPCREATIVEADPCMWAVEFORMAT = POINTER(CREATIVEADPCMWAVEFORMAT)
+
+# Creative FASTSPEECH
+# WAVEFORMAT_CREATIVE_FASTSPEECH8   (0x0202)
+
+
+class creative_fastspeech8format_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+CREATIVEFASTSPEECH8WAVEFORMAT = creative_fastspeech8format_tag
+
+
+PCREATIVEFASTSPEECH8WAVEFORMAT = POINTER(CREATIVEFASTSPEECH8WAVEFORMAT)
+NPCREATIVEFASTSPEECH8WAVEFORMAT = POINTER(CREATIVEFASTSPEECH8WAVEFORMAT)
+LPCREATIVEFASTSPEECH8WAVEFORMAT = POINTER(CREATIVEFASTSPEECH8WAVEFORMAT)
+# Creative FASTSPEECH
+# WAVEFORMAT_CREATIVE_FASTSPEECH10   (0x0203)
+
+
+class creative_fastspeech10format_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+CREATIVEFASTSPEECH10WAVEFORMAT = creative_fastspeech10format_tag
+
+
+PCREATIVEFASTSPEECH10WAVEFORMAT = POINTER(CREATIVEFASTSPEECH10WAVEFORMAT)
+NPCREATIVEFASTSPEECH10WAVEFORMAT = POINTER(CREATIVEFASTSPEECH10WAVEFORMAT)
+LPCREATIVEFASTSPEECH10WAVEFORMAT = POINTER(CREATIVEFASTSPEECH10WAVEFORMAT)
+
+# Fujitsu FM Towns 'SND' structure
+
+# for WAVE_FORMAT_FMMTOWNS_SND   (0x0300)
+
+
+class fmtowns_snd_waveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+        ('wRevision', WORD),
+    ]
+
+
+FMTOWNS_SND_WAVEFORMAT = fmtowns_snd_waveformat_tag
+
+
+PFMTOWNS_SND_WAVEFORMAT = POINTER(FMTOWNS_SND_WAVEFORMAT)
+NPFMTOWNS_SND_WAVEFORMAT = POINTER(FMTOWNS_SND_WAVEFORMAT)
+LPFMTOWNS_SND_WAVEFORMAT = POINTER(FMTOWNS_SND_WAVEFORMAT)
+
+# Olivetti structure
+
+# for WAVE_FORMAT_OLIGSM   (0x1000)
+
+
+class oligsmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+OLIGSMWAVEFORMAT = oligsmwaveformat_tag
+
+
+POLIGSMWAVEFORMAT = POINTER(OLIGSMWAVEFORMAT)
+NPOLIGSMWAVEFORMAT = POINTER(OLIGSMWAVEFORMAT)
+LPOLIGSMWAVEFORMAT = POINTER(OLIGSMWAVEFORMAT)
+
+# Olivetti structure
+
+# for WAVE_FORMAT_OLIADPCM   (0x1001)
+
+
+class oliadpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+OLIADPCMWAVEFORMAT = oliadpcmwaveformat_tag
+
+
+POLIADPCMWAVEFORMAT = POINTER(OLIADPCMWAVEFORMAT)
+NPOLIADPCMWAVEFORMAT = POINTER(OLIADPCMWAVEFORMAT)
+LPOLIADPCMWAVEFORMAT = POINTER(OLIADPCMWAVEFORMAT)
+
+# Olivetti structure
+
+# for WAVE_FORMAT_OLICELP   (0x1002)
+
+
+class olicelpwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+OLICELPWAVEFORMAT = olicelpwaveformat_tag
+
+
+POLICELPWAVEFORMAT = POINTER(OLICELPWAVEFORMAT)
+NPOLICELPWAVEFORMAT = POINTER(OLICELPWAVEFORMAT)
+LPOLICELPWAVEFORMAT = POINTER(OLICELPWAVEFORMAT)
+
+# Olivetti structure
+
+# for WAVE_FORMAT_OLISBC   (0x1003)
+
+
+class olisbcwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+OLISBCWAVEFORMAT = olisbcwaveformat_tag
+
+
+POLISBCWAVEFORMAT = POINTER(OLISBCWAVEFORMAT)
+NPOLISBCWAVEFORMAT = POINTER(OLISBCWAVEFORMAT)
+LPOLISBCWAVEFORMAT = POINTER(OLISBCWAVEFORMAT)
+
+# Olivetti structure
+
+# for WAVE_FORMAT_OLIOPR   (0x1004)
+
+
+class olioprwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+OLIOPRWAVEFORMAT = olioprwaveformat_tag
+
+
+POLIOPRWAVEFORMAT = POINTER(OLIOPRWAVEFORMAT)
+NPOLIOPRWAVEFORMAT = POINTER(OLIOPRWAVEFORMAT)
+LPOLIOPRWAVEFORMAT = POINTER(OLIOPRWAVEFORMAT)
+
+# Crystal Semiconductor IMA ADPCM format
+
+# for WAVE_FORMAT_CS_IMAADPCM   (0x0039)
+
+
+class csimaadpcmwaveformat_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfx', WAVEFORMATEX),
+    ]
+
+
+CSIMAADPCMWAVEFORMAT = csimaadpcmwaveformat_tag
+
+
+PCSIMAADPCMWAVEFORMAT = POINTER(CSIMAADPCMWAVEFORMAT)
+NPCSIMAADPCMWAVEFORMAT = POINTER(CSIMAADPCMWAVEFORMAT)
+LPCSIMAADPCMWAVEFORMAT = POINTER(CSIMAADPCMWAVEFORMAT)
+# ==========================================================================;
+
+# ACM Wave Filters
+
+
+# ==========================================================================;
+WAVE_FILTER_UNKNOWN = 0x0000
+WAVE_FILTER_DEVELOPMENT = 0xFFFF
+
+
+class wavefilter_tag(ctypes.Structure):
+    _fields_ = [
+        ('cbStruct', DWORD),
+        ('dwFilterTag', DWORD),
+        ('fdwFilter', DWORD),
+        ('dwReserved', DWORD * 5),
+    ]
+
+
+WAVEFILTER = wavefilter_tag
+
+
+# Size of the filter in bytes
+# filter type
+# Flags for the filter (Universal Dfns)
+# Reserved for system use
+PWAVEFILTER = POINTER(WAVEFILTER)
+NPWAVEFILTER = POINTER(WAVEFILTER)
+LPWAVEFILTER = POINTER(WAVEFILTER)
+# _ACM_WAVEFILTER
+WAVE_FILTER_VOLUME = 0x0001
+
+
+class wavefilter_volume_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfltr', WAVEFILTER),
+        ('dwVolume', DWORD),
+    ]
+
+
+VOLUMEWAVEFILTER = wavefilter_volume_tag
+
+
+PVOLUMEWAVEFILTER = POINTER(VOLUMEWAVEFILTER)
+NPVOLUMEWAVEFILTER = POINTER(VOLUMEWAVEFILTER)
+LPVOLUMEWAVEFILTER = POINTER(VOLUMEWAVEFILTER)
+# WAVE_FILTER_VOLUME
+WAVE_FILTER_ECHO = 0x0002
+
+
+class wavefilter_echo_tag(ctypes.Structure):
+    _fields_ = [
+        ('wfltr', WAVEFILTER),
+        ('dwVolume', DWORD),
+        ('dwDelay', DWORD),
+    ]
+
+
+ECHOWAVEFILTER = wavefilter_echo_tag
+
+
+PECHOWAVEFILTER = POINTER(ECHOWAVEFILTER)
+NPECHOWAVEFILTER = POINTER(ECHOWAVEFILTER)
+LPECHOWAVEFILTER = POINTER(ECHOWAVEFILTER)
+# WAVEFILTER_ECHO
+# ------------------------------------------------------------------------------
+
+# New RIFF WAVE Chunks
+
+RIFFWAVE_inst = mmioFOURCC('i', 'n', 's', 't')
+
+
+class tag_s_RIFFWAVE_inst(ctypes.Structure):
+    _fields_ = [
+        ('bUnshiftedNote', BYTE),
+        ('chFineTune', CHAR),
+        ('chGain', CHAR),
+        ('bLowNote', BYTE),
+        ('bHighNote', BYTE),
+        ('bLowVelocity', BYTE),
+        ('bHighVelocity', BYTE)
+    ]
+
+
+s_RIFFWAVE_inst = tag_s_RIFFWAVE_inst
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+# ------------------------------------------------------------------------------
+
+# New RIFF Forms
+
+# RIFF AVI
+
+# AVI file format is specified in a seperate file (AVIFMT.H),
+# which is available in the VfW and Win 32 SDK
+
+# RIFF CPPO
+RIFFCPPO = mmioFOURCC('C', 'P', 'P', 'O')
+RIFFCPPO_objr = mmioFOURCC('o', 'b', 'j', 'r')
+RIFFCPPO_obji = mmioFOURCC('o', 'b', 'j', 'i')
+RIFFCPPO_clsr = mmioFOURCC('c', 'l', 's', 'r')
+RIFFCPPO_clsi = mmioFOURCC('c', 'l', 's', 'i')
+RIFFCPPO_mbr = mmioFOURCC('m', 'b', 'r', ' ')
+RIFFCPPO_CHAR = mmioFOURCC('c', 'h', 'a', 'r')
+RIFFCPPO_byte = mmioFOURCC('b', 'y', 't', 'e')
+RIFFCPPO_INT = mmioFOURCC('i', 'n', 't', ' ')
+RIFFCPPO_word = mmioFOURCC('w', 'o', 'r', 'd')
+RIFFCPPO_LONG = mmioFOURCC('l', 'o', 'n', 'g')
+RIFFCPPO_dwrd = mmioFOURCC('d', 'w', 'r', 'd')
+RIFFCPPO_flt = mmioFOURCC('f', 'l', 't', ' ')
+RIFFCPPO_dbl = mmioFOURCC('d', 'b', 'l', ' ')
+RIFFCPPO_str = mmioFOURCC('s', 't', 'r', ' ')
+
+
+# DIB Compression Defines
+
+# DIB Compression Defines
+BI_BITFIELDS = 0x3
+QUERYDIBSUPPORT = 0xC01
+QDI_SETDIBITS = 0x0001
+QDI_GETDIBITS = 0x0002
+QDI_DIBTOSCREEN = 0x0004
+QDI_STRETCHDIB = 0x0008
+# Structure definitions
+
+from .wingdi_h import BITMAPINFOHEADER
+
+
+class tagEXBMINFOHEADER(ctypes.Structure):
+    _fields_ = [
+        ('bmi', BITMAPINFOHEADER),
+        ('biExtDataOffset', DWORD),
+    ]
+
+
+EXBMINFOHEADER = tagEXBMINFOHEADER
+
+
+# extended BITMAPINFOHEADER fields
+# Other stuff will go here
+# ...
+# Format-specific information
+# biExtDataOffset poINTs here
+# NOBITMAP
+# New DIB Compression Defines
+BICOMP_IBMULTIMOTION = mmioFOURCC('U', 'L', 'T', 'I')
+BICOMP_IBMPHOTOMOTION = mmioFOURCC('P', 'H', 'M', 'O')
+BICOMP_CREATIVEYUV = mmioFOURCC('c', 'y', 'u', 'v')
+# New DIB Compression Defines
+# Still image JPEG DIB biCompression
+# Motion JPEG DIB biCompression
+JPEG_DIB = mmioFOURCC('J', 'P', 'E', 'G')
+MJPG_DIB = mmioFOURCC('M', 'J', 'P', 'G')
+# JPEGProcess Definitions
+# Baseline DCT
+JPEG_PROCESS_BASELINE = 0x0
+# AVI File format extensions
+# This is a control frame
+AVIIF_CONTROLFRAME = 0x00000200
+# JIF Marker byte pairs in JPEG Interchange Format sequence
+# SOF Huff  - Baseline DCT
+# SOF Huff  - Extended sequential DCT
+JIFMK_SOF0 = 0xFFC0
+# SOF Huff  - Progressive DCT
+JIFMK_SOF1 = 0xFFC1
+# SOF Huff  - Spatial (sequential) lossless
+JIFMK_SOF2 = 0xFFC2
+# SOF Huff  - Differential sequential DCT
+JIFMK_SOF3 = 0xFFC3
+# SOF Huff  - Differential progressive DCT
+JIFMK_SOF5 = 0xFFC5
+# SOF Huff  - Differential spatial
+JIFMK_SOF6 = 0xFFC6
+# SOF Arith - Reserved for JPEG extensions
+JIFMK_SOF7 = 0xFFC7
+# SOF Arith - Extended sequential DCT
+JIFMK_JPG = 0xFFC8
+# SOF Arith - Progressive DCT
+JIFMK_SOF9 = 0xFFC9
+# SOF Arith - Spatial (sequential) lossless
+JIFMK_SOF10 = 0xFFCA
+# SOF Arith - Differential sequential DCT
+JIFMK_SOF11 = 0xFFCB
+# SOF Arith - Differential progressive DCT
+JIFMK_SOF13 = 0xFFCD
+# SOF Arith - Differential spatial
+JIFMK_SOF14 = 0xFFCE
+# Define Huffman Table(s)
+JIFMK_SOF15 = 0xFFCF
+# Define Arithmetic coding conditioning(s)
+JIFMK_DHT = 0xFFC4
+# Restart with modulo 8 count 0
+JIFMK_DAC = 0xFFCC
+# Restart with modulo 8 count 1
+JIFMK_RST0 = 0xFFD0
+# Restart with modulo 8 count 2
+JIFMK_RST1 = 0xFFD1
+# Restart with modulo 8 count 3
+JIFMK_RST2 = 0xFFD2
+# Restart with modulo 8 count 4
+JIFMK_RST3 = 0xFFD3
+# Restart with modulo 8 count 5
+JIFMK_RST4 = 0xFFD4
+# Restart with modulo 8 count 6
+JIFMK_RST5 = 0xFFD5
+# Restart with modulo 8 count 7
+JIFMK_RST6 = 0xFFD6
+# Start of Image
+JIFMK_RST7 = 0xFFD7
+# End of Image
+JIFMK_SOI = 0xFFD8
+# Start of Scan
+JIFMK_EOI = 0xFFD9
+# Define quantization Table(s)
+JIFMK_SOS = 0xFFDA
+# Define Number of Lines
+JIFMK_DQT = 0xFFDB
+# Define Restart Interval
+JIFMK_DNL = 0xFFDC
+# Define Hierarchical progression
+JIFMK_DRI = 0xFFDD
+# Expand Reference Component(s)
+JIFMK_DHP = 0xFFDE
+# Application Field 0
+JIFMK_EXP = 0xFFDF
+# Application Field 1
+JIFMK_APP0 = 0xFFE0
+# Application Field 2
+JIFMK_APP1 = 0xFFE1
+# Application Field 3
+JIFMK_APP2 = 0xFFE2
+# Application Field 4
+JIFMK_APP3 = 0xFFE3
+# Application Field 5
+JIFMK_APP4 = 0xFFE4
+# Application Field 6
+JIFMK_APP5 = 0xFFE5
+# Application Field 7
+JIFMK_APP6 = 0xFFE6
+# Reserved for JPEG extensions
+JIFMK_APP7 = 0xFFE7
+# Reserved for JPEG extensions
+JIFMK_JPG0 = 0xFFF0
+# Reserved for JPEG extensions
+JIFMK_JPG1 = 0xFFF1
+# Reserved for JPEG extensions
+JIFMK_JPG2 = 0xFFF2
+# Reserved for JPEG extensions
+JIFMK_JPG3 = 0xFFF3
+# Reserved for JPEG extensions
+JIFMK_JPG4 = 0xFFF4
+# Reserved for JPEG extensions
+JIFMK_JPG5 = 0xFFF5
+# Reserved for JPEG extensions
+JIFMK_JPG6 = 0xFFF6
+# Reserved for JPEG extensions
+JIFMK_JPG7 = 0xFFF7
+# Reserved for JPEG extensions
+JIFMK_JPG8 = 0xFFF8
+# Reserved for JPEG extensions
+JIFMK_JPG9 = 0xFFF9
+# Reserved for JPEG extensions
+JIFMK_JPG10 = 0xFFFA
+# Reserved for JPEG extensions
+JIFMK_JPG11 = 0xFFFB
+# Reserved for JPEG extensions
+JIFMK_JPG12 = 0xFFFC
+# Comment
+JIFMK_JPG13 = 0xFFFD
+# for temp private use arith code
+JIFMK_COM = 0xFFFE
+# Reserved
+JIFMK_TEM = 0xFF01
+# Zero stuffed byte - entropy data
+JIFMK_RES = 0xFF02
+# Fill byte
+JIFMK_00 = 0xFF00
+JIFMK_FF = 0xFFFF
+# JPEGColorSpaceID Definitions
+# Y only component of YCbCr
+# YCbCr as define by CCIR 601
+JPEG_Y = 0x1
+# 3 component RGB
+JPEG_YCbCr = 0x2
+JPEG_RGB = 0x3
+# Structure definitions
+
+
+class tagJPEGINFOHEADER(ctypes.Structure):
+    _fields_ = [
+        ('JPEGSize', DWORD),
+        ('JPEGProcess', DWORD),
+        ('JPEGColorSpaceID', DWORD),
+        ('JPEGBitsPerSample', DWORD),
+        ('JPEGHSubSampling', DWORD),
+        ('JPEGVSubSampling', DWORD),
+    ]
+
+
+JPEGINFOHEADER = tagJPEGINFOHEADER
+
+
+# compression-specific fields
+# these fields are defined for 'JPEG' and 'MJPG'
+# Process specific fields
+# Default DHT Segment
+# JPEG DHT Segment for YCrCb omitted from MJPG data
+# End DHT default
+# End JPEG
+# ------------------------------------------------------------------------------
+
+# Defined IC types
+
+ICTYPE_VIDEO = mmioFOURCC('v', 'i', 'd', 'c')
+ICTYPE_AUDIO = mmioFOURCC('a', 'u', 'd', 'c')
+# Misc. FOURCC registration
+# Misc. FOURCC registration
+# for the storage and downloading of DSP
+# code for Audio and communications devices.
+# Sierra Semiconductor: RDSP- Proprietary RIFF file format
+# for the storage and downloading of DSP
+# code for Audio and communications devices.
+
+from .mmeapi_h import MIXERCONTROL_CONTROLTYPE_BOOLEAN
+
+FOURCC_RDSP = mmioFOURCC('R', 'D', 'S', 'P')
+MIXERCONTROL_CONTROLTYPE_SRS_MTS = MIXERCONTROL_CONTROLTYPE_BOOLEAN + 6
+MIXERCONTROL_CONTROLTYPE_SRS_ONOFF = MIXERCONTROL_CONTROLTYPE_BOOLEAN + 7
+MIXERCONTROL_CONTROLTYPE_SRS_SYNTHSELECT = MIXERCONTROL_CONTROLTYPE_BOOLEAN + 8
+# WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+# Revert to default packing
+# from poppack_h import * # NOQA
+# RC_INVOKED
+# End of extern "C" {
+# __cplusplus
+# _INC_MMREG
+# __midl
+
+
+__all__ = (
+    'MM_RADIUS', 'WAVE_FORMAT_SONY_ATRAC3', 'MM_ADDX_PCTV_AUX_LINE',
+    'MPEGLAYER3_ID_CONSTANTFRAMESIZE', 'MM_IBM_PCMCIA_WAVEOUT',
+    'MM_AZTECH_NOVA16_WAVEIN', 'MM_LERNOUT_ANDHAUSPIE_LHCODECACM',
+    'MM_CHROMATIC_M2', 'MM_AU8830_MIDIOUT', 'MM_HEADSPACE_HAEWAVEIN',
+    'WAVE_FORMAT_PACKED', 'MM_AST_MODEMWAVE_WAVEOUT',
+    'MM_MSFT_VMDM_GAME_WAVEOUT', 'MM_GADGETLABS_WAVE42_WAVEIN',
+    'WAVE_FORMAT_COMVERSE_INFOSYS_AVQSBC', 'MM_OKSORI',
+    'MM_COREDYNAMICS_DYNASONIX_MIDI_OUT', 'MM_IBM_PCMCIA_WAVEIN',
+    'MM_SNI', 'MM_PROAUD_AUX', 'MM_SHARP_MDC_AUX_WAVE_RVB',
+    'MM_ICS_WAVEDEC_SB_MPU401_MIDIIN', 'WAVE_FORMAT_RHETOREX_ADPCM',
+    'MM_MITEL', 'MM_SGI_RAD_ADATMONO8_WAVEOUT', 'WAVE_FORMAT_IRAT',
+    'MM_NCR_BA_AUX', 'MM_SYDEC_NV', 'MM_CRYSTAL_CS4232_WAVEIN',
+    'MM_ICE_WAVEIN', 'SPEAKER_FRONT_LEFT', 'MM_EES_PCMIDI14_OUT3',
+    'WAVE_FORMAT_SONY_SCX', 'MM_GUILLEMOT', 'MM_MSFT_WDMAUDIO_MIDIOUT',
+    'MM_3COM_CB_WAVEOUT', 'MM_ICE_MIDIOUT1', 'MM_ICE_MIDIOUT2',
+    'MM_EUPHONICS_AUX_MIDI', 'MM_NEOMAGIC_MW3DX_GMSYNTH',
+    'MM_TANDY_SENS_MMAMIDIOUT', 'MM_CYRIX', 'WMAUDIO2_MAX_CHANNELS',
+    'MM_EES_PCMIDI14_OUT2', 'MM_EUPHONICS_EUSYNTH', 'MM_MSFT_ACM_WMAUDIO',
+    'MM_MOTU_MTPAV_MIDIOUT_ADAT', 'MM_TANDY_SENS_MMAWAVEIN',
+    'MM_INTERACTIVE', 'MM_TANDY_VISBIOSSYNTH', 'MM_CHROMATIC_M1',
+    'MM_IPI_ACM_HSX', 'MM_WANGLABS', 'MM_SHARP_MDC_WAVE_OUT',
+    'MM_DIGITAL_AUDIO_LABS_CPRO', 'MM_OPTI_P16_AUX', 'MM_NMP_CCP_WAVEOUT',
+    'MM_ESS_ES1788_WAVEOUT', 'MM_AU8820_SYNTH', 'WAVE_FORMAT_SPEEX_VOICE',
+    'MM_NEOMAGIC_MWAVE_AUX', 'MM_ROLAND_SERIAL_MIDIIN', 'JIFMK_SOF13',
+    'JIFMK_SOF10', 'MM_OPUS1216_WAVEOUT', 'MM_HP_WAVEIN',
+    'MM_MOSCOM_VPC2400_IN', 'MM_CRYSTAL_CS4232_INPUTGAIN_LOOP',
+    'MM_YAMAHA', 'MM_CIRRUSLOGIC', 'MM_OPTI_P16_MIDIIN',
+    'WAVE_FORMAT_DSAT_DISPLAY', 'MM_AZTECH_WASH16_WAVEOUT', 'MM_DPSINC',
+    'MM_LUCENT_ACM_G723', 'MM_SIERRA_QUARTET_AUX_MODEM',
+    'MM_ATT_MICROELECTRONICS', 'MM_BECUBED', 'MM_MSFT_ACM_MSG723',
+    'MM_MPU401_MIDIOUT', 'MM_ICOM_WAVEIN', 'JIFMK_RST0', 'JIFMK_RST3',
+    'JIFMK_RST2', 'JIFMK_RST5', 'JIFMK_RST4', 'JIFMK_RST7', 'JIFMK_RST6',
+    'WAVE_FORMAT_LH_CODEC_CELP', 'WAVE_FORMAT_VODAFONE_MPEG_RAW_AAC',
+    'WAVE_FORMAT_LH_CODEC', 'WAVE_FORMAT_POLYCOM_SIREN',
+    'MM_MSFT_ACM_PCM', 'MM_SIERRA_ARIA_AUX2', 'MM_LUMINOSITI_SCWAVEOUT',
+    'MM_AZTECH_MIXER', 'WAVE_FORMAT_VOXWARE', 'MM_LUMINOSITI_SCWAVEMIX',
+    'MM_EUPHONICS_FMSYNTH_MONO', 'MM_SNDBLST_SYNTH',
+    'MM_WILLOWPOND_SNDPORT_WAVEIN', 'MM_ADDX_PCTV_WAVEIN',
+    'MM_LUCID_PCI24WAVEIN', 'QDI_GETDIBITS', 'MM_ICCC_UNA3_AUX',
+    'MM_ROCKWELL', 'MM_OLIVETTI_ACM_ADPCM', 'MM_CHROMATIC_M2_FMSYNTH',
+    'MM_SGI_RAD_ADATSTEREO32_WAVEOUT', 'MM_TDK_MW_WAVE_IN',
+    'MM_COREDYNAMICS_DYNAMIXHR', 'MM_OKSORI_FM_OPL4', 'MM_BERCOS_MIXER',
+    'WAVE_FORMAT_LUCENT_SX8300P', 'MM_S3_WAVEOUT',
+    'WAVE_FORMAT_BTV_DIGITAL', 'WAVE_FORMAT_INFOCOM_ITS_G721_ADPCM',
+    'MM_VIONA', 'SPEAKER_TOP_FRONT_LEFT', 'MM_ETEK_KWIKMIDI_MIDIIN',
+    'WAVE_FORMAT_DIGIREAL', 'MM_ROLAND_SCP_WAVEOUT', 'MM_DIMD_WSS_SYNTH',
+    'DEFINE_MMREG_PID_GUID', 'MM_NVIDIA_MIDIOUT',
+    'WAVE_FORMAT_PROSODY_8KBPS', 'MM_ISOLUTION',
+    'WAVE_FORMAT_VOXWARE_SC3', 'MM_SHARP_MDC_AUX_BASS',
+    'MM_EES_PCMIDI14_OUT4', 'MM_CREATIVE_SBP16_WAVEIN',
+    'MM_SELSIUS_SYSTEMS_RTPWAVEOUT', 'ACM_MPEG_PRIVATEBIT',
+    'MM_ADMOS_FM_SYNTH', 'JPEG_DIB', 'MM_AHEAD_MULTISOUND',
+    'MM_IBM_THINKPAD200', 'MM_MOTU_MXPXT_MIDIOUT_ALL',
+    'MM_CRYSTAL_SOUND_FUSION_WAVEIN',
+    'STATIC_KSDATAFORMAT_SUBTYPE_IEEE_FLOAT', 'MM_DIMD_WSS_AUX',
+    'MM_VOCALTEC_WAVEIN', 'MM_ADMOS_QS3AMIDIOUT', 'MM_MSFT_WSS_MIXER',
+    'MM_SOUNDSCAPE_WAVEIN', 'MM_CHROMATIC_M1_MIXER', 'WAVE_FORMAT_PCM',
+    'MM_VIA_WAVEOUT', 'MM_SGI_RAD_ADATMONO1_WAVEIN',
+    'MM_ICS_WAVEDEC_SB_WAVEOUT', 'MM_SIEMENS_SBC', 'MM_ZEFIRO_ZA2',
+    'MM_DIMD_WSS_WAVEOUT', 'MM_TDK_MW_AUX_WAVE_RVB',
+    'MM_SGI_RAD_ADATMONO3_WAVEOUT', 'WAVE_FORMAT_ESPCM',
+    'MM_RHETOREX_WAVEOUT', 'ROCKWELL_WA2_MPU401_OUT', 'MM_EES',
+    'CRYSTAL_NET_SFM_CODEC', 'JIFMK_JPG1', 'JIFMK_JPG0', 'JIFMK_JPG7',
+    'JIFMK_JPG6', 'JIFMK_JPG5', 'INIT_WAVEFORMATEX_GUID',
+    'MM_MEDIAVISION_PROAUDIO', 'JIFMK_JPG9', 'JIFMK_JPG8',
+    'MM_SGI_RAD_ADATSTEREO78_WAVEOUT', 'MM_COMPUSIC',
+    'MM_OSITECH_TRUMPCARD', 'MM_CHROMATIC_M1_WAVEIN', 'MM_AUDIOPT',
+    'IS_COMPATIBLE_MMREG_MID', 'MM_MIRO_VIDEOTD', 'MM_OPTI_P16_WAVEIN',
+    'MM_TDK_MW_AUX_BASS', 'WAVE_FORMAT_G723_ADPCM',
+    'MM_DIGITAL_AUDIO_LABS_TC', 'MM_MSFT_SBPRO_WAVEOUT', 'MM_VOYETRA',
+    'MM_MOTIONPIXELS', 'MM_AST', 'MM_NEOMAGIC_MW3DX_FMSYNTH',
+    'MM_ARTISOFT_SBWAVEOUT', 'MM_HP', 'MM_SEERSYS_SEERSYNTH',
+    'WAVE_FORMAT_EXTENSIBLE', 'MM_MSFT_GENERIC_WAVEOUT',
+    'MM_SILICONSOFT_SOUNDJR2PR_WAVEIN', 'WAVE_FORMAT_INGENIENT_G726',
+    'INIT_MMREG_MID', 'MM_HEADSPACE_HAEMIXER', 'MM_QUICKNET',
+    'MM_QUICKAUDIO', 'MM_SUPERMAC', 'MM_FRONTIER_WAVECENTER_MIDIIN',
+    'MM_NVIDIA_MIDIIN', 'MM_OKI', 'WAVE_FORMAT_VOXWARE_RT24_SPEECH',
+    'WAVE_FORMAT_RACAL_RECORDER_GSM', 'WAVE_FORMAT_ISIAUDIO_2',
+    'MM_MITEL_MPA_HANDSFREE_WAVEOUT', 'MM_SELSIUS_SYSTEMS',
+    'MM_SGI_RAD_ADATMONO3_WAVEIN', 'WAVE_FORMAT_APTX',
+    'MM_SHARP_MDC_AUX_WAVE_VOL', 'MM_TERALOGIC', 'JPEG_Y',
+    'MM_ANTEX_SX12_WAVEIN', 'MM_DIGITAL_AUDIO_LABS_DOC',
+    'WAVE_FORMAT_SONY_SCY', 'MM_QUICKAUDIO_MAXIMIDI',
+    'MM_SIERRA_QUARTET_SYNTH', 'MM_ALGOVISION_VB80MIXER',
+    'MM_AMD_INTERWAVE_AUX_CD', 'MM_FAST', 'MM_QTEAM', 'WAVE_FORMAT_ADPCM',
+    'MM_MINDMAKER', 'MM_VKC_MPU401_MIDIOUT',
+    'MM_SGI_RAD_AESSTEREO_WAVEIN', 'MM_ADDX_PCTV_AUX_CD',
+    'MM_EMAGIC_UNITOR8', 'MM_VIDEOLOGIC_MSWAVEOUT', 'MM_DIMD_MIDIIN',
+    'MM_COMPAQ', 'MM_NEOMAGIC_WAVEIN', 'MM_BTV_DIGITALIN',
+    'MM_ROLAND_SC7_MIDIIN', 'MM_TANDY_PSSJWAVEIN', 'MM_VIA_WDM_WAVEIN',
+    'MM_MSFT_VMDMW_HANDSET_WAVEIN', 'MM_OPUS1208_AUX',
+    'MM_ALGOVISION_VB80AUX2', 'MM_OPTI', 'MM_OPCODE',
+    'WAVE_FILTER_UNKNOWN', 'MM_DOLBY', 'MM_AZTECH_PRO16_FMSYNTH',
+    'MM_IODD', 'WAVE_FORMAT_WAVPACK_AUDIO', 'MM_ESS_MIXER',
+    'MM_VANKOEVERING', 'MM_OSPREY_1000WAVEIN', 'BI_BITFIELDS',
+    'JIFMK_JPG10', 'MM_MSFT_GENERIC_AUX_LINE', 'MM_NORRIS_VOICELINK',
+    'MM_YAMAHA_GSS_MIDIOUT', 'MM_ESS_ES688_WAVEOUT',
+    'MM_KAY_ELEMETRICS_CSL_4CHANNEL', 'WAVE_FORMAT_OLIOPR',
+    'MM_OPTI_M32_MIXER', 'MM_ANTEX_SX12_WAVEOUT', 'MM_PHONET',
+    'MM_MOTU_MXPMPU_MIDIOUT_ALL', 'WAVE_FORMAT_FM_TOWNS_SND',
+    'MM_ROLAND_RAP10_SYNTH', 'MM_NEOMAGIC_MW3DX_MIXER', 'MM_TTEWS_WAVEIN',
+    'MM_ESS_ES1688_WAVEOUT', 'MM_WSS_SB16_AUX_CD', 'MM_STUDIO_16_AUX',
+    'MM_COREDYNAMICS_DYNASONIX_AUDIO_IN', 'SPEAKER_TOP_BACK_LEFT',
+    'WAVE_FORMAT_DIALOGIC_OKI_ADPCM', 'MM_SEERSYS_REALITY',
+    'MM_OKSORI_MIX_WAVE', 'EXTRACT_MMREG_MID', 'MM_MSFT_SB16_WAVEOUT',
+    'WAVE_FORMAT_QUARTERDECK', 'MM_ROLAND_SMPU_MIDIINB',
+    'MM_SGI_RAD_ADATMONO2_WAVEIN', 'MM_ROLAND_SMPU_MIDIINA', 'MM_IOMAGIC',
+    'MM_CDPC_WAVEOUT', 'MM_NVIDIA_MIXER', 'MM_TDK', 'MM_BTV_AUX_CD',
+    'MM_SILICONSOFT_SOUNDJR2PR_WAVEOUT', 'MM_AZTECH_WASH16_WAVEIN',
+    'MM_KORG_1212IO_MSWAVEOUT', 'MM_ANTEX_AUDIOPORT22_FEEDTHRU',
+    'MM_ROLAND_SMPU_MIDIOUTB', 'MM_ROLAND_SMPU_MIDIOUTA', 'MM_ESS_AMAUX',
+    'MM_MOTU_MXN_MIDIOUT_4', 'MM_MOTU_MXN_MIDIOUT_2',
+    'MM_MOTU_MXN_MIDIOUT_3', 'MM_MOTU_MXN_MIDIOUT_1',
+    'MM_ICS_WAVEDECK_SYNTH', 'MM_AU8830_SYNTH',
+    'WAVE_FORMAT_DIVIO_MPEG4_AAC', 'WAVE_FORMAT_OGG_VORBIS_MODE_1',
+    'MM_ACTIVEVOICE_ACM_VOXADPCM', 'MM_VTG', 'ACM_MPEG_JOINTSTEREO',
+    'MM_INVISION', 'MM_SOFTLAB_NSK', 'JIFMK_SOF11', 'RIFFCPPO_flt',
+    'MM_OTI', 'MM_WORKBIT_AUX', 'MM_YAMAHA_YMF724LEG_MIDIOUT',
+    'WAVE_FORMAT_VOICEAGE_AMR_WB', 'WAVE_FORMAT_NICE_ACA',
+    'MM_FORTEMEDIA_WAVEIN', 'SPEAKER_FRONT_RIGHT_OF_CENTER',
+    'MM_ICS_WAVEDECK_WAVEOUT', 'MM_WORKBIT_MIDIIN',
+    'MM_WINNOV_CAVIAR_VIDC', 'ROCKWELL_WA1_MPU401_IN', 'MM_DIMD_VIRTSB',
+    'MIXERCONTROL_CONTROLTYPE_SRS_ONOFF', 'JPEG_YCbCr',
+    'WAVE_FORMAT_VOXWARE_TQ40', 'MM_TBS_TROPEZ_LINE', 'RIFFCPPO_CHAR',
+    'MM_ENET_T2000_LINEIN', 'MM_MSFT_VMDM_GAME_WAVEIN',
+    'MM_YAMAHA_OPL3SA_JOYSTICK', 'ACM_MPEG_SINGLECHANNEL',
+    'MM_GADGETLABS_WAVE4_MIDIOUT', 'MM_MPTUS', 'MM_CREATIVE_AUX_MASTER',
+    'MM_SILICONSOFT_SOUNDJR2_WAVEOUT', 'MM_RZS',
+    'MM_GADGETLABS_WAVE42_WAVEOUT', 'WAVE_FORMAT_DIVIO_G726',
+    'MM_DIGITAL_AUDIO_LABS_CTDIF', 'MM_GADGETLABS',
+    'MM_TDK_MW_AUX_TREBLE', 'WAVE_FORMAT_MALDEN_PHONYTALK',
+    'MM_ESS_ES1878_WAVEIN', 'MM_WORKBIT', 'MM_TPORT_WAVEOUT',
+    'MM_ROLAND_RAP10_WAVEIN', 'WAVE_FORMAT_MSRT24',
+    'MM_PROAUD_PLUS_SYNTH', 'WAVE_FORMAT_FAAD_AAC', 'QDI_SETDIBITS',
+    'MM_ICS_2120_LITE_MIDIOUT', 'MM_ESS_ES1868_WAVEOUT', 'MM_APT',
+    'WAVE_FORMAT_MULTITUDE_FT_SX20', 'MM_PROAUD_16_MIDIIN',
+    'MM_WINNOV_CAVIAR_CHAMPAGNE', 'MM_EUPHONICS_FMSYNTH_STEREO',
+    'JIFMK_JPG13', 'JIFMK_JPG12', 'JIFMK_JPG11', 'WAVE_FORMAT_UNKNOWN',
+    'WAVE_FORMAT_RT24', 'MM_YAMAHA_YMF724_MIXER',
+    'MM_NEOMAGIC_MW3DX_WAVEOUT', 'MM_MICRONAS', 'RIFFINFO_IMED',
+    'WAVE_FORMAT_ROCKWELL_ADPCM', 'MM_WINNOV_CAVIAR_WAVEOUT',
+    'MM_PHONET_PP_WAVEIN', 'MM_DIGITAL_AUDIO_LABS', 'MM_IPI_WF_ASSS',
+    'JIFMK_FF', 'MM_SGI_540_WAVEIN', 'MM_NETXL', 'MM_ECHO_WAVEOUT',
+    'MM_3COM_CB_MIXER', 'MM_XIRLINK_VISIONLINK', 'MM_MICRONAS_CLP833',
+    'MM_STUDER', 'MM_MSFT_SB16_MIXER', 'MM_DDD_MIDILINK_MIDIOUT',
+    'MM_MITEL_MPA_LINE2_WAVEOUT', 'MM_WILLOPOND_SNDCOMM_WAVEIN',
+    'MM_PROAUD_MIDIOUT', 'MM_WSS_SB16_MIXER', 'MM_OLIVETTI_ACM_SBC',
+    'MM_ENSONIQ', 'MM_MOTU_MTP_MIDIIN_3', 'MM_FRONTIER_WAVECENTER_WAVEIN',
+    'JIFMK_SOF14', 'MM_MATSUSHITA_WAVEOUT', 'WAVE_FORMAT_DF_G726',
+    'JIFMK_SOF15', 'MM_AZTECH_MIDIOUT', 'MM_SGI_RAD_ADAT8CHAN_WAVEOUT',
+    'MM_SILICONSOFT', 'MM_FTR_ENCODER_WAVEIN',
+    'MM_AARDVARK_STUDIO12_WAVEOUT', 'MM_ICOM_WAVEOUT',
+    'WAVE_FORMAT_INDEO_AUDIO', 'WAVE_FORMAT_DSPGROUP_TRUESPEECH',
+    'MM_CRYSTAL_SOUND_FUSION_MIDIIN', 'MM_NVIDIA_WAVEOUT',
+    'MM_TDK_MW_MIDI_SYNTH', 'MM_GADGETLABS_WAVE44_WAVEOUT',
+    'MM_SNI_ACM_G721', 'MM_SOUNDESIGNS_WAVEIN', 'MM_HYPERACTIVE',
+    'MM_MEDIAVISION_PROAUDIO_16', 'MM_MITEL_TALKTO_BRIDGED_WAVEOUT',
+    'MM_MIRO_VIDEOD1', 'RIFFINFO_ISFT', 'SPEAKER_BACK_CENTER',
+    'MM_AMD_INTERWAVE_WAVEOUT_TREBLE', 'MM_PHONET_PP_MIXER', 'MM_MALDEN',
+    'MM_HEADSPACE_HAESYNTH', 'MM_FORTEMEDIA', 'JIFMK_00',
+    'MM_ESS_ES1868_WAVEIN', 'WAVE_FORMAT_VODAFONE_MPEG_ADTS_AAC',
+    'MM_MELABS', 'MM_MMOTION_WAVEAUX', 'MM_MITEL_TALKTO_LINE_WAVEIN',
+    'MM_TELEKOL', 'WAVE_FORMAT_MPEGLAYER3', 'MM_DSP_SOLUTIONS_WAVEOUT',
+    'MM_DICTAPHONE', 'MM_SSP_SNDFESMIDIIN', 'MM_PROAUD_SYNTH',
+    'SPEAKER_FRONT_CENTER', 'MM_OLIVETTI_WAVEIN', 'MM_DIMD_VIRTMPU',
+    'BICOMP_CREATIVEYUV', 'MM_MIRO_MOVIEPRO', 'MM_VIVO', 'MM_OLIVETTI',
+    'MM_MITEL_TALKTO_LINE_WAVEOUT', 'MM_SILICONSOFT_SC1_WAVEIN',
+    'WAVE_FORMAT_MULAW', 'MM_CREATIVE_AUX_CD',
+    'MM_MITEL_MPA_LINE2_WAVEIN', 'WAVE_FORMAT_MSG723',
+    'MM_MOTU_FLYER_MIDI_OUT_A', 'MM_MOTU_FLYER_MIDI_OUT_B',
+    'MM_MMOTION_WAVEIN', 'WAVE_FORMAT_NEC_AAC', 'MM_DIGITAL',
+    'WAVE_FORMAT_UNISYS_NAP_ADPCM', 'MM_DSP_SOLUTIONS_AUX',
+    'WAVE_FORMAT_OGG_VORBIS_MODE_3_PLUS', 'WAVE_FORMAT_VOXWARE_SC3_1',
+    'MM_MELABS_MIDI2GO', 'SPEAKER_BACK_LEFT', 'MM_QUARTERDECK_LHWAVEIN',
+    'MM_MSFT_VMDMS_HANDSET_WAVEOUT', 'MM_INTELOPD_WAVEIN',
+    'MM_INTERNET_SSW_WAVEIN', 'WAVE_FORMAT_WMAUDIO2',
+    'WAVE_FORMAT_WMAUDIO3', 'MM_BCB_NETBOARD_10',
+    'MM_YAMAHA_OPL3SA_MIDIOUT', 'MM_NEOMAGIC_MWAVE_MIDIIN',
+    'MM_ECS_AADF_MIDI_OUT', 'MM_PINNACLE', 'MM_STUDIO_16_WAVEIN',
+    'MM_DTS_DS', 'MM_NCR_BA_SYNTH', 'MM_TDK_MW_AUX_CHR', 'MM_ECHO_MIDIIN',
+    'MM_CRYSTAL_CS4232_WAVEOUT', 'JPEG_PROCESS_BASELINE',
+    'MM_DIMD_PLATFORM', 'MM_EMU_APSMIDIOUT', 'MM_YAMAHA_YMF724_WAVEOUT',
+    'MM_CREATIVE_AUX_MIDI', 'MM_OTI_611MIXER', 'MM_PROAUD_PLUS_MIXER',
+    'MM_SGI_RAD_ADATMONO5_WAVEIN', 'MM_I_LINK', 'MM_ICS_WAVEDECK_WAVEIN',
+    'MM_CRYSTAL_CS4232_WAVEAUX_AUX1', 'MM_CRYSTAL_CS4232_WAVEAUX_AUX2',
+    'MM_DDD_MIDILINK_MIDIIN', 'MM_AURAVISION', 'MM_EMU_APSMIDIIN',
+    'MM_MITEL_MEDIAPATH_WAVEIN', 'MM_SYDEC_NV_WAVEOUT',
+    'MM_ESS_ES1868_MIXER', 'JIFMK_RST1', 'MM_CHROMATIC_M2_WTSYNTH',
+    'MM_ZYXEL_ACM_ADPCM', 'WAVE_FORMAT_FLAC', 'MM_PRAGMATRAX',
+    'MM_MOTU_MTPAV_MIDIIN_ADAT', 'MM_SOFTLAB_NSK_FRW_AUX',
+    'MM_STUDIO_16_SYNTH', 'MM_AST_MODEMWAVE_WAVEIN',
+    'WAVE_FORMAT_NICE_ADPCM', 'ROCKWELL_WA1_WAVEIN', 'MM_SUNCOM',
+    'MM_OPTI_M16_MIDIOUT', 'MM_MEDIAVISION', 'MM_DIALOGIC',
+    'MM_VIA_WDM_MIXER', 'WAVE_FILTER_ECHO', 'MM_ESS',
+    'MM_AZTECH_PRO16_WAVEIN', 'MM_THUNDER_SYNTH',
+    'WAVE_FORMAT_VIVO_SIREN', 'MM_MOTU_MXPMPU_MIDIIN_SYNC',
+    'MM_VIA_WDM_MPU401_MIDIOUT', 'MM_CHROMATIC_M1_MIDIIN',
+    'MM_SGI_RAD_ADATSTEREO12_WAVEIN', 'MM_SGI_RAD_ADAT8CHAN_WAVEIN',
+    'MM_CAT', 'MM_MATSUSHITA', 'MM_OKSORI_MIX_LINE',
+    'WAVE_FORMAT_FRACE_TELECOM_G729', 'MM_MOTU_MTPAV_NET_MIDIOUT_3',
+    'MM_MOTU_MTPAV_NET_MIDIOUT_2', 'MM_MEDIAVISION_PROAUDIO_PLUS',
+    'MM_MOTU_MTPAV_NET_MIDIOUT_7', 'MM_MOTU_MTPAV_NET_MIDIOUT_6',
+    'MM_MOTU_MTPAV_NET_MIDIOUT_5', 'MM_OPUS401_MIDIIN',
+    'MM_MOTU_MTPAV_NET_MIDIOUT_8', 'JIFMK_COM',
+    'WAVE_FORMAT_DICTAPHONE_CELP54', 'MM_FHGIIS_MPEGLAYER3_PROFESSIONAL',
+    'JIFMK_EOI', 'MM_WEITEK', 'MM_ADDX_PCTV_DIGITALMIX',
+    'MM_EMU_APSWAVEIN', 'MM_CREATIVE_AUX_LINE', 'MM_DIGITAL_ICM_H261',
+    'MM_DTS', 'MM_TTEWS_WAVEOUT', 'MM_VIONA_QVINPCI_MIXER',
+    'RIFFINFO_ISHP', 'WAVE_FORMAT_GSM_690', 'MM_GULBRANSEN',
+    'MM_WINNOV_CAVIAR_YUV8', 'MM_MATSUSHITA_FMSYNTH_STEREO',
+    'MM_CRYSTAL_NET', 'MM_MOTU_MXPMPU_MIDIOUT_1',
+    'MM_MOTU_MXPMPU_MIDIOUT_3', 'MM_MOTU_MXPMPU_MIDIOUT_2',
+    'MM_MOTU_MXPMPU_MIDIOUT_5', 'MM_MOTU_MXPMPU_MIDIOUT_4',
+    'MM_MOTU_MXPMPU_MIDIOUT_6', 'MM_YAMAHA_GSS_WAVEOUT', 'RIFFCPPO_objr',
+    'MM_AUDIOFILE', 'MM_COREDYNAMICS_DYNASONIX_AUDIO_OUT', 'MM_IBM',
+    'WAVE_FORMAT_VOXWARE_AC10', 'WAVE_FORMAT_VOXWARE_AC16',
+    'MM_TTEWS_VMIDIOUT', 'MM_ICE_WAVEOUT', 'WAVE_FORMAT_INTEL_G723_1',
+    'MM_SONORUS', 'MM_APICOM', 'MM_BTV_MIDIWAVESTREAM',
+    'MM_MSFT_ACM_MSRT24', 'MM_MSFT_WDMAUDIO_MIXER',
+    'MM_SHARP_MDC_MIDI_IN', 'MM_CREATIVE_AUX_PCSPK',
+    'WAVE_FORMAT_G722_ADPCM', 'MM_WILLOWPOND_SNDCOMM_AUX',
+    'BICOMP_IBMULTIMOTION', 'MM_PROAUD_PLUS_WAVEOUT', 'MM_ZEFIRO',
+    'MM_DSP_GROUP', 'MM_ENET', 'MM_TANDY_SENS_MMAMIDIIN', 'MM_IPI',
+    'MM_CASIO', 'MM_AU8820_WAVEOUT', 'WMAUDIO_BITS_PER_SAMPLE',
+    'WAVE_FORMAT_PAC', 'MM_SILICONSOFT_SC2_WAVEIN',
+    'WAVE_FORMAT_POLYCOM_G728', 'MM_WSS_SB16_MIDIOUT',
+    'MM_ADMOS_QS3AWAVEIN', 'RIFFINFO_ISRF', 'WAVE_FORMAT_VOXWARE_TQ60',
+    'MM_ARTISOFT_SBWAVEIN', 'MM_ITERATEDSYS', 'MM_MSFT_WSS_NT_WAVEOUT',
+    'MM_CHROMATIC_M1_WAVEOUT', 'WAVE_FORMAT_CREATIVE_ADPCM',
+    'MM_SOUNDSCAPE_SYNTH', 'MM_SIERRA_ARIA_WAVEIN',
+    'WAVE_FORMAT_G721_ADPCM', 'MM_MITEL_TALKTO_HANDSET_WAVEOUT',
+    'MM_MARIAN_ARC88WAVEIN', 'MM_AMD_INTERWAVE_WAVEOUT',
+    'WAVE_FORMAT_NOKIA_MPEG_RAW_AAC', 'MM_WILLOWPOND_PH_MIXER',
+    'MM_OLIVETTI_MIDIIN', 'MM_VITEC_VMPRO', 'MM_CS',
+    'MM_PHILIPS_SPEECH_PROCESSING', 'MM_WANGLABS_WAVEOUT1',
+    'MM_COREDYNAMICS', 'EXTRACT_WAVEFORMATEX_ID',
+    'MM_COREDYNAMICS_DYNASONIX_WAVE_IN', 'MM_TRUEVISION',
+    'MM_SNDBLST_WAVEIN', 'MM_PCSPEAKER_WAVEOUT',
+    'WAVE_FORMAT_TELUM_IA_AUDIO', 'MM_ANALOGDEVICES', 'MM_VIA_SWFM_SYNTH',
+    'MM_SIERRA_ARIA_MIDIIN', 'MM_CRYSTAL_CS4232_MIDIIN',
+    'WAVE_FORMAT_DTS', 'JIFMK_RES', 'MM_AMD_INTERWAVE_MIDIIN',
+    'MM_CDPC_MIDIOUT', 'MM_NVIDIA_WAVEIN', 'MM_PROAUD_WAVEOUT',
+    'MM_SHARP_MDC_AUX_TREBLE', 'MM_SHARP_MDC_AUX_RVB', 'MM_AU8830_AUX',
+    'MM_ALESIS', 'MM_SPECTRUM_PRODUCTIONS', 'MM_ICE_SYNTH',
+    'MM_EPS_FMSND', 'MM_MSFT_VMDMW_LINE_WAVEOUT', 'MM_YAMAHA_SXG_WAVEOUT',
+    'WAVE_FORMAT_VOXWARE_RT24', 'MM_AARDVARK_STUDIO88_WAVEIN',
+    'MM_WILLOWPOND_GENERIC_WAVEOUT', 'QDI_STRETCHDIB',
+    'MM_MIRO_VIDEODC1TV', 'MM_FRONTIER', 'MM_RZS_ACM_TUBGSM',
+    'MM_IBM_MWAVE_MIDIIN', 'MM_THUNDER_WAVEOUT',
+    'MM_SGI_RAD_ADATMONO5_WAVEOUT', 'MM_ESS_ES1488_WAVEIN',
+    'WAVE_FORMAT_COMVERSE_INFOSYS_SBC', 'MM_SGI_RAD_AESMONO2_WAVEOUT',
+    'MM_ESS_ES488_WAVEIN', 'MM_MSFT_WDMAUDIO_MIDIIN', 'RIFFCPPO_str',
+    'MM_SIERRA_QUARTET_MIXER', 'MM_SILICONSOFT_SC2_WAVEOUT',
+    'MM_CREATIVE_PHNBLST_WAVEOUT', 'MM_CANOPUS',
+    'MM_ROLAND_SERIAL_MIDIOUT', 'MM_SHARP_MDC_MIDI_OUT', 'MM_SICRESOURCE',
+    'WAVE_FORMAT_ROCKWELL_DIGITALK', 'MM_WILDCAT_AUTOSCOREMIDIIN',
+    'MM_CHROMATIC_M1_FMSYNTH', 'MM_ICS', 'MM_BERKOM', 'MM_ICE',
+    'MM_MSFT_GENERIC_AUX_MIC', 'MM_FRONTIER_WAVECENTER_WAVEOUT',
+    'MM_SOFTSOUND_CODEC', 'WAVE_FORMAT_SIPROLAB_ACELP8V3', 'MM_LYRRUS',
+    'MM_PROAUD_16_MIDIOUT', 'WAVE_FORMAT_DICTAPHONE_CELP68',
+    'MM_COLORGRAPH', 'MM_MSFT_GENERIC_MIDIIN', 'MM_QUARTERDECK_LHWAVEOUT',
+    'MM_VIA_MPU401_MIDIOUT', 'MM_WSS_SB16_AUX_LINE', 'MM_CONTROLRES',
+    'MM_OLIVETTI_ACM_GSM', 'MM_FLEXION_X300_WAVEOUT',
+    'ROCKWELL_WA2_WAVEOUT', 'MM_PICTURETEL',
+    'MM_GADGETLABS_WAVE44_WAVEIN', 'MM_MSFT_WSS_NT_WAVEIN',
+    'WAVE_FORMAT_MSAUDIO1', 'WAVE_FORMAT_AUDIOFILE_AF10',
+    'MM_ESS_AMWAVEOUT', 'WAVE_FORMAT_GSM_660', 'MM_VKC_SERIAL_MIDIIN',
+    'MM_CDPC_MIXER', 'MM_ICS_2115_LITE_MIDIOUT',
+    'MM_MOTU_MXPMPU_MIDIIN_6', 'MM_MOTU_MXPMPU_MIDIIN_5',
+    'MM_MOTU_MXPMPU_MIDIIN_4', 'MM_MOTU_MXPMPU_MIDIIN_3',
+    'MM_MOTU_MXPMPU_MIDIIN_2', 'MM_MOTU_MXPMPU_MIDIIN_1',
+    'MM_ESS_AMMIDIIN', 'WAVE_FORMAT_SONY_SPC', 'MM_MSFT_MSOPL_SYNTH',
+    'MM_SHARP_MDC_AUX_CHR', 'MM_QUANTUM3D', 'MM_TDK_MW_AUX_MASTER',
+    'MM_MSFT_WSS_WAVEIN', 'MM_QUALCOMM', 'WAVE_FORMAT_VOXWARE_AC20',
+    'MM_NVIDIA_GAMEPORT', 'MM_SEERSYS_WAVESYNTH_WG',
+    'WAVE_FORMAT_IPI_HSX', 'WAVE_FORMAT_TELUM_AUDIO',
+    'MSAUDIO1_MAX_CHANNELS', 'MM_MSFT_WSS_NT_AUX',
+    'MM_MOTU_MTPAV_NET_MIDIOUT_4', 'MM_KORG',
+    'IS_VALID_WAVEFORMATEX_GUID', 'WAVE_FORMAT_OGG_VORBIS_MODE_1_PLUS',
+    'MM_MATSUSHITA_WAVEIN', 'MM_AZTECH_AUX_CD',
+    'MM_MOTU_MXPXT_MIDIIN_SYNC', 'MM_AZTECH_MIDIIN', 'MM_S3_MIDIOUT',
+    'WMAUDIO3_WFX_EXTRA_BYTES', 'MM_MEDIAVISION_TPORT',
+    'MM_CREATIVE_SBP16_WAVEOUT', 'MM_COREDYNAMICS_DYNAGRAFX_WAVE_IN',
+    'MM_TDK_MW_AUX_RVB', 'MM_VOICEINFO', 'MM_SSP_SNDFESAUX',
+    'MM_YAMAHA_GSS_SYNTH', 'MM_ANTEX_AUDIOPORT22_WAVEOUT', 'MM_NORRIS',
+    'WAVE_FORMAT_GSM610', 'MM_NEOMAGIC', 'WAVE_FORMAT_IBM_CVSD',
+    'MM_WSS_SB16_MIDIIN', 'WAVE_FORMAT_CREATIVE_FASTSPEECH10',
+    'MM_APT_ACE100CD', 'SPEAKER_TOP_BACK_CENTER', 'MM_AUREAL', 'MM_AMD',
+    'MM_MICRONAS_SC4', 'MM_ECHO_SYNTH', 'MSAUDIO1_BITS_PER_SAMPLE',
+    'MM_OLIVETTI_WAVEOUT', 'MM_HEWLETT_PACKARD',
+    'WAVE_FORMAT_GSM_AMR_VBR_SID', 'MM_IPI_AT_WAVEIN', 'MM_TDK_MW_AUX',
+    'MM_EUPHONICS_MIDIIN', 'MM_YOUCOM', 'MM_YAMAHA_SERIAL_MIDIOUT',
+    'MM_OPUS1216_AUX', 'MM_IOMAGIC_TEMPO_WAVEIN', 'MM_TANDY_VISWAVEOUT',
+    'MM_INTEL_NSPMODEMLINEOUT', 'MM_MITEL_MPA_HANDSET_WAVEIN',
+    'MM_IOMAGIC_TEMPO_MXDOUT', 'MM_PHONET_PP_WAVEOUT',
+    'MM_CREATIVE_AUX_WAVE', 'MSAUDIO1_WFX_EXTRA_BYTES',
+    'WAVE_FORMAT_WMAVOICE10', 'WAVE_FORMAT_ISIAUDIO',
+    'WAVE_FORMAT_AMR_NB', 'MM_PRECEPT', 'MM_IBM_MWAVE_WAVEIN',
+    'MM_MSFT_ACM_G711', 'MM_ALGOVISION_VB80AUX',
+    'MM_MOTU_MTPAV_MIDIOUT_8', 'MM_OPTI_M32_MIDIIN', 'MM_OPUS1208_MIXER',
+    'MM_ATI', 'MM_OLIVETTI_MIDIOUT', 'MM_MOTU_MTPAV_MIDIOUT_2',
+    'MM_MOTU_MTPAV_MIDIOUT_1', 'MM_MOTU_MTPAV_MIDIOUT_7',
+    'MM_MOTU_MTPAV_MIDIOUT_6', 'MM_MOTU_MTPAV_MIDIOUT_5',
+    'MM_MOTU_MTPAV_MIDIOUT_4', 'MM_CYRIX_XAMIDIIN',
+    'MM_SIPROLAB_ACELPNET', 'MM_IBM_MWAVE_AUX',
+    'MM_SGI_RAD_ADATMONO7_WAVEIN', 'WAVE_FORMAT_VOXWARE_RT29HW',
+    'MM_WORKBIT_FMSYNTH', 'WAVE_FILTER_DEVELOPMENT', 'MM_NMP',
+    'ROCKWELL_WA1_MPU401_OUT', 'MM_NMS', 'MM_PROAUD_16_MIXER',
+    'MM_OPTI_P16_MIDIOUT', 'MM_ROLAND_MPU401_MIDIIN',
+    'MM_YAMAHA_YMF724LEG_MIDIIN', 'MM_AU8830_WAVEOUT',
+    'MM_CHROMATIC_M2_MIDIIN', 'MM_NEOMAGIC_MW3DX_AUX', 'MM_LOGITECH',
+    'MM_HORIZONS', 'MM_I_LINK_VOICE_CODER', 'MM_ESS_AUX_CD',
+    'WAVE_FORMAT_XEBEC', 'RIFFCPPO_byte', 'MM_LEXICON_STUDIO_WAVE_IN',
+    'MM_COMPAQ_BB_WAVEOUT', 'MM_YAMAHA_OPL3SA_YSYNTH',
+    'KSDATAFORMAT_SUBTYPE_WAVEFORMATEX', 'MM_MOTU_DTX_MIDI_OUT_A',
+    'MM_MOTU_MXP_MIDIIN_MIDIOUT_1', 'MM_MOTU_MXP_MIDIIN_MIDIOUT_2',
+    'MM_MOTU_DTX_MIDI_OUT_B', 'MM_MOTU_MXP_MIDIIN_MIDIOUT_4',
+    'MM_MOTU_MXP_MIDIIN_MIDIOUT_5', 'MM_CONNECTIX', 'MM_DICTAPHONE_G726',
+    'MM_FORTEMEDIA_MIXER', 'MM_PROAUD_PLUS_WAVEIN',
+    'MM_AZTECH_DSP16_FMSYNTH', 'WAVE_FORMAT_SYCOM_ACM_SYC701_G726L',
+    'MM_LUCID', 'MM_EMAGIC', 'MM_MICROSOFT',
+    'MM_MSFT_WSS_NT_FMSYNTH_STEREO', 'MM_AMD_INTERWAVE_MONO_IN',
+    'RIFFINFO_IART', 'MM_AMD_INTERWAVE_STEREO_ENHANCED', 'MM_DDD',
+    'WAVE_FORMAT_SIPROLAB_ACEPLNET', 'MM_LUMINOSITI_SCWAVEIN',
+    'MM_AMD_INTERWAVE_JOYSTICK', 'WAVE_FORMAT_NORRIS',
+    'WAVE_FORMAT_DIGIADPCM', 'MM_MSFT_VMDMW_MIXER', 'MM_CREATIVE_MIDIOUT',
+    'MM_AHEAD_SOUNDBLASTER', 'MM_OPUS1216_WAVEIN', 'RIFFINFO_IGNR',
+    'MM_CDPC_SYNTH', 'WAVE_FORMAT_VOXWARE_AC8', 'MM_DIMD_WAVEOUT',
+    'MM_VIA_MIXER', 'MM_CANAM', 'MM_MIRO', 'RIFFCPPO_LONG',
+    'RIFFINFO_IENG', 'MM_OSPREY_1000WAVEOUT', 'MM_DIMD_DIRSOUND',
+    'MM_MARIAN_PRODIF24WAVEIN', 'MM_BTV_AUX_MIC',
+    'WAVE_FORMAT_NMS_VBXADPCM', 'MM_IBM_PCMCIA_AUX', 'DEFINE_GUIDNAMED',
+    'MM_SGI_320_WAVEOUT', 'MM_BTV_MIDIIN', 'MM_KAY_ELEMETRICS_CSL_DAT',
+    'MM_DIGITAL_ACM_G723', 'MM_OPTI_P16_FMSYNTH_STEREO',
+    'MM_MSFT_SBPRO_MIDIOUT', 'MM_AMD_INTERWAVE_WAVEIN',
+    'MM_SSP_SNDFESMIDIOUT', 'WAVE_FORMAT_MPEG', 'WAVE_FORMAT_WMAVOICE9',
+    'MM_QUICKNET_PJWAVEOUT', 'MM_TELEKOL_WAVEIN', 'MM_OPUS1216_MIXER',
+    'MM_NEOMAGIC_MWAVE_WAVEIN', 'MM_MOSCOM_VPC2400_OUT',
+    'WAVE_FORMAT_WM9_SPECTRUM_ANALYZER', 'MM_METHEUS', 'MM_EVEREX',
+    'MM_GRAVIS', 'MM_FUJITSU', 'WAVE_FORMAT_SONICFOUNDRY_LOSSLESS',
+    'MM_SOUNDSCAPE_MIDIIN', 'MM_DF_ACM_G726', 'MM_HEADSPACE_HAEWAVEOUT',
+    'MM_SOFTSOUND', 'MM_MSFT_ACM_GSM610', 'MM_MOTU_MTPAV_MIDIOUT_3',
+    'WAVE_FORMAT_QUALCOMM_HALFRATE', 'MM_BTV_WAVEOUT', 'MM_TTEWS_MIDIOUT',
+    'ROCKWELL_WA2_MPU401_IN', 'MM_DIMD_WAVEIN', 'MM_S3',
+    'MM_ADMOS_QS3AWAVEOUT', 'WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB',
+    'MM_MSFT_GENERIC_WAVEIN', 'WAVE_FORMAT_KNOWLEDGE_ADVENTURE_ADPCM',
+    'MM_YAMAHA_OPL3SA_MIXER', 'MM_ROLAND', 'RIFFINFO_IDPI',
+    'MM_ICE_MIDIIN2', 'MM_ICE_MIDIIN1', 'WAVE_FORMAT_MPEG_HEAAC',
+    'ROCKWELL_WA1_SYNTH', 'MM_IBM_WC_MIDIOUT', 'MM_AHEAD_GENERIC',
+    'MM_YAMAHA_GSS_MIDIIN', 'MM_AZTECH_AUX', 'MM_KORG_PCIF_MIDIIN',
+    'MM_TPORT_SYNTH', 'MM_AZTECH_DSP16_WAVEIN', 'MM_SHARP_MDC_AUX',
+    'JPEG_RGB', 'MM_XIRLINK', 'MM_OPTI_M32_MIDIOUT',
+    'MM_OLIVETTI_JOYSTICK', 'MM_MOTU_MXP_MIDIIN_SYNC',
+    'MM_ICS_WAVEDEC_SB_MPU401_MIDIOUT', 'MM_XYZ', 'MM_S3_AUX',
+    'WAVE_FORMAT_SIPROLAB_G729A', 'MM_TRUEVISION_WAVEOUT1',
+    'MM_FORTEMEDIA_FMSYNC', 'MM_SEERSYS_SEERWAVE',
+    'MPEGLAYER3_WFX_EXTRA_BYTES', 'MM_VOCALTEC',
+    'WAVE_FORMAT_LEAD_VORBIS', 'MM_RHETOREX', 'MM_MSFT_GENERIC_AUX_CD',
+    'WAVE_FORMAT_RAW_AAC1', 'MM_ECHO_MIDIOUT', 'MM_VKC_SERIAL_MIDIOUT',
+    'WAVE_FORMAT_SYCOM_ACM_SYC701_CELP68', 'MM_ANTEX', 'JIFMK_TEM',
+    'MM_AUDIOSCIENCE', 'MM_KORG_PCIF_MIDIOUT', 'MM_EUPHONICS_MIXER',
+    'MM_WILLOWPOND_FMSYNTH_STEREO', 'MM_FORTEMEDIA_AUX',
+    'MM_CRYSTAL_SOUND_FUSION_JOYSTICK', 'MM_SGI_320_MIXER',
+    'MM_IBM_WC_WAVEOUT', 'MM_SORVIS', 'MM_ROLAND_SCP_MIDIOUT',
+    'MM_OPTI_P16_MIXER', '_INC_MMREG', 'MM_AMD_INTERWAVE_AUX_MIC',
+    'WAVE_FORMAT_SYMBOL_G729_A', 'MM_TDK_MW_WAVE_OUT', 'RIFFINFO_INAM',
+    'MM_EUPHONICS_AUX_MASTER', 'WAVE_FORMAT_WMF_SPECTRUM_ANAYZER',
+    'WAVE_FORMAT_INTEL_MUSIC_CODER', 'ACM_MPEG_ID_MPEG1', 'MM_ADLIB',
+    'ROCKWELL_WA2_MIXER', 'MM_BROOKTREE', 'WAVE_FORMAT_CANOPUS_ATRAC',
+    'MM_QDESIGN', 'MM_MOTU_DTX_MIDI_IN_SYNC', 'MM_WORKBIT_MIDIOUT',
+    'MM_OPTI_M16_AUX', 'MM_VIONA_BUSTER_MIXER', 'ACM_MPEG_STEREO',
+    'JIFMK_DRI', 'MM_SGI_RAD_ADATMONO4_WAVEOUT',
+    'WAVE_FORMAT_VOCORD_G723_1', 'MM_MSFT_ACM_IMAADPCM',
+    'MM_TDK_MW_AUX_VOL', 'WAVE_FORMAT_DIGISTD', 'MM_DIAMONDMM',
+    'MM_LUMINOSITI', 'MM_SGI_RAD_AESMONO2_WAVEIN',
+    'MM_CHROMATIC_M2_MIDIOUT', 'MM_AU8820_AUX', 'MM_CREATIVE_SBPRO_MIXER',
+    'SPEAKER_TOP_FRONT_RIGHT', 'WAVE_FORMAT_SOUNDSPACE_MUSICOMPRESS',
+    'MM_IBM_MWAVE_WAVEOUT', 'JIFMK_DNL', 'MM_SNDBLST_WAVEOUT', 'MM_SGI',
+    'MM_VAL', 'WAVE_FORMAT_CONGRUENCY', 'MM_SELSIUS_SYSTEMS_RTPWAVEIN',
+    'WAVE_FORMAT_AUDIOFILE_AF36', 'MM_MWM', 'JIFMK_JPG3',
+    'MM_CHROMATIC_M2_AUX_CD', 'JIFMK_JPG2', 'MM_ETEK',
+    'MM_NEC_73_86_WAVEIN', 'MM_SGI_RAD_AESMONO1_WAVEOUT',
+    'MM_CHROMATIC_M2_AUX', 'WAVE_FORMAT_RACAL_RECORDER_TETRA_ACELP',
+    'MM_NETXL_XLVIDEO', 'JIFMK_JPG4', 'MM_CRYSTAL_CS4232_WAVEAUX_MASTER',
+    'MM_SGI_540_MIXER', 'MM_OPTI_M32_WAVEIN',
+    'WAVE_FORMAT_GENERIC_PASSTHRU', 'SPEAKER_ALL', 'MM_MSFT_SBPRO_MIDIIN',
+    'MM_OTI_611MIDIOUT', 'MM_IBM_PCMCIA_MIDIOUT',
+    'WAVE_FORMAT_ZYXEL_ADPCM', 'MM_SONORUS_STUDIO', 'MM_BTV_MIDIOUT',
+    'MM_MEDIASONIC_ICOM', 'MM_ESS_ES1788_MIXER',
+    'MM_AARDVARK_STUDIO12_WAVEIN', 'MM_CRYSTAL_CS4232_MIDIOUT',
+    'QUERYDIBSUPPORT', 'MM_APPLE', 'MM_S3_FMSYNTH', 'MM_SPEECHCOMP',
+    'RIFFINFO_IPRD', 'MM_ICS_WAVEDEC_SB_MIXER',
+    'WAVE_FORMAT_NOKIA_MPEG_ADTS_AAC', 'WAVE_FORMAT_DVI_ADPCM',
+    'MM_LYRRUS_BRIDGE_GUITAR', 'MM_MOTIONPIXELS_MVI2',
+    'ACM_MPEG_PROTECTIONBIT', 'MM_SONY', 'MM_BERCOS_WAVEOUT',
+    'MM_EVEREX_CARRIER', 'JIFMK_SOF7', 'MM_CHROMATIC_M1_MPEGWAVEOUT',
+    'MM_MOTU_MXN_MIDIIN_SYNC', 'MM_WINNOV_CAVIAR_WAVEIN', 'MM_UNMAPPED',
+    'MM_MSFT_SB16_SYNTH', 'MM_TANDY_SENS_MMAWAVEOUT',
+    'MM_MOTU_FLYER_MIDI_IN_SYNC', 'SPEAKER_LOW_FREQUENCY',
+    'WAVE_FORMAT_ON2_VP7_AUDIO', 'MM_INTEL_NSPMODEMLINEIN',
+    'WAVE_FORMAT_SBC24', 'MM_CREATIVE_SB15_WAVEOUT',
+    'MM_MOTU_FLYER_MIDI_IN_B', 'MM_MOTU_FLYER_MIDI_IN_A',
+    'WAVE_FORMAT_SYCOM_ACM_SYC008', 'MM_NEC_73_86_SYNTH', 'RIFFCPPO_word',
+    'MM_QDESIGN_ACM_MPEG', 'WAVE_FORMAT_DIGIFIX', 'MM_ADLACC',
+    'MM_MMOTION_WAVEOUT', 'MM_MITEL_TALKTO_HANDSET_WAVEIN',
+    'MM_MINDMAKER_GC_WAVEIN', 'MM_TTEWS_MIDIMONITOR',
+    'MM_BINTEC_TAPI_WAVE', 'WAVE_FORMAT_ULEAD_DV_AUDIO_1',
+    'MM_MOTU_MTP_MIDIIN_8', 'MM_ICE_MIXER', 'MM_CONNECTIX_VIDEC_CODEC',
+    'WAVE_FORMAT_VOICEAGE_AMR', 'MM_MOTU_MTP_MIDIIN_1',
+    'MM_MOTU_MTP_MIDIIN_2', 'MM_SIERRA_ARIA_WAVEOUT',
+    'MM_MOTU_MTP_MIDIIN_4', 'MM_MOTU_MTP_MIDIIN_5',
+    'MM_MOTU_MTP_MIDIIN_6', 'MM_MOTU_MTP_MIDIIN_7', 'RIFFCPPO_clsr',
+    'WAVE_FORMAT_RAW_SPORT', 'WAVE_FORMAT_CUSEEME',
+    'MM_FHGIIS_MPEGLAYER3_LITE', 'MM_VIA_MPU401_MIDIIN',
+    'MM_TDK_MW_MIDI_OUT', 'RIFFCPPO_clsi', 'WAVE_FORMAT_VOCORD_G721',
+    'MM_ANTEX_SX15_WAVEIN', 'WAVE_FORMAT_SONARC',
+    'MM_MITEL_MEDIAPATH_WAVEOUT', 'MM_SGI_RAD_ADATSTEREO56_WAVEIN',
+    'JIFMK_DHP', 'ROCKWELL_WA1_MIXER', 'MM_MSFT_VMDMW_LINE_WAVEIN',
+    'WAVE_FORMAT_CONTROL_RES_VQLPC', 'MM_WSS_SBPRO_MIDIIN',
+    'MM_EUPHONICS_AUX_CD', 'MM_AMD_INTERWAVE_WAVEOUT_BASE',
+    'MM_TTEWS_AUX', 'MM_VOXWARE', 'MM_MATSUSHITA_AUX',
+    'WAVE_FORMAT_VOCORD_G728', 'MM_MSFT_SB16_MIDIIN',
+    'MM_PHILIPS_ACM_LPCBB', 'MM_COREDYNAMICS_DYNASONIX_WAVE_OUT',
+    'MM_ADMOS_QS3AMIDIIN', 'MM_YAMAHA_OPL3SA_FMSYNTH',
+    'MM_AZTECH_NOVA16_WAVEOUT', 'MM_NEOMAGIC_MW3DX_WAVEIN',
+    'MM_PROAUD_16_SYNTH', 'MM_COREDYNAMICS_DYNAGRAFX_VGA',
+    'DEFINE_MMREG_MID_GUID', 'MM_MOTU_MXP_MIDIIN_MIDIOUT_3',
+    'MM_OPUS1216_SYNTH', 'MM_MOTU_MXP_MIDIIN_MIDIOUT_6',
+    'MM_OPUS401_MIDIOUT', 'MM_MATSUSHITA_MIXER',
+    'WAVE_FORMAT_PROSODY_1612', 'MM_AZTECH', 'WAVE_FORMAT_QDESIGN_MUSIC',
+    'MM_IPI_ACM_RPELP', 'MM_MOTU_MTP_MIDIOUT_ALL',
+    'WAVE_FORMAT_ENCORE_G726', 'WAVE_FORMAT_OPUS',
+    'MM_NEOMAGIC_MWAVE_WAVEOUT', 'WAVE_FORMAT_DOLBY_AC2',
+    'MM_MIRO_DC30_WAVEOUT', 'MM_ENET_T2000_HANDSETIN', 'MM_VIENNASYS',
+    'MM_MOTU_MTPII_MIDIIN_2', 'MM_ITERATEDSYS_FUFCODEC', 'MM_APPS',
+    'MM_CRYSTAL_SOUND_FUSION_MIDIOUT', 'WAVE_FORMAT_VOCORD_LBC',
+    'WAVE_FILTER_VOLUME', 'MM_VOXWARE_CODEC', 'MM_CREATIVE_SB15_WAVEIN',
+    'MM_ICE_AUX', 'MM_TURTLE_BEACH', 'MM_VOCALTEC_WAVEOUT', 'MM_VITEC',
+    'MM_CREATIVE_SB16_MIXER', 'MM_ESS_ES488_MIXER',
+    'MM_SGI_RAD_ADATMONO7_WAVEOUT', 'WAVE_FORMAT_VOXWARE_VR18',
+    'WMAUDIO2_BITS_PER_SAMPLE', 'MM_S3_MIXER', 'MM_SHARP_MDC_MIXER',
+    'MM_SANYO_ACM_LD_ADPCM', 'WAVE_FORMAT_ILINK_VC',
+    'MM_MOTU_MXPXT_MIDIIN_2', 'MM_MOTU_MXPXT_MIDIIN_3',
+    'MM_MOTU_MXPXT_MIDIIN_1', 'MM_MOTU_MXPXT_MIDIIN_6',
+    'MM_MOTU_MXPXT_MIDIIN_7', 'MM_MOTU_MXPXT_MIDIIN_4',
+    'MM_MOTU_MXPXT_MIDIIN_5', 'MM_OPUS1208_WAVEIN',
+    'MM_MOTU_MXPXT_MIDIIN_8', 'MM_PROAUD_16_WAVEIN',
+    'WAVE_FORMAT_MEDIASONIC_G723', 'MM_AZTECH_AUX_MIC',
+    'MM_MOTU_PKX_MIDI_OUT_B', 'MPEGLAYER3_FLAG_PADDING_OFF', 'MM_MOSCOM',
+    'MM_MOTU_PKX_MIDI_OUT_A', 'MM_YAMAHA_OPL3SA_MIDIIN', 'JIFMK_SOS',
+    'JIFMK_DAC', 'MM_OKSORI_MIX_LINE1', 'WAVE_FORMAT_SIPROLAB_KELVIN',
+    'MM_NORTEL_MPXAC_WAVEOUT', 'MM_NCR_BA_WAVEOUT', 'JIFMK_SOI',
+    'MM_MSFT_VMDMW_HANDSET_WAVEOUT', 'MM_ACULAB',
+    'MM_SOFTLAB_NSK_FRW_WAVEOUT', 'MM_AZTECH_FMSYNTH',
+    'MM_VIVO_AUDIO_CODEC', 'MM_SGI_RAD_ADATMONO6_WAVEOUT', 'MM_XEBEC',
+    'WAVE_FORMAT_MPEG_ADTS_AAC', 'MM_AZTECH_DSP16_WAVESYNTH',
+    'MM_MERGING_TECHNOLOGIES', 'MM_FHGIIS_MPEGLAYER3_DECODE',
+    'MM_CASIO_WP150_MIDIIN', 'MM_ESS_ES1888_WAVEIN',
+    'MM_MSFT_WSS_OEM_MIXER', 'JIFMK_SOF0', 'JIFMK_SOF1', 'JIFMK_SOF2',
+    'JIFMK_SOF3', 'MM_MIDI_MAPPER', 'JIFMK_SOF5', 'JIFMK_SOF6',
+    'RIFFINFO_ISBJ', 'MM_WORKBIT_MIXER', 'MM_SHARP_MDC_MIDI_SYNTH',
+    'MM_CHROMATIC_M1_AUX', 'MM_SIPROLAB', 'MM_SEERSYS',
+    'MM_WILLOWPOND_PH_AUX', 'MM_SOUNDSCAPE_MIDIOUT',
+    'MM_AMD_INTERWAVE_MIXER2', 'MM_AMD_INTERWAVE_MIXER1',
+    'ROCKWELL_WA2_WAVEIN', 'MM_COMPAQ_BB_WAVEAUX', 'MM_ALGOVISION',
+    'SPEAKER_SIDE_RIGHT', 'MM_EMU_APSSYNTH', 'WAVE_FORMAT_G728_CELP',
+    'MM_MSFT_GENERIC_MIDIOUT', 'WAVE_FORMAT_NTCSOFT_ALF2CM_ACM',
+    'MM_WORKBIT_WAVEIN', 'MM_NEOMAGIC_MIDIOUT', 'JIFMK_EXP',
+    'MM_DSP_SOLUTIONS_WAVEIN', 'MM_CHROMATIC_M1_AUX_CD',
+    'MM_INTERNET_SSW_WAVEOUT', 'MM_INTELOPD_WAVEOUT',
+    'WAVE_FORMAT_LH_CODEC_SBC12', 'RIFFINFO_IARL', 'MM_AU8820_MIDIOUT',
+    'WAVE_FORMAT_LH_CODEC_SBC16', 'MM_NMP_CCP_WAVEIN',
+    'MM_SSP_SNDFESWAVEIN', 'MM_MSFT_WSS_FMSYNTH_STEREO',
+    'MM_MSFT_ACM_MSAUDIO1', 'MM_ALARIS', 'MM_AMD_INTERWAVE_SYNTH',
+    'MM_BTV_MIDISYNTH', 'EXTRACT_MMREG_PID', 'MM_ESS_ES1688_WAVEIN',
+    'MM_CREATIVE_SBPRO_WAVEIN', 'MM_MINDMAKER_GC_WAVEOUT',
+    'MM_SOUNDSCAPE_AUX', 'MM_DIGITAL_AV320_WAVEIN', 'MM_MEDIATRIX',
+    'MM_FHGIIS_MPEGLAYER3_BASIC', 'WAVE_FORMAT_DTS2',
+    'MM_CRYSTAL_CS4232_WAVEAUX_MONO', 'MM_OKSORI_MIX_ECHO',
+    'MM_WILLOWPOND_PH_WAVEIN', 'MM_OKSORI_BASE', 'MM_YAMAHA_GSS_AUX',
+    'WAVE_FORMAT_MVI_MVI2', 'WAVE_FORMAT_MSNAUDIO',
+    'MM_CRYSTAL_SOUND_FUSION_MIXER', 'RIFFCPPO_dwrd',
+    'MM_EUPHONICS_MIDIOUT', 'MM_CREATIVE', 'MM_STUDIO_16_WAVEOUT',
+    'MM_ESS_ES1788_WAVEIN', 'MM_FLEXION_X300_WAVEIN',
+    'MM_CREATIVE_SBPRO_WAVEOUT', 'MM_ACTIVEVOICE',
+    'STATIC_KSDATAFORMAT_SUBTYPE_PCM', 'MM_WSS_SBPRO_MIDIOUT',
+    'WAVE_FORMAT_OLIGSM', 'MM_NETSCAPE',
+    'WAVE_FORMAT_NOKIA_ADAPTIVE_MULTIRATE', 'MM_BTV_MIXER',
+    'MM_MSFT_SBPRO_SYNTH', 'MM_MITEL_MPA_LINE1_WAVEIN',
+    'MM_ANTEX_SX15_WAVEOUT', 'MM_DVISION', 'SPEAKER_RESERVED',
+    'MM_EES_PCMIDI14_IN', 'RIFFCPPO_INT', 'MM_IPI_AT_WAVEOUT',
+    'RIFFINFO_IPLT', 'MM_OSPREY', 'MM_TBS_TROPEZ_WAVEOUT',
+    'MM_3COM_CB_WAVEIN', 'WAVE_FORMAT_DRM', 'MM_ICE_MTWAVEOUT',
+    'MM_OPTI_M16_WAVEOUT', 'MM_AMD_INTERWAVE_AUX2',
+    'MM_AMD_INTERWAVE_AUX1', 'WAVE_FORMAT_POLYCOM_G729_A',
+    'MM_AZTECH_NOVA16_MIXER', 'SPEAKER_TOP_CENTER',
+    'WAVE_FORMAT_LUCENT_SX5363S', 'MM_SGI_540_WAVEOUT',
+    'MM_DIACOUSTICS_DRUM_ACTION', 'WAVE_FORMAT_OLISBC',
+    'MM_SGI_RAD_ADATSTEREO78_WAVEIN', 'MM_PROAUD_PLUS_MIDIOUT',
+    'MM_LERNOUT_AND_HAUSPIE', 'WAVE_FORMAT_PHILIPS_CELP',
+    'MM_INTERNET_SSW_MIDIOUT', 'MM_KORG_1212IO_MSWAVEIN',
+    'MM_DSP_GROUP_TRUESPEECH', 'MM_MARIAN_ARC44WAVEIN',
+    'WAVE_FORMAT_VIANIX_MASC', 'MM_MSFT_WSS_OEM_WAVEIN',
+    'MM_AMD_INTERWAVE_MONO_OUT', 'MM_WSS_SBPRO_WAVEIN',
+    'WAVE_FORMAT_DOLBY_AC3_SPDIF', 'MM_LYNX',
+    'WAVE_FORMAT_MEDIASPACE_ADPCM', 'WAVE_FORMAT_GSM_620',
+    'AVIIF_CONTROLFRAME', 'MM_TERRATEC', 'MM_PC_JOYSTICK', 'MM_DUCK',
+    'MM_NOGATECH', 'MM_EMU', 'MM_ADDX', 'WAVE_FORMAT_CS2',
+    'MM_YAMAHA_ACXG_WAVEIN', 'MM_VIA_WDM_WAVEOUT',
+    'MM_CHROMATIC_M2_MPEGWAVEOUT', 'MM_TTEWS_VMIDIIN', 'MM_WILLOWPOND',
+    'WAVE_FORMAT_OLIADPCM', 'JIFMK_APP7', 'JIFMK_APP6', 'JIFMK_APP5',
+    'JIFMK_APP4', 'MM_TBS_TROPEZ_WAVEIN', 'JIFMK_APP2', 'JIFMK_APP1',
+    'JIFMK_APP0', 'MM_INSOFT', 'MM_CREATIVE_AUX_MIC',
+    'MM_VIDEOLOGIC_MSWAVEIN', 'MM_MOTU_PKX_MIDI_IN_SYNC',
+    'MM_ANTEX_AUDIOPORT22_WAVEIN', 'MM_TDK_MW_AUX_MIDI_VOL',
+    'WAVE_FORMAT_MPEG_RAW_AAC', 'MM_CANOPUS_ACM_DVREX', 'MM_3COM',
+    'MM_WSS_SBPRO_AUX_LINE', 'MM_BTV_WAVEIN', 'MM_DSP_SOLUTIONS',
+    'WAVE_FORMAT_YAMAHA_ADPCM', 'MM_ADDX_PCTV_WAVEOUT',
+    'MM_MSFT_SBPRO_WAVEIN', 'MM_RHETOREX_WAVEIN',
+    'MM_YAMAHA_YMF724LEG_FMSYNTH', 'MPEGLAYER3_FLAG_PADDING_ISO',
+    'MM_ESS_ES488_WAVEOUT', 'MM_OKSORI_MIX_MASTER', 'MM_TANDY',
+    'WAVE_FORMAT_RADIOTIME_TIME_SHIFT_RADIO',
+    'MM_SGI_RAD_AESSTEREO_WAVEOUT', 'WAVE_FORMAT_SOFTSOUND',
+    'WAVE_FORMAT_FRAUNHOFER_IIS_MPEG2_AAC', 'MM_SEERSYS_WAVESYNTH',
+    'MM_OLIVETTI_ACM_CELP', 'MM_SNDBLST_MIDIIN', 'MM_TBS_TROPEZ_AUX2',
+    'MM_TBS_TROPEZ_AUX1', 'MM_VIONA_CINEMASTER_MIXER',
+    'WAVE_FORMAT_CIRRUS', 'MM_SIERRA_QUARTET_MIDIIN',
+    'WAVE_FORMAT_3COM_NBX', 'MM_HEADSPACE', 'WAVE_FORMAT_DTS_DS',
+    'MM_SIERRA', 'MM_CYRIX_XAMIXER', 'MM_ROLAND_SCP_MIXER', 'MM_FTR_ACM',
+    'MM_IOMAGIC_TEMPO_AUXOUT', 'WAVE_FORMAT_UNISYS_NAP_ALAW',
+    'MM_AU8830_MIXER', 'MM_ST_MICROELECTRONICS', 'MM_WILLOWPOND_MPU401',
+    'ROCKWELL_WA2_SYNTH', 'MM_SGI_RAD_ADATSTEREO56_WAVEOUT',
+    'MM_MOTOROLA', 'MM_WORKBIT_WAVEOUT', 'RIFFCPPO_mbr',
+    'WAVE_FORMAT_G726ADPCM', 'MM_EES_PCMIDI14_OUT1', 'MM_QUARTERDECK',
+    'MM_OPUS1216_MIDIOUT', 'MM_NEWMEDIA', 'MM_YAMAHA_OPL3SA_WAVEIN',
+    'WAVE_FORMAT_UNISYS_NAP_16K', 'MM_THUNDER_WAVEIN',
+    'MM_SICRESOURCE_SSOW3DI', 'WAVE_FORMAT_ZOLL_ASAO',
+    'MM_AARDVARK_STUDIO88_WAVEOUT', 'SPEAKER_FRONT_RIGHT',
+    'MM_CREATIVE_FMSYNTH_MONO', 'MM_SIERRA_QUARTET_AUX_CD',
+    'MM_ESS_MPU401_MIDIOUT', 'MM_INTERACTIVE_WAVEOUT', 'MM_EPSON',
+    'MM_VQST', 'MM_NEOMAGIC_MW3DX_MIDIOUT', 'MM_CHROMATIC_M2_WAVEIN',
+    'MM_CREATIVE_SB20_WAVEIN', 'WAVE_FORMAT_VOCORD_G722_1', 'JIFMK_DQT',
+    'MM_YAMAHA_GSS_WAVEIN', 'MM_MSFT_SB16_AUX_LINE',
+    'WAVE_FORMAT_CONVEDIA_G729', 'MM_SOUNDSCAPE_MIXER',
+    'WAVE_FORMAT_SYCOM_ACM_SYC701_CELP54', 'MM_MOTU_MTPAV_NET_MIDIOUT_1',
+    'MM_OPTI_M32_AUX', 'MM_SGI_RAD_ADATMONO8_WAVEIN',
+    'MM_SIERRA_ARIA_AUX', 'MM_COREDYNAMICS_DYNASONIX_SYNTH',
+    'MM_OPTI_M16_FMSYNTH_STEREO', 'MM_OPUS1208_WAVEOUT',
+    'MM_MARIAN_ARC88WAVEOUT', 'MM_THUNDER_AUX',
+    'MM_SGI_RAD_ADATMONO4_WAVEIN', 'MM_ROLAND_SCP_WAVEIN', 'MM_RICHMOND',
+    'WAVE_FORMAT_TPC', 'MM_CRYSTAL_CS4232_WAVEMIXER', 'SPEAKER_SIDE_LEFT',
+    'MM_ESS_ES688_WAVEIN', 'MPEGLAYER3_ID_UNKNOWN',
+    'MM_QDESIGN_ACM_QDESIGN_MUSIC', 'MM_ONLIVE', 'WAVE_FORMAT_NICE_G728',
+    'MM_MSFT_SB16_WAVEIN', 'MM_MSFT_ACM_WMAUDIO2', 'MM_FAITH',
+    'MM_OKSORI_MPEG_CDVISION', 'WAVE_FORMAT_VOXWARE_BYTE_ALIGNED',
+    'RIFFCPPO', 'MM_MOTU_PKX_MIDI_IN_B', 'WAVE_FORMAT_SIPROLAB_ACELP4800',
+    'MM_MOTU_PKX_MIDI_IN_A', 'WAVE_FORMAT_OKI_ADPCM',
+    'WAVE_FORMAT_RACAL_RECORDER_G723_1', 'WAVE_FORMAT_ANTEX_ADPCME',
+    'MM_SEERSYS_SEERMIX', 'MM_ICCC_UNA3_MIXER',
+    'MM_CRYSTAL_CS4232_INPUTGAIN_AUX1', 'MM_OKSORI_MIX_AUX1',
+    'MM_SONY_ACM_SCX', 'MM_MSFT_MSACM', 'MM_ESS_AMWAVEIN', 'MM_ZYXEL',
+    'SPEAKER_TOP_BACK_RIGHT', 'MM_ROLAND_RAP10_MIDIIN',
+    'MM_WSS_SB16_WAVEIN', 'MM_MOTU_MTPAV_MIDIIN_1',
+    'MM_MOTU_MTPAV_MIDIIN_3', 'MM_MOTU_MTPAV_MIDIIN_2',
+    'MM_MOTU_MTPAV_MIDIIN_5', 'MM_MOTU_MTPAV_MIDIIN_4',
+    'MM_MOTU_MTPAV_MIDIIN_7', 'MM_MOTU_MTPAV_MIDIIN_6',
+    'MM_MOTU_MTPAV_MIDIIN_8', 'MM_CRYSTAL_SOUND_FUSION_WAVEOUT',
+    'MM_TDK_MW_AUX_WAVE_CHR', 'MM_CHROMATIC_M2_MPEGWAVEIN',
+    'MM_VIA_WDM_MPU401_MIDIIN', 'MM_ATT_G729A', 'DEFINE_GUIDSTRUCT',
+    'MM_TTEWS_MIDIIN', 'MM_WSS_SBPRO_MIXER', 'MM_ROLAND_SCP_MIDIIN',
+    'MM_3DFX', 'WAVE_FORMAT_GLOBAL_IP_ILBC', 'MM_ICCC',
+    'MM_TANDY_VISWAVEIN', 'MM_INTERACTIVE_WAVEIN', 'WAVE_FORMAT_CODIAN',
+    'MM_FTR', 'MM_S3_MIDIIN', 'MM_SGI_RAD_ADATSTEREO12_WAVEOUT',
+    'MM_ESS_ES688_MIXER', 'RIFFINFO_ISRC', 'MM_ICCC_UNA3_WAVEOUT',
+    'RIFFINFO_ICRD', 'MM_OKSORI_MIX_CD', 'MM_WINNOV', 'RIFFINFO_ICRP',
+    'MM_STUDIO_16_MIXER', 'MM_ENSONIQ_SOUNDSCAPE', 'MM_OPTI_M16_MIDIIN',
+    'ICTYPE_VIDEO', 'WAVE_FORMAT_ON2_VP6_AUDIO',
+    'WMAUDIO2_WFX_EXTRA_BYTES', 'MM_DIGITAL_ICM_H263',
+    'MM_MITEL_MPA_LINE1_WAVEOUT', 'MM_CYRIX_XASYNTH',
+    'MM_SPECTRUM_SIGNAL_PROCESSING', 'WAVE_FORMAT_CREATIVE_FASTSPEECH8',
+    'MM_MSFT_WSS_OEM_FMSYNTH_STEREO', 'WAVE_FORMAT_MICRONAS_CELP833',
+    'MM_WILLOWPOND_GENERIC_AUX', 'WAVE_FORMAT_RACAL_RECORDER_G720_A',
+    'DEFINE_WAVEFORMATEX_GUID', 'MM_DIMD_WSS_WAVEIN', 'MM_HAFTMANN',
+    'MM_AZTECH_WAVEIN', 'MM_CRYSTAL_CS4232_WAVEAUX_LINE',
+    'MM_MPU401_MIDIIN', 'MM_VAL_MICROKEY_AP_WAVEIN', 'MM_CHROMATIC',
+    'MM_YAMAHA_SERIAL_MIDIIN', 'MM_OKSORI_OSR16_WAVEOUT',
+    'MM_CHROMATIC_M2_MIXER', 'SPEAKER_BACK_RIGHT', 'WAVE_FORMAT_MICRONAS',
+    'MM_CHROMATIC_M1_WTSYNTH', 'MM_MSFT_ACM_MSADPCM', 'JIFMK_JPG',
+    'WAVE_FORMAT_LUCENT_G723', 'MM_PROAUD_PLUS_AUX', 'MM_DIMD_WSS_MIXER',
+    'MM_SOUNDSPACE', 'KSDATAFORMAT_SUBTYPE_IEEE_FLOAT', 'ACM_MPEG_LAYER1',
+    'ACM_MPEG_LAYER2', 'ACM_MPEG_LAYER3', 'RIFFINFO_IKEY',
+    'MM_IOMAGIC_TEMPO_MIDIOUT', 'MM_OTI_611MIDIN', 'WAVE_FORMAT_VSELP',
+    'MM_SONICFOUNDRY', 'MM_OSITECH', 'RIFFINFO_ITOC',
+    'MM_ANTEX_VP625_WAVEOUT', 'MM_MEDIAVISION_CDPC', 'MM_WSS_SB16_SYNTH',
+    'MM_SIERRA_QUARTET_MIDIOUT', 'MM_SIERRA_QUARTET_AUX_LINE',
+    'MM_ETEK_KWIKMIDI_MIDIOUT', 'MM_VAL_MICROKEY_AP_WAVEOUT',
+    'MM_PID_UNMAPPED', 'MM_ICS_WAVEDECK_AUX',
+    'MM_WILLOWPOND_SNDCOMM_MIXER', 'WAVE_FORMAT_ONLIVE',
+    'MM_YAMAHA_YMF724_MIDIOUT', 'WAVE_FORMAT_VOCORD_G726',
+    'MM_EUPHONICS_AUX_LINE', 'MM_MEDIAVISION_OPUS1208',
+    'MM_ESS_ES1688_MIXER', 'MM_ICS_WAVEDEC_SB_WAVEIN', 'MM_AU8820_MIDIIN',
+    'MM_AZTECH_WASH16_MIXER', 'WAVE_FORMAT_VOCORD_G729',
+    'MM_YAMAHA_OPL3SA_WAVEOUT', 'SPEAKER_TOP_FRONT_CENTER',
+    'MM_OPUS1216_MIDIIN', 'MM_MSFT_SB16_AUX_CD', 'MM_ECHO_WAVEIN',
+    'WAVE_FORMAT_ULEAD_DV_AUDIO', 'MM_SICRESOURCE_SSO3D',
+    'MM_NEOMAGIC_MW3DX_MIDIIN', 'MM_MIRO_DC30_WAVEIN',
+    'MM_MOTU_MTPII_NET_MIDIOUT_1', 'MM_MOTU_MTPII_NET_MIDIOUT_2',
+    'MM_MOTU_MTPII_NET_MIDIOUT_3', 'MM_MOTU_MTPII_NET_MIDIOUT_4',
+    'MM_MOTU_MTPII_NET_MIDIOUT_5', 'MM_MOTU_MTPII_NET_MIDIOUT_6',
+    'MM_MOTU_MTPII_NET_MIDIOUT_7', 'MM_MOTU_MTPII_NET_MIDIOUT_8',
+    'MM_UH_ACM_ADPCM', 'MM_NVIDIA', 'MM_NEOMAGIC_MWAVE_MIXER',
+    'WAVE_FORMAT_LRC', 'RIFFCPPO_obji', 'MM_ESS_ES1878_MIXER',
+    'MM_YAMAHA_ACXG_AUX', 'MM_CHROMATIC_M1_MPEGWAVEIN',
+    'MM_ESS_ES1878_WAVEOUT', 'MM_MATROX_DIV', 'MM_MIRO_DC30_MIX',
+    'MM_PROAUD_16_WAVEOUT', 'RIFFINFO_ICOP', 'MM_YAMAHA_SXG_MIXER',
+    'MM_ENET_T2000_LINEOUT', 'MM_CYRIX_XAWAVEOUT', 'WAVE_FORMAT_AMR_WB',
+    'MM_MSFT_GENERIC_MIDISYNTH', 'MM_ESS_MPU401_MIDIIN',
+    'WAVE_FORMAT_MPEG4_AAC', 'WAVE_FORMAT_AMR_WP',
+    'WAVE_FORMAT_UNISYS_NAP_ULAW', 'WAVE_FORMAT_OLICELP',
+    'MM_AU8820_MIXER', 'MM_FHGIIS_MPEGLAYER3_ADVANCEDPLUS',
+    'MM_PROAUD_MIXER', 'MM_DATAFUSION', 'MM_TANDY_SENS_VISWAVEOUT',
+    'MM_ANTEX_VP625_WAVEIN', 'MM_MSFT_SBPRO_AUX_CD',
+    'MM_SOFTLAB_NSK_FRW_WAVEIN', 'WAVE_FORMAT_DEVELOPMENT',
+    'MM_NORTEL_MPXAC_WAVEIN', 'MM_CAT_WAVEOUT',
+    'KSDATAFORMAT_SUBTYPE_PCM', 'MM_HAFTMANN_LPTDAC2', 'MM_NVIDIA_AUX',
+    'RIFFINFO_ILGT', 'MM_CREATIVE_SB20_WAVEOUT', 'MM_LEXICON',
+    'MM_NEOMAGIC_MIDIIN', 'MM_ECS_AADF_WAVE2MIDI_IN', 'MM_NMP_ACM_AMR',
+    'MM_ONLIVE_MPCODEC', 'MM_BERCOS', 'MM_SOUNDESIGNS',
+    'WMAUDIO_MAX_CHANNELS', 'MM_MITEL_MPA_HANDSET_WAVEOUT',
+    'MM_YAMAHA_ACXG_MIDIOUT', 'RIFFINFO_ISMP', 'MM_SHARP_MDC_WAVE_IN',
+    'MM_PROAUD_16_AUX', 'WAVE_FORMAT_LIGHTWAVE_LOSSLESS',
+    'MM_IBM_PCMCIA_SYNTH', 'MM_OKSORI_OSR8_WAVEOUT',
+    'MM_SOUNDESIGNS_WAVEOUT', 'MM_MSFT_WDMAUDIO_WAVEOUT',
+    'WAVE_FORMAT_COMVERSE_INFOSYS_G723_1', 'MM_MEDIAVISION_THUNDER',
+    'MM_DIACOUSTICS', 'MM_MOTU_MXP_MIDIIN_MIDIOUT_ALL',
+    'MM_MEDIAVISION_PROSTUDIO_16', 'MM_GADGETLABS_WAVE4_MIDIIN',
+    'MM_MOTU_MTPII_MIDIOUT_ALL', 'MM_MSFT_WSS_AUX',
+    'MM_CREATIVE_PHNBLST_WAVEIN', 'MM_AZTECH_PRO16_WAVEOUT',
+    'MM_WSS_SBPRO_WAVEOUT', 'MM_OLIVETTI_AUX', 'MM_MOTU_MXPXT_MIDIOUT_8',
+    'MM_MOTU_MXPXT_MIDIOUT_2', 'MM_CREATIVE_FMSYNTH_STEREO',
+    'MM_MOTU_MXPXT_MIDIOUT_1', 'MM_MOTU_MXPXT_MIDIOUT_6',
+    'MM_MOTU_MXPXT_MIDIOUT_7', 'MM_OPTI_P16_WAVEOUT',
+    'MM_MOTU_MXPXT_MIDIOUT_5', 'MM_COMPUTER_FRIENDS', 'MM_EUPHONICS',
+    'MM_IBM_MWAVE_MIDIOUT', 'MIXERCONTROL_CONTROLTYPE_SRS_SYNTHSELECT',
+    'MM_YAMAHA_YMF724_AUX', 'MM_SGI_RAD_ADATMONO1_WAVEOUT',
+    'MM_TPORT_WAVEIN', 'MM_WILLOWPOND_GENERIC_WAVEIN',
+    'MM_ICS_WAVEDEC_SB_AUX', 'MM_ICL_PS', 'MM_UNISYS',
+    'MM_ROLAND_MPU401_MIDIOUT', 'MM_CONCEPTS', 'MM_KAY_ELEMETRICS',
+    'MM_MOTU_MXPXT_MIDIOUT_3', 'MM_OLIVETTI_MIXER',
+    'WAVE_FORMAT_SIERRA_ADPCM', 'MM_NEOMAGIC_AUX', 'MM_ARRAY',
+    'MM_ESS_ES1488_MIXER', 'MM_MOTU_MXPXT_MIDIOUT_4', 'MM_AUREAL_AU8820',
+    'JIFMK_SOF9', 'MM_OKSORI_MIDIOUT', 'MM_LUCENT', 'MM_SPLASH_STUDIOS',
+    'MM_OPTI_M32_WAVEOUT', 'MM_ROLAND_SC7_MIDIOUT',
+    'MM_TANDY_PSSJWAVEOUT', 'MM_VKC_MPU401_MIDIIN',
+    'MM_WILLOWPOND_SNDPORT_MIXER', 'MM_CREATIVE_MIDI_AWE32',
+    'MM_DIMD_MIDIOUT', 'ACM_MPEG_DUALCHANNEL', 'MM_UHER_INFORMATIC',
+    'MM_SGI_RAD_ADATSTEREO34_WAVEIN', 'MM_AMD_INTERWAVE_MIDIOUT',
+    'MM_SGI_RAD_ADATMONO2_WAVEOUT', 'MM_PROAUD_MIDIIN',
+    'MM_NORTHERN_TELECOM', 'MM_NEC_73_86_WAVEOUT',
+    'MM_MEDIAVISION_OPUS1216', 'MM_FLEXION', 'MM_MARIAN',
+    'WAVE_FORMAT_SANYO_LD_ADPCM', 'MM_CREATIVE_MIDIIN',
+    'MM_SGI_320_WAVEIN', 'MM_EUPHONICS_AUX_WAVE', 'ROCKWELL_WA1_WAVEOUT',
+    'SPEAKER_FRONT_LEFT_OF_CENTER', 'MM_WSS_SBPRO_AUX_CD', 'MM_ICOM_LINE',
+    'MM_SHARP', 'MM_ISOLUTION_PASCAL', 'MM_SIERRA_ARIA_MIDIOUT',
+    'MM_SILICONSOFT_SC1_WAVEOUT', 'WAVE_FORMAT_CU_CODEC',
+    'MM_OTI_611WAVEIN', 'WAVE_FORMAT_CS_IMAADPCM', 'RIFFINFO_IDIM',
+    'WAVE_FORMAT_SHARP_G726', 'MM_CYRIX_XAAUX',
+    'MM_MOTU_MTPAV_MIDIOUT_ALL', 'RIFFINFO_ITRK', 'ACM_MPEG_ORIGINALHOME',
+    'MM_ADMOS', 'WAVE_FORMAT_POLYCOM_G722', 'MM_AHEAD',
+    'MM_FRONTIER_WAVECENTER_MIDIOUT', 'IS_COMPATIBLE_MMREG_PID',
+    'MM_AARDVARK', 'MM_ESS_ES1888_WAVEOUT', 'MM_CASIO_WP150_MIDIOUT',
+    'MM_SHARP_MDC_AUX_WAVE_CHR', 'WAVE_FORMAT_MPEG_LOAS',
+    'MM_AZTECH_AUX_LINE', 'MM_NEC', 'MM_TTEWS_MIDISYNTH',
+    'MM_CANAM_CBXWAVEOUT', 'WAVE_FORMAT_GSM_610', 'MM_WINBOND',
+    'WAVE_FORMAT_CONTROL_RES_CR10', 'MM_CASIO_LSG_MIDIOUT',
+    'MM_SHARP_MDC_AUX_MASTER', 'MM_ALGOVISION_VB80WAVEIN',
+    'WAVE_FORMAT_IMA_ADPCM', 'RIFFWAVE_inst', 'MM_MOTU',
+    'MM_SSP_SNDFESWAVEOUT', 'MM_DIMD_AUX_LINE', 'MM_METHEUS_ZIPPER',
+    'MM_DATARAN', 'WAVE_FORMAT_HP_DYN_VOICE', 'MM_YAMAHA_ACXG_WAVEOUT',
+    'MM_MARIAN_PRODIF24WAVEOUT', 'MM_TDK_MW_MIDI_IN', 'MM_BERCOS_WAVEIN',
+    'WAVE_FORMAT_PHILIPS_GRUNDIG', 'MM_ALGOVISION_VB80WAVEOUT',
+    'MM_WILLOWPOND_PH_WAVEOUT', 'WAVE_FORMAT_OGG_VORBIS_MODE_3',
+    'WAVE_FORMAT_OGG_VORBIS_MODE_2', 'MM_TDK_MW_MIXER',
+    'WAVE_FORMAT_INNINGS_TELECOM_ADPCM', 'MM_AZTECH_WAVEOUT',
+    'MM_INTELOPD_AUX', 'MM_MSFT_WSS_OEM_AUX',
+    'WAVE_FORMAT_WMAUDIO_LOSSLESS', 'MM_DIMD_MIXER', 'MM_GRANDE',
+    'MM_ICE_MTWAVEIN', 'MM_FRAUNHOFER_IIS',
+    'MM_WILLOWPOND_SNDCOMM_WAVEOUT', 'MM_NEC_JOYSTICK', 'MM_INTERNET',
+    'MM_OKSORI_MIDIIN', 'WAVE_FORMAT_OGG_VORBIS_MODE_2_PLUS',
+    'MM_CDPC_WAVEIN', 'MM_PACIFICRESEARCH', 'MM_MSFT_ACM_MSNAUDIO',
+    'MM_SOFTLAB_NSK_FRW_MIXER', 'WAVE_FORMAT_LEAD_SPEECH',
+    'MM_TDK_MW_AUX_WAVE_VOL', 'MM_WSS_SBPRO_SYNTH', 'MM_TELEKOL_WAVEOUT',
+    'WAVE_FORMAT_QUALCOMM_PUREVOICE', 'MM_HP_WAVEOUT', 'MM_NCR_BA_WAVEIN',
+    'FOURCC_RDSP', 'WAVE_FORMAT_IEEE_FLOAT', 'MM_ROLAND_RAP10_WAVEOUT',
+    'MM_MOTU_MTPAV_NET_MIDIIN_1', 'MM_MOTU_MTPAV_NET_MIDIIN_3',
+    'MM_MOTU_MTPAV_NET_MIDIIN_2', 'MM_MOTU_MTPAV_NET_MIDIIN_5',
+    'MM_MOTU_MTPAV_NET_MIDIIN_4', 'MM_MOTU_MTPAV_NET_MIDIIN_7',
+    'MM_MOTU_MTPAV_NET_MIDIIN_6', 'MM_MOTU_MTPAV_NET_MIDIIN_8',
+    'MM_DIMD_VIRTJOY', 'MM_WILLOWPOND_GENERIC_MIXER', 'MM_BINTEC',
+    'MM_IBM_WC_MIXEROUT', 'MM_ECHO', 'MM_NEC_MPU401_MIDIIN',
+    'MM_AUREAL_AU8830', 'MM_CYRIX_XAWAVEIN', 'MM_SIERRA_ARIA_SYNTH',
+    'RIFFINFO_ICMT', 'MM_PROAUD_PLUS_MIDIIN', 'MM_TRUEVISION_WAVEIN1',
+    'MM_EUPHONICS_WAVEOUT', 'WAVE_FORMAT_DF_GSM610',
+    'MM_IBM_PCMCIA_MIDIIN', 'MM_IBM_MWAVE_MIXER',
+    'MIXERCONTROL_CONTROLTYPE_SRS_MTS', 'MM_ICS_WAVEDECK_MIXER',
+    'MM_SIERRA_QUARTET_WAVEIN', 'MM_SYDEC_NV_WAVEIN', 'MM_OLIVETTI_SYNTH',
+    'MM_SSP_SNDFESSYNTH', 'MM_ESS_AMSYNTH', 'MM_BCB_TT75_10',
+    'MM_ESS_AMMIDIOUT', 'MJPG_DIB', 'MM_COREDYNAMICS_DYNAGRAFX_WAVE_OUT',
+    'MM_MOTU_MXN_MIDIIN_2', 'MM_MOTU_MXN_MIDIIN_3', 'WAVE_FORMAT_DSAT',
+    'MM_MOTU_MXN_MIDIIN_1', 'MM_MOTU_MXN_MIDIIN_4', 'MM_COMPAQ_BB_WAVEIN',
+    'WAVE_FORMAT_INTEL_G729', 'MM_ATT', 'MM_SGI_RAD_AESMONO1_WAVEIN',
+    'MM_NEOMAGIC_MWAVE_MIDIOUT', 'MM_CHROMATIC_M1_MIDIOUT',
+    'MM_VIENNASYS_TSP_WAVE_DRIVER', 'MM_MPTUS_SPWAVEOUT', 'RIFFINFO_ITCH',
+    'MM_WANGLABS_WAVEIN1', 'MM_IPI_AT_MIXER', 'MM_VIA_WAVEIN',
+    'MM_CHROMATIC_M2_WAVEOUT', 'MM_SIERRA_QUARTET_WAVEOUT',
+    'MM_SHARP_MDC_AUX_MIDI_VOL', 'MM_MSFT_VMDMS_HANDSET_WAVEIN',
+    'MM_WILLOWPOND_SNDPORT_WAVEOUT', 'MM_OKSORI_OSR16_WAVEIN',
+    'INIT_MMREG_PID', 'WAVE_FORMAT_MEDIAVISION_ADPCM', 'RIFFINFO_ICMS',
+    'MM_MERGING_MPEGL3', 'MM_SOUNDSCAPE_WAVEOUT_AUX',
+    'MM_OLIVETTI_ACM_OPR', 'MM_MOTU_MXN_MIDIOUT_ALL',
+    'MM_MOTU_DTX_MIDI_IN_B', 'MM_MOTU_DTX_MIDI_IN_A', 'WAVE_FORMAT_DVM',
+    'MM_MOTU_MTP_MIDIOUT_1', 'MM_MOTU_MTP_MIDIOUT_2',
+    'MM_MOTU_MTP_MIDIOUT_3', 'MM_MOTU_MTP_MIDIOUT_4',
+    'MM_MOTU_MTP_MIDIOUT_5', 'MM_MOTU_MTP_MIDIOUT_6',
+    'MM_MOTU_MTP_MIDIOUT_7', 'MM_MOTU_MTP_MIDIOUT_8', 'JIFMK_APP3',
+    'MM_EXAN', 'MM_LUCID_PCI24WAVEOUT', 'MM_WORKBIT_JOYSTICK',
+    'MM_NEC_MPU401_MIDIOUT', 'MM_ALDIGITAL', 'MM_FORTEMEDIA_WAVEOUT',
+    'MM_MOTU_MTPII_MIDIOUT_4', 'MM_MOTU_MTPII_MIDIOUT_5',
+    'MM_MOTU_MTPII_MIDIOUT_6', 'MM_MOTU_MTPII_MIDIOUT_7',
+    'MM_TTEWS_MIXER', 'MM_MOTU_MTPII_MIDIOUT_1',
+    'MM_MOTU_MTPII_MIDIOUT_2', 'MM_MOTU_MTPII_MIDIOUT_3', 'MM_CRYSTAL',
+    'MM_MOTU_MTPII_MIDIOUT_8', 'MM_MINDMAKER_GC_MIXER',
+    'MM_OKSORI_MIX_MIC', 'MM_ICS_WAVEDEC_SB_FM_MIDIOUT', 'MM_VIA_AUX',
+    'MM_QUICKAUDIO_MINIMIDI', 'JIFMK_DHT', 'MM_MOTU_MXP_MIDIIN_MIDIIN_4',
+    'MM_MOTU_MXP_MIDIIN_MIDIIN_5', 'MM_MOTU_MXP_MIDIIN_MIDIIN_6',
+    'MM_MOTU_MXP_MIDIIN_MIDIIN_1', 'MM_MOTU_MXP_MIDIIN_MIDIIN_2',
+    'MM_MOTU_MXP_MIDIIN_MIDIIN_3', 'MM_VOICEMIXER',
+    'MM_MOTU_MTPII_MIDIIN_8', 'MM_MSFT_VMDMS_LINE_WAVEOUT',
+    'WAVE_FORMAT_UHER_ADPCM', 'MM_MOTU_MTPII_MIDIIN_1',
+    'MM_AZTECH_DSP16_WAVEOUT', 'MM_MOTU_MTPII_MIDIIN_3',
+    'MM_MOTU_MTPII_MIDIIN_4', 'MM_MOTU_MTPII_MIDIIN_5',
+    'MM_MOTU_MTPII_MIDIIN_6', 'MM_MOTU_MTPII_MIDIIN_7', 'MM_VIRTUALMUSIC',
+    'MM_ROLAND_SCP_AUX', 'MM_MSFT_SB16_MIDIOUT', 'MM_MSFT_WDMAUDIO_AUX',
+    'WAVE_FORMAT_VOXWARE_VR12', 'WAVE_FORMAT_GSM_AMR_CBR',
+    'MM_AHEAD_PROAUDIO', 'MM_MEDIASONIC_ACM_G723', 'MM_CANAM_CBXWAVEIN',
+    'MM_MOTU_MTPII_NET_MIDIIN_8', 'MPEGLAYER3_ID_MPEG',
+    'MM_MOTU_MTPII_NET_MIDIIN_4', 'MM_MOTU_MTPII_NET_MIDIIN_5',
+    'MM_MOTU_MTPII_NET_MIDIIN_6', 'MM_MOTU_MTPII_NET_MIDIIN_7',
+    'MM_MOTU_MTPII_NET_MIDIIN_1', 'MM_MOTU_MTPII_NET_MIDIIN_2',
+    'MM_MOTU_MTPII_NET_MIDIIN_3', 'MM_HEWLETT_PACKARD_CU_CODEC',
+    'WAVE_FORMAT_PHILIPS_LPCBB', 'MM_STUDIO_16_MIDIIN',
+    'MM_NEWMEDIA_WAVJAMMER', 'MM_OTI_611WAVEOUT', 'MM_MSFT_WSS_WAVEOUT',
+    'MM_OKSORI_EXT_MIC1', 'MM_OKSORI_EXT_MIC2', 'MM_VIA',
+    'MM_SILICONSOFT_SOUNDJR3_WAVEOUT', 'MM_ESS_ES1488_WAVEOUT',
+    'MM_AU8820_WAVEIN', 'MM_COREDYNAMICS_DYNASONIX_MIDI_IN',
+    'RIFFCPPO_dbl', 'MM_MSFT_VMDMS_LINE_WAVEIN', 'BICOMP_IBMPHOTOMOTION',
+    'MM_ECS', 'MM_ADDX_PCTV_MIXER', 'MM_MSFT_SBPRO_AUX_LINE',
+    'MM_DIGITAL_AUDIO_LABS_V8', 'MM_ARTISOFT', 'MM_OPTI_M32_SYNTH_STEREO',
+    'MM_NEOMAGIC_WAVEOUT', 'MM_BTV_DIGITALOUT', 'MM_YAMAHA_SXG_MIDIOUT',
+    'MM_VITEC_VMAKER', 'MM_UNISYS_ACM_NAP', 'MM_DIGITAL_AUDIO_LABS_VP',
+    'MM_FHGIIS_MPEGLAYER3_ADVANCED', 'MM_VIONA_QVINPCI_WAVEIN',
+    'MM_NEOMAGIC_SYNTH', 'MM_YAMAHA_YMF724_WAVEIN', 'WAVE_FORMAT_G729A',
+    'MM_MITEL_TALKTO_BRIDGED_WAVEIN', 'MM_STUDIO_16_MIDIOUT',
+    'MM_WILDCAT', 'MM_MSFT_WDMAUDIO_WAVEIN',
+    'MM_SGI_RAD_ADATMONO6_WAVEIN', 'MPEGLAYER3_FLAG_PADDING_ON',
+    'STATIC_KSDATAFORMAT_SUBTYPE_WAVEFORMATEX', 'WAVE_FORMAT_IPI_RPELP',
+    'MM_OKSORI_MIX_FM', 'WAVE_FORMAT_VOCORD_G729_A', 'MM_AU8830_MIDIIN',
+    'MM_ROLAND_RAP10_MIDIOUT', 'MM_SANYO', 'MM_MEDIASONIC',
+    'MM_MITEL_MPA_HANDSFREE_WAVEIN', 'MM_INTEL', 'MM_NEC_26_SYNTH',
+    'MM_WILLOWPOND_SNDPORT_AUX', 'MM_EUPHONICS_AUX_MIC',
+    'MM_EMU_APSWAVEOUT', 'MM_AU8830_WAVEIN', 'QDI_DIBTOSCREEN',
+    'MM_CDPC_MIDIIN', 'MM_YAMAHA_YMF724LEG_MIXER', 'MM_CYRIX_XAMIDIOUT',
+    'MM_MOTU_MTPAV_MIDIIN_SYNC', 'WAVE_FORMAT_G726_ADPCM', 'MM_S3_WAVEIN',
+    'MM_EES_PCMIDI14', 'WAVE_FORMAT_TUBGSM', 'MM_IOMAGIC_TEMPO_WAVEOUT',
+    'MM_MSFT_WSS_OEM_WAVEOUT', 'WAVE_FORMAT_NORCOM_VOICE_SYSTEMS_ADPCM',
+    'WAVE_FORMAT_LH_CODEC_SBC8', 'MM_SCALACS', 'MM_ICOM_MIXER',
+    'MM_KAY_ELEMETRICS_CSL', 'MM_WAVE_MAPPER', 'MM_VIONAQVINPCI_WAVEOUT',
+    'MM_BCB', 'MM_NCR_BA_MIXER', 'WAVE_FORMAT_DIGITAL_G723',
+    'MM_DIGITAL_AUDIO_LABS_CDLX', 'MM_OPTI_M16_WAVEIN',
+    'MM_SOUNDSCAPE_WAVEOUT', 'ACM_MPEG_COPYRIGHT', 'MM_SNDBLST_MIDIOUT',
+    'MM_CDPC_AUX', 'MM_WSS_SB16_WAVEOUT', 'WAVE_FORMAT_VME_VMPCM',
+    'MM_LEXICON_STUDIO_WAVE_OUT', 'MM_INTERNET_SSW_MIDIIN',
+    'MM_ENET_T2000_HANDSETOUT', 'MM_VQST_VQC1', 'MM_VQST_VQC2',
+    'MM_SHARP_MDC_AUX_VOL', 'MM_DF_ACM_GSM610', 'MM_ECS_AADF_MIDI_IN',
+    'WAVE_FORMAT_SIPROLAB_G729', 'MM_MSFT_ACM_MSFILTER',
+    'MM_VIONA_CONCERTO_MIXER', 'MM_OPUS1208_SYNTH',
+    'MM_AMD_INTERWAVE_EX_CD', 'WAVE_FORMAT_ALAC', 'MM_DIGIGRAM',
+    'MM_ESS_ES1888_MIXER', 'MM_QUICKNET_PJWAVEIN', 'MM_OPTI_M16_MIXER',
+    'MM_MOTU_MTPII_MIDIIN_SYNC', 'ICTYPE_AUDIO', 'MM_EUPHONICS_WAVEIN',
+    'WAVE_FORMAT_ALAW', 'MM_OKSORI_OSR8_WAVEIN', 'MM_SSP_SNDFESMIX',
+    'MM_DSP_SOLUTIONS_SYNTH', 'MM_DIGITAL_AV320_WAVEOUT',
+    'MM_YAMAHA_ACXG_MIXER', 'MM_FHGIIS_MPEGLAYER3', 'WAVE_FORMAT_ECHOSC3',
+    'WAVE_FORMAT_ECHOSC1', 'RIFFINFO_IDIT', 'WAVE_FORMAT_MAKEAVIS',
+    'MM_ECHO_AUX', 'MM_QCIAR', 'WAVE_FORMAT_VIVO_G723',
+    'WAVE_FORMAT_ESST_AC3', 'MM_MSFT_SBPRO_MIXER', 'MM_MSFT_WSS_NT_MIXER',
+    'MM_IOMAGIC_TEMPO_SYNTH', 'MM_PROAUD_WAVEIN',
+    'MM_MARIAN_ARC44WAVEOUT', 'MM_NCR', 'WAVE_FORMAT_VOXWARE_RT29',
+    'MM_ICCC_UNA3_WAVEIN', 'MM_ICOM_AUX', 'MM_BTV_AUX_LINE',
+    'WAVE_FORMAT_WMASPDIF', 'MM_VIDEOLOGIC',
+    'MM_AMD_INTERWAVE_EX_TELEPHONY', 'creative_adpcmwaveformat_tag',
+    'mpeg1waveformat_tag', 'sierra_adpcmwaveformat_tag',
+    'heaacwaveinfo_tag', 'ima_adpcmwaveformat_tag', 'drmwaveformat_tag',
+    'creative_fastspeech10format_tag', 'oligsmwaveformat_tag',
+    'mpeglayer3waveformat_tag', 'gsm610waveformat_tag', 'tWAVEFORMATEX',
+    'contres_vqlpcwaveformat_tag', 'WAVEFORMATEXTENSIBLE',
+    'tagJPEGINFOHEADER', 'olioprwaveformat_tag', 'wmaudio2waveformat_tag',
+    'wavefilter_tag', 'yamaha_adpmcwaveformat_tag',
+    'mediaspace_adpcmwaveformat_tag', 'creative_fastspeech8format_tag',
+    'digiadpcmmwaveformat_tag', 'waveformat_tag', 'digistdwaveformat_tag',
+    'g723_adpcmwaveformat_tag', 'heaacwaveformat_tag',
+    'dvi_adpcmwaveformat_tag', 'fmtowns_snd_waveformat_tag',
+    'csimaadpcmwaveformat_tag', 'audiofile_af36waveformat_tag',
+    'truespeechwaveformat_tag', 'adpcmcoef_tag',
+    'creative_fastspeechformat_tag', 'msaudio1waveformat_tag',
+    'dolbyac2waveformat_tag', 'tagEXBMINFOHEADER',
+    'digirealwaveformat_tag', 'contres_cr10waveformat_tag',
+    'aptxwaveformat_tag', 'pcmwaveformat_tag', 'echosc1waveformat_tag',
+    'wavefilter_echo_tag', 'oliadpcmwaveformat_tag',
+    'sonarcwaveformat_tag', 'g721_adpcmwaveformat_tag',
+    'wmaudio3waveformat_tag', 'nms_vbxadpcmmwaveformat_tag',
+    'olisbcwaveformat_tag', 'wavefilter_volume_tag',
+    'olicelpwaveformat_tag', 'adpcmewaveformat_tag',
+    'audiofile_af10waveformat_tag', 'digifixwaveformat_tag',
+    'adpcmwaveformat_tag', 'LPOLIGSMWAVEFORMAT',
+    'LPCONTRESVQLPCWAVEFORMAT', 'PTRUESPEECHWAVEFORMAT',
+    'NPHEAACWAVEINFO', 'LPHEAACWAVEINFO', 'WAVEFORMATIEEEFLOATEX',
+    'PWAVEFORMATEX', 'LPDIGISTDWAVEFORMAT', 'LPWMAUDIO2WAVEFORMAT',
+    'NPPCMWAVEFORMAT', 'PECHOSC1WAVEFORMAT', 'LPECHOSC1WAVEFORMAT',
+    'NPG723_ADPCMWAVEFORMAT', 'LPCSIMAADPCMWAVEFORMAT',
+    'LPDIGIREALWAVEFORMAT', 'LPWAVEFORMATIEEEFLOATEX',
+    'NPMPEGLAYER3WAVEFORMAT', 'PG721_ADPCMWAVEFORMAT',
+    'NPCONTRESVQLPCWAVEFORMAT', 'NPECHOSC1WAVEFORMAT',
+    'PAUDIOFILE_AF36WAVEFORMAT', 'PMEDIASPACEADPCMWAVEFORMAT',
+    'NPNMS_VBXADPCMWAVEFORMAT', 'NPWAVEFORMAT', 'NPIMAADPCMWAVEFORMAT',
+    'PADPCMWAVEFORMAT', 'NPMPEG1WAVEFORMAT', 'LPMPEG1WAVEFORMAT',
+    'NPSONARCWAVEFORMAT', 'LPFMTOWNS_SND_WAVEFORMAT', 'PMPEG1WAVEFORMAT',
+    'PADPCMCOEFSET', 'PCREATIVEFASTSPEECH10WAVEFORMAT',
+    'LPDIGIFIXWAVEFORMAT', 'NPADPCMCOEFSET', 'NPOLISBCWAVEFORMAT',
+    'LPSONARCWAVEFORMAT', 'PDIALOGICOKIADPCMWAVEFORMAT',
+    'LPOLICELPWAVEFORMAT', 'PWAVEFORMATPCMEX', 'PYAMAHA_ADPCMWAVEFORMAT',
+    'NPCONTRESCR10WAVEFORMAT', 'POLISBCWAVEFORMAT',
+    'LPCONTRESCR10WAVEFORMAT', 'NPHEAACWAVEFORMAT', 'NPWAVEFORMATEX',
+    'LPWMAUDIO3WAVEFORMAT', 'LPMPEGLAYER3WAVEFORMAT',
+    'PDIGIFIXWAVEFORMAT', 'PADPCMEWAVEFORMAT', 'NPDIGISTDWAVEFORMAT',
+    'NPDIALOGICOKIADPCMWAVEFORMAT', 'LPNMS_VBXADPCMWAVEFORMAT',
+    'PHEAACWAVEFORMAT', 'LPMEDIASPACEADPCMWAVEFORMAT',
+    'NPOLIOPRWAVEFORMAT', 'NPADPCMWAVEFORMAT',
+    'LPAUDIOFILE_AF36WAVEFORMAT', 'LPDVIADPCMWAVEFORMAT',
+    'PDVIADPCMWAVEFORMAT', 'PDRMWAVEFORMAT', 'PDIGIREALWAVEFORMAT',
+    'PCONTRESVQLPCWAVEFORMAT', 'NPDVIADPCMWAVEFORMAT',
+    'NPDIGIREALWAVEFORMAT', 'PWAVEFILTER', 'NPOLIGSMWAVEFORMAT',
+    'PCSIMAADPCMWAVEFORMAT', 'PSIERRAADPCMWAVEFORMAT',
+    'PCREATIVEADPCMWAVEFORMAT', 'LPOLISBCWAVEFORMAT',
+    'LPIMAADPCMWAVEFORMAT', 'NPGSM610WAVEFORMAT', 'PWAVEFORMAT',
+    'LPG723_ADPCMWAVEFORMAT', 'LPECHOWAVEFILTER',
+    'LPCREATIVEFASTSPEECH8WAVEFORMAT', 'PCREATIVEFASTSPEECH8WAVEFORMAT',
+    'POLICELPWAVEFORMAT', 'PGSM610WAVEFORMAT', 'LPMSAUDIO1WAVEFORMAT',
+    'NPSIERRAADPCMWAVEFORMAT', 'LPDRMWAVEFORMAT',
+    'NPMEDIASPACEADPCMWAVEFORMAT', 'NPAUDIOFILE_AF10WAVEFORMAT',
+    'LPWAVEFILTER', 'LPG721_ADPCMWAVEFORMAT', 'NPFMTOWNS_SND_WAVEFORMAT',
+    'LPWAVEFORMATPCMEX', 'POLIOPRWAVEFORMAT', 'LPYAMAHA_ADPCMWAVEFORMAT',
+    'LPADPCMWAVEFORMAT', 'LPVOLUMEWAVEFILTER', 'LPWAVEFORMATEX',
+    'PAUDIOFILE_AF10WAVEFORMAT', 'LPPCMWAVEFORMAT', 'PHEAACWAVEINFO',
+    'PCONTRESCR10WAVEFORMAT', 'LPAPTXWAVEFORMAT', 'LPHEAACWAVEFORMAT',
+    'PDIGISTDWAVEFORMAT', 'LPADPCMEWAVEFORMAT', 'NPOLIADPCMWAVEFORMAT',
+    'PIMAADPCMWAVEFORMAT', 'POLIADPCMWAVEFORMAT',
+    'LPTRUESPEECHWAVEFORMAT', 'NPAUDIOFILE_AF36WAVEFORMAT',
+    'PDIGIADPCMWAVEFORMAT', 'PSONARCWAVEFORMAT', 'NPADPCMEWAVEFORMAT',
+    'LPCREATIVEADPCMWAVEFORMAT', 'PFMTOWNS_SND_WAVEFORMAT',
+    'POLIGSMWAVEFORMAT', 'NPCSIMAADPCMWAVEFORMAT', 'NPDRMWAVEFORMAT',
+    'WAVEFORMATPCMEX', 'LPDIALOGICOKIADPCMWAVEFORMAT',
+    'NPTRUESPEECHWAVEFORMAT', 'NPDIGIFIXWAVEFORMAT', 'LPGSM610WAVEFORMAT',
+    'LPAUDIOFILE_AF10WAVEFORMAT', 'NPWAVEFORMATPCMEX',
+    'LPDIGIADPCMWAVEFORMAT', 'PPCMWAVEFORMAT', 'NPWAVEFILTER',
+    'NPECHOWAVEFILTER', 'LPCREATIVEFASTSPEECH10WAVEFORMAT',
+    'PWAVEFORMATIEEEFLOATEX', 'NPVOLUMEWAVEFILTER',
+    'PG723_ADPCMWAVEFORMAT', 'LPOLIOPRWAVEFORMAT', 'PAPTXWAVEFORMAT',
+    'NPCREATIVEFASTSPEECH10WAVEFORMAT', 'LPSIERRAADPCMWAVEFORMAT',
+    'NPDIGIADPCMWAVEFORMAT', 'PMPEGLAYER3WAVEFORMAT',
+    'PNMS_VBXADPCMWAVEFORMAT', 'NPAPTXWAVEFORMAT', 'LPADPCMCOEFSET',
+    'NPWAVEFORMATIEEEFLOATEX', 'NPCREATIVEFASTSPEECH8WAVEFORMAT',
+    'LPOLIADPCMWAVEFORMAT', 'NPYAMAHA_ADPCMWAVEFORMAT', 'PECHOWAVEFILTER',
+    'NPG721_ADPCMWAVEFORMAT', 'NPCREATIVEADPCMWAVEFORMAT', 'LPWAVEFORMAT',
+    'NPOLICELPWAVEFORMAT', 'PVOLUMEWAVEFILTER', 'WAVEFORMATEX', 'MAKEFOURCC',
+)
