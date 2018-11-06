@@ -4,6 +4,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.*
+!*.py
+!LICENSE.md
+!README.md
+!.gitignore
+
 # C extensions
 *.so
 
