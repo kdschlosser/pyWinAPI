@@ -1014,6 +1014,9 @@ if not defined(__BTHDEF_H__):
                 BTH_ADDR_LIAC = 0x9E8B00
                 BTH_ADDR_GIAC = 0x9E8B33
 
+                BTHSTATUS = UCHAR
+                PBTHSTATUS = POINTER(UCHAR)
+
 
                 def BTH_ERROR(_btStatus):
                     return _btStatus != BTH_ERROR_SUCCESS

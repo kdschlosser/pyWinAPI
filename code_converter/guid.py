@@ -116,6 +116,8 @@ def EXTERN_GUID(*args):
 
 def parse_guid(indent, guid):
     line = ' '.join(g.strip() for g in guid)
+    if line.startswith('#'):
+        return ''
 
     if 'EXTERN_GUID' in line:
         func_name = 'EXTERN_GUID'
@@ -140,6 +142,9 @@ def parse_guid(indent, guid):
 
     elif 'GUID_BUILDER' in line:
         func_name = 'GUID_BUILDER'
+
+    elif line.strip().startswith('OUR_GUID_ENTRY'):
+        func_name = 'OUR_GUID_ENTRY'
     else:
         return False
 
@@ -170,9 +175,16 @@ def parse_guid(indent, guid):
         line = line.replace(func_name + '(', '').replace(')', '')
         line = line.replace(';', '').strip()
 
-        var_name, hex_codes = line.split(',', 1)
+        try:
+            var_name, hex_codes = line.split(',', 1)
+        except:
+            print(guid)
+            raise
         var_name = var_name.strip()
         hex_codes = hex_codes.strip()
+
+        if not hex_codes:
+            return ''
 
         hex_codes = hex_codes.split(',')
         codes = hex_codes[:11]

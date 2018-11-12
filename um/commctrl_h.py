@@ -1,12 +1,31 @@
 import ctypes
 from pyWinAPI import *
 from pyWinAPI.shared.wtypes_h import *
+
+
 _INC_COMMCTRL = None
-WINCOMMCTRLAPI = None
-_HRESULT_DEFINED = None
 _COMCTL32_ = None
-DUMMYUNIONNAME = 0
+_WLM_NOFORCE_LIBS = None
+_WLMDLL = None
+WMN_FIRST = None
 SNDMSG = None
+CCSIZEOF_STRUCT = None
+WINCOMMCTRLAPI = None
+IMAGELISTDRAWPARAMS = None
+HIMAGELIST = None
+IMAGEINFO = None
+NOHOTKEY = None
+NOIMAGEAPIS = None
+NOTOOLBAR = None
+NOPROGRESS = None
+NOUPDOWN = None
+NODRAGLIST = None
+NOTRACKBAR = None
+NOMENUHELP = None
+NOSTATUSBAR = None
+NOTOOLTIPS = None
+NOIMAGEAPIS = None
+NOREBAR = None
 NOUSER = None
 NOHEADER = None
 
@@ -289,7 +308,7 @@ if not defined(_INC_COMMCTRL):
             if not defined(CCSIZEOF_STRUCT):
 
                 def CCSIZEOF_STRUCT(structname, member):
-                    pass
+                    return ctypes.sizeof(structname)
                     # return ((INT(LPBYTE( & (structname*0) - >member) - (LPBYTE(structname*0)))) + ctypes.sizeof((structname*0) - >member))
             # END IF
 
@@ -3809,7 +3828,7 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ListView_DeleteItem(hwnd, i):
-                    return BOOLSNDMSG(hwnd, LVM_DELETEITEM, WPARAMINTi, 0L)
+                    return SNDMSG(hwnd, LVM_DELETEITEM, WPARAMINTi, 0)
                 LVM_DELETEALLITEMS = LVM_FIRST + 9
 
 
@@ -4326,7 +4345,7 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ListView_GetCountPerPage(hwndLV):
-                    return INTSNDMSG(hwndLV, LVM_GETCOUNTPERPAGE, 0, 0)
+                    return SNDMSG(hwndLV, LVM_GETCOUNTPERPAGE, 0, 0)
 
 
                 LVM_GETORIGIN = LVM_FIRST + 41
@@ -4528,41 +4547,41 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ListView_GetSubItemRect(hwnd, iItem, iSubItem, code, prc):
-                    return BOOLSNDMSG(hwnd, LVM_GETSUBITEMRECT, WPARAMINTiItem, (prc ? (((LPRECTprc) - >top = iSubItem), ((LPRECTprc) - >left = code), LPARAMprc) : LPARAMLPRECTNULL))
+                    return SNDMSG(hwnd, LVM_GETSUBITEMRECT, WPARAMINTiItem, (prc ? (((LPRECTprc) - >top = iSubItem), ((LPRECTprc) - >left = code), prc)) : LPARAMLPRECTNULL))
                 LVM_SUBITEMHITTEST = LVM_FIRST + 57
 
 
                 def ListView_SubItemHitTest(hwnd, plvhti):
-                    return INTSNDMSGhwnd, LVM_SUBITEMHITTEST, 0, LPARAMLPLVHITTESTINFOplvhti
+                    return SNDMSG(hwnd, LVM_SUBITEMHITTEST, 0, LPARAMLPLVHITTESTINFOplvhti
 
 
                 def ListView_SubItemHitTestEx(hwnd, plvhti):
-                    return INTSNDMSGhwnd, LVM_SUBITEMHITTEST, WPARAM - 1, LPARAMLPLVHITTESTINFOplvhti
+                    return SNDMSG(hwnd, LVM_SUBITEMHITTEST, WPARAM - 1, LPARAMLPLVHITTESTINFOplvhti
                 LVM_SETCOLUMNORDERARRAY = LVM_FIRST + 58
 
 
                 def ListView_SetColumnOrderArray(hwnd, iCount, pi):
-                    return BOOLSNDMSGhwnd, LVM_SETCOLUMNORDERARRAY, WPARAMiCount, LPARAMLPINTpi
+                    return SNDMSG(hwnd, LVM_SETCOLUMNORDERARRAY, WPARAMiCount, LPARAMLPINTpi
                 LVM_GETCOLUMNORDERARRAY = LVM_FIRST + 59
 
 
                 def ListView_GetColumnOrderArray(hwnd, iCount, pi):
-                    return BOOLSNDMSGhwnd, LVM_GETCOLUMNORDERARRAY, WPARAMiCount, LPARAMLPINTpi
+                    return SNDMSG(hwnd, LVM_GETCOLUMNORDERARRAY, WPARAMiCount, LPARAMLPINTpi
                 LVM_SETHOTITEM = LVM_FIRST + 60
 
 
                 def ListView_SetHotItem(hwnd, i):
-                    return INTSNDMSG(hwnd, LVM_SETHOTITEM, WPARAMi, 0)
+                    return SNDMSG(hwnd, LVM_SETHOTITEM, WPARAMi, 0)
                 LVM_GETHOTITEM = LVM_FIRST + 61
 
 
                 def ListView_GetHotItem(hwnd):
-                    return INTSNDMSG(hwnd, LVM_GETHOTITEM, 0, 0)
+                    return SNDMSG(hwnd, LVM_GETHOTITEM, 0, 0)
                 LVM_SETHOTCURSOR = LVM_FIRST + 62
 
 
                 def ListView_SetHotCursor(hwnd, hcur):
-                    return HCURSORSNDMSGhwnd, LVM_SETHOTCURSOR, 0, LPARAMhcur
+                    return HCURSORSNDMSG(hwnd, LVM_SETHOTCURSOR, 0, LPARAMhcur
                 LVM_GETHOTCURSOR = LVM_FIRST + 63
 
 
@@ -4572,58 +4591,60 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ListView_ApproximateViewRect(hwnd, iWidth, iHeight, iCount):
-                    return DWORDSNDMSGhwnd, LVM_APPROXIMATEVIEWRECT, WPARAMiCount, MAKELPARAMiWidth, iHeight
+                    return SNDMSG(hwnd, LVM_APPROXIMATEVIEWRECT, WPARAMiCount, MAKELPARAMiWidth, iHeight
                 LV_MAX_WORKAREAS = 16
                 LVM_SETWORKAREAS = LVM_FIRST + 65
 
 
                 def ListView_SetWorkAreas(hwnd, nWorkAreas, prc):
-                    return BOOLSNDMSGhwnd, LVM_SETWORKAREAS, WPARAMINTnWorkAreas, LPARAMRECT *prc
+                    return SNDMSG(hwnd, LVM_SETWORKAREAS, WPARAMINTnWorkAreas, LPARAMRECT *prc
                 LVM_GETWORKAREAS = LVM_FIRST + 70
 
 
                 def ListView_GetWorkAreas(hwnd, nWorkAreas, prc):
-                    return BOOLSNDMSGhwnd, LVM_GETWORKAREAS, WPARAMINTnWorkAreas, LPARAMRECT *prc
+                    return SNDMSG(hwnd, LVM_GETWORKAREAS, WPARAMINTnWorkAreas, LPARAMRECT *prc
                 LVM_GETNUMBEROFWORKAREAS = LVM_FIRST + 73
 
 
                 def ListView_GetNumberOfWorkAreas(hwnd, pnWorkAreas):
-                    return BOOLSNDMSGhwnd, LVM_GETNUMBEROFWORKAREAS, 0, LPARAMUINT *pnWorkAreas
+                    return SNDMSG(hwnd, LVM_GETNUMBEROFWORKAREAS, 0, LPARAMUINT *pnWorkAreas
                 LVM_GETSELECTIONMARK = LVM_FIRST + 66
 
 
                 def ListView_GetSelectionMark(hwnd):
-                    return INTSNDMSG(hwnd, LVM_GETSELECTIONMARK, 0, 0)
+                    return SNDMSG(hwnd, LVM_GETSELECTIONMARK, 0, 0)
                 LVM_SETSELECTIONMARK = LVM_FIRST + 67
 
 
                 def ListView_SetSelectionMark(hwnd, i):
-                    return INTSNDMSGhwnd, LVM_SETSELECTIONMARK, 0, LPARAMi
+                    return SNDMSG(hwnd, LVM_SETSELECTIONMARK, 0, LPARAMi
                 LVM_SETHOVERTIME = LVM_FIRST + 71
 
 
                 def ListView_SetHoverTime(hwndLV, dwHoverTimeMs):
-                    return DWORDSNDMSGhwndLV, LVM_SETHOVERTIME, 0, LPARAMdwHoverTimeMs
+                    return SNDMSG(hwndLV, LVM_SETHOVERTIME, 0, LPARAMdwHoverTimeMs
                 LVM_GETHOVERTIME = LVM_FIRST + 72
 
 
                 def ListView_GetHoverTime(hwndLV):
-                    return DWORDSNDMSG(hwndLV, LVM_GETHOVERTIME, 0, 0)
+                    return SNDMSG(hwndLV, LVM_GETHOVERTIME, 0, 0)
                 LVM_SETTOOLTIPS = LVM_FIRST + 74
 
 
                 def ListView_SetToolTips(hwndLV, hwndNewHwnd):
-                    return HWNDSNDMSG(hwndLV, LVM_SETTOOLTIPS, WPARAMhwndNewHwnd, 0)
+                    return SNDMSG(hwndLV, LVM_SETTOOLTIPS, WPARAMhwndNewHwnd, 0)
                 LVM_GETTOOLTIPS = LVM_FIRST + 78
 
 
                 def ListView_GetToolTips(hwndLV):
-                    return HWNDSNDMSG(hwndLV, LVM_GETTOOLTIPS, 0, 0)
+                    return SNDMSG(hwndLV, LVM_GETTOOLTIPS, 0, 0)
                 LVM_SORTITEMSEX = LVM_FIRST + 81
 
 
                 def ListView_SortItemsEx(hwndLV, _pfnCompare, _lPrm):
-                    return BOOLSNDMSGhwndLV, LVM_SORTITEMSEX, WPARAMLPARAM_lPrm, LPARAMPFNLVCOMPARE_pfnCompare
+                    return SNDMSG(hwndLV, LVM_SORTITEMSEX, WPARAMLPARAM_lPrm, LPARAMPFNLVCOMPARE_pfnCompare
+
+
                 class tagLVBKIMAGEA(ctypes.Structure):
                     pass
 
@@ -4638,6 +4659,8 @@ if not defined(_INC_COMMCTRL):
                 ]
                 LVBKIMAGEA = tagLVBKIMAGEA
                 LPLVBKIMAGEA = POINTER(tagLVBKIMAGEA)
+
+
                 class tagLVBKIMAGEW(ctypes.Structure):
                     pass
 
@@ -4652,6 +4675,8 @@ if not defined(_INC_COMMCTRL):
                 ]
                 LVBKIMAGEW = tagLVBKIMAGEW
                 LPLVBKIMAGEW = POINTER(tagLVBKIMAGEW)
+
+
                 LVBKIF_SOURCE_NONE = 0x00000000
                 LVBKIF_SOURCE_HBITMAP = 0x00000001
                 LVBKIF_SOURCE_URL = 0x00000002
@@ -4665,6 +4690,7 @@ if not defined(_INC_COMMCTRL):
                     LVBKIF_TYPE_WATERMARK = 0x10000000
                     LVBKIF_FLAG_ALPHABLEND = 0x20000000
                 # END IF
+
                 LVM_SETBKIMAGEA = LVM_FIRST + 68
                 LVM_SETBKIMAGEW = LVM_FIRST + 138
                 LVM_GETBKIMAGEA = LVM_FIRST + 69
@@ -4675,7 +4701,9 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetSelectedColumn(hwnd, iCol):
-                        return SNDMSG(hwnd, LVM_SETSELECTEDCOLUMN, WPARAMiCol, 0)
+                        return SNDMSG(hwnd, LVM_SETSELECTEDCOLUMN, iCol, 0)
+
+
                     LV_VIEW_ICON = 0x0000
                     LV_VIEW_DETAILS = 0x0001
                     LV_VIEW_SMALLICON = 0x0002
@@ -4686,12 +4714,16 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetView(hwnd, iView):
-                        return DWORDSNDMSG(hwnd, LVM_SETVIEW, WPARAMDWORDiView, 0)
+                        return SNDMSG(hwnd, LVM_SETVIEW, iView, 0)
+
+
                     LVM_GETVIEW = LVM_FIRST + 143
 
 
                     def ListView_GetView(hwnd):
-                        return DWORDSNDMSG(hwnd, LVM_GETVIEW, 0, 0)
+                        return SNDMSG(hwnd, LVM_GETVIEW, 0, 0)
+
+
                     LVGF_NONE = 0x00000000
                     LVGF_HEADER = 0x00000001
                     LVGF_FOOTER = 0x00000002
@@ -4725,11 +4757,16 @@ if not defined(_INC_COMMCTRL):
                     LVGA_FOOTER_LEFT = 0x00000008
                     LVGA_FOOTER_CENTER = 0x00000010
                     LVGA_FOOTER_RIGHT = 0x00000020
+
+
                     class tagLVGROUP(ctypes.Structure):
                         pass
 
 
-                    tagLVGROUP._fields_ = [
+                    LVGROUP = tagLVGROUP
+                    PLVGROUP = POINTER(tagLVGROUP)
+
+                    _TEMP_tagLVGROUP = [
                         ('cbSize', UINT),
                         ('mask', UINT),
                         ('pszHeader', LPWSTR),
@@ -4740,6 +4777,10 @@ if not defined(_INC_COMMCTRL):
                         ('stateMask', UINT),
                         ('state', UINT),
                         ('uAlign', UINT),
+                    ]
+
+                    if NTDDI_VERSION >= NTDDI_VISTA:
+                        _TEMP_tagLVGROUP += [
                             ('pszSubtitle', LPWSTR),
                             ('cchSubtitle', UINT),
                             ('pszTask', LPWSTR),
@@ -4750,57 +4791,69 @@ if not defined(_INC_COMMCTRL):
                             ('cchDescriptionBottom', UINT),
                             ('iTitleImage', INT),
                             ('iExtendedImage', INT),
-                            ('iFirstItem', INT), # Read only
-                            ('cItems', UINT), # Read only
-                            ('pszSubsetTitle', LPWSTR), # NULL if group is not subset
-                            ('cchSubsetTitle', UINT),
-                    ]
-                    LVGROUP = tagLVGROUP
-                    PLVGROUP = POINTER(tagLVGROUP)
-
-                    if NTDDI_VERSION >= NTDDI_VISTA:
-                        LVGROUP_V5_SIZE = CCSIZEOF_STRUCT(LVGROUP, uAlign)
+                            ('iFirstItem', INT),  # Read only
+                            ('cItems', UINT),  # Read only
+                            ('pszSubsetTitle', LPWSTR),  # NULL if group is not subset
+                            ('cchSubsetTitle', UINT)
+                        ]
+                        tagLVGROUP._fields_ = _TEMP_tagLVGROUP
+                        LVGROUP_V5_SIZE = CCSIZEOF_STRUCT(LVGROUP, LVGROUP.uAlign)
+                    else:
+                        tagLVGROUP._fields_ = _TEMP_tagLVGROUP
                     # END IF
+
                     LVM_INSERTGROUP = LVM_FIRST + 145
 
 
                     def ListView_InsertGroup(hwnd, index, pgrp):
-                        return SNDMSGhwnd, LVM_INSERTGROUP, WPARAMindex, LPARAMpgrp
+                        return SNDMSG(hwnd, LVM_INSERTGROUP, index, pgrp)
+
+
                     LVM_SETGROUPINFO = LVM_FIRST + 147
 
 
                     def ListView_SetGroupInfo(hwnd, iGroupId, pgrp):
-                        return SNDMSGhwnd, LVM_SETGROUPINFO, WPARAMiGroupId, LPARAMpgrp
+                        return SNDMSG(hwnd, LVM_SETGROUPINFO, iGroupId, pgrp)
+
+
                     LVM_GETGROUPINFO = LVM_FIRST + 149
 
 
                     def ListView_GetGroupInfo(hwnd, iGroupId, pgrp):
-                        return SNDMSGhwnd, LVM_GETGROUPINFO, WPARAMiGroupId, LPARAMpgrp
+                        return SNDMSG(hwnd, LVM_GETGROUPINFO, iGroupId, pgrp)
                     LVM_REMOVEGROUP = LVM_FIRST + 150
 
 
                     def ListView_RemoveGroup(hwnd, iGroupId):
-                        return SNDMSG(hwnd, LVM_REMOVEGROUP, WPARAMiGroupId, 0)
+                        return SNDMSG(hwnd, LVM_REMOVEGROUP, iGroupId, 0)
+
+
                     LVM_MOVEGROUP = LVM_FIRST + 151
 
 
                     def ListView_MoveGroup(hwnd, iGroupId, toIndex):
-                        return SNDMSGhwnd, LVM_MOVEGROUP, WPARAMiGroupId, LPARAMtoIndex
+                        return SNDMSG(hwnd, LVM_MOVEGROUP, iGroupId, toIndex)
+
+
                     LVM_GETGROUPCOUNT = LVM_FIRST + 152
 
 
                     def ListView_GetGroupCount(hwnd):
-                        return SNDMSG(hwnd, LVM_GETGROUPCOUNT, WPARAM0, LPARAM0)
+                        return SNDMSG(hwnd, LVM_GETGROUPCOUNT, 0, 0)
                     LVM_GETGROUPINFOBYINDEX = LVM_FIRST + 153
 
 
                     def ListView_GetGroupInfoByIndex(hwnd, iIndex, pgrp):
-                        return SNDMSGhwnd, LVM_GETGROUPINFOBYINDEX, WPARAMiIndex, LPARAMpgrp
+                        return SNDMSG(hwnd, LVM_GETGROUPINFOBYINDEX, iIndex, pgrp)
+
+
                     LVM_MOVEITEMTOGROUP = LVM_FIRST + 154
 
 
                     def ListView_MoveItemToGroup(hwnd, idItemFrom, idGroupTo):
-                        return SNDMSGhwnd, LVM_MOVEITEMTOGROUP, WPARAMidItemFrom, LPARAMidGroupTo
+                        return SNDMSG(hwnd, LVM_MOVEITEMTOGROUP, idItemFrom, idGroupTo)
+
+
                     LVGGR_GROUP = 0
                     LVGGR_HEADER = 1
                     LVGGR_LABEL = 2
@@ -4809,7 +4862,12 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_GetGroupRect(hwnd, iGroupId, type, prc):
-                        return SNDMSG(hwnd, LVM_GETGROUPRECT, WPARAMiGroupId, (prc ? ((RECT*prc) - >top = type), LPARAMRECT*prc : LPARAMRECT*NULL))
+                        if prc:
+                            prc.top = type
+
+                        return SNDMSG(hwnd, LVM_GETGROUPRECT, iGroupId, ctypes.byref(prc) if prc else NULL)
+
+
                     LVGMF_NONE = 0x00000000
                     LVGMF_BORDERSIZE = 0x00000001
                     LVGMF_BORDERCOLOR = 0x00000002
@@ -4838,17 +4896,17 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetGroupMetrics(hwnd, pGroupMetrics):
-                        return SNDMSGhwnd, LVM_SETGROUPMETRICS, 0, LPARAMpGroupMetrics
+                        return SNDMSG(hwnd, LVM_SETGROUPMETRICS, 0, pGroupMetrics)
                     LVM_GETGROUPMETRICS = LVM_FIRST + 156
 
 
                     def ListView_GetGroupMetrics(hwnd, pGroupMetrics):
-                        return SNDMSGhwnd, LVM_GETGROUPMETRICS, 0, LPARAMpGroupMetrics
+                        return SNDMSG(hwnd, LVM_GETGROUPMETRICS, 0, pGroupMetrics)
                     LVM_ENABLEGROUPVIEW = LVM_FIRST + 157
 
 
                     def ListView_EnableGroupView(hwnd, fEnable):
-                        return SNDMSG(hwnd, LVM_ENABLEGROUPVIEW, WPARAMfEnable, 0)
+                        return SNDMSG(hwnd, LVM_ENABLEGROUPVIEW, fEnable, 0)
                     (CALLBACK = INT
                     PFNLVGROUPCOMPARE)(int = POINTER(INT)
                     int = INT
@@ -4858,7 +4916,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SortGroups(hwnd, _pfnGroupCompate, _plv):
-                        return SNDMSGhwnd, LVM_SORTGROUPS, WPARAM_pfnGroupCompate, LPARAM_plv
+                        return SNDMSG(hwnd, LVM_SORTGROUPS, _pfnGroupCompate, _plv)
                     class tagLVINSERTGROUPSORTED(ctypes.Structure):
                         pass
 
@@ -4874,7 +4932,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_InsertGroupSorted(hwnd, structInsert):
-                        return SNDMSG(hwnd, LVM_INSERTGROUPSORTED, WPARAMstructInsert, 0)
+                        return SNDMSG(hwnd, LVM_INSERTGROUPSORTED, structInsert, 0)
                     LVM_REMOVEALLGROUPS = LVM_FIRST + 160
 
 
@@ -4888,12 +4946,20 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetGroupState(hwnd, dwGroupId, dwMask, dwState):
-                        return { LVGROUP _macro_lvg; _macro_lvg.cbSize = ctypes.sizeof_macro_lvg; _macro_lvg.mask = LVGF_STATE; _macro_lvg.stateMask = dwMask; _macro_lvg.state = LPARAMLVGROP * & _macro_lvg); }
+                        _macro_lvg = LVGROUP
+                        _macro_lvg.cbSize = ctypes.sizeof(_macro_lvg)
+                        _macro_lvg.mask = LVGF_STATE
+                        _macro_lvg.stateMask = dwMask
+                        _macro_lvg.state = _macro_lvg
+                        return _macro_lvg
+
                     LVM_GETGROUPSTATE = LVM_FIRST + 92
 
 
                     def ListView_GetGroupState(hwnd, dwGroupId, dwMask):
-                        return UINT SNDMSGhwnd, LVM_GETGROUPSTATE, WPARAMdwGroupId, LPARAMdwMask
+                        return SNDMSG(hwnd, LVM_GETGROUPSTATE, dwGroupId, dwMask)
+
+
                     LVM_GETFOCUSEDGROUP = LVM_FIRST + 93
 
 
@@ -4943,28 +5009,28 @@ if not defined(_INC_COMMCTRL):
                     # END IF
                     LVTILEINFO_V5_SIZE = CCSIZEOF_STRUCT(
                         LVTILEINFO,
-                        puColumns,
+                        LVTILEINFO.puColumns,
                     )
                     LVM_SETTILEVIEWINFO = LVM_FIRST + 162
 
 
                     def ListView_SetTileViewInfo(hwnd, ptvi):
-                        return SNDMSGhwnd, LVM_SETTILEVIEWINFO, 0, LPARAMptvi
+                        return SNDMSG(hwnd, LVM_SETTILEVIEWINFO, 0, ptvi)
                     LVM_GETTILEVIEWINFO = LVM_FIRST + 163
 
 
                     def ListView_GetTileViewInfo(hwnd, ptvi):
-                        return SNDMSGhwnd, LVM_GETTILEVIEWINFO, 0, LPARAMptvi
+                        return SNDMSG(hwnd, LVM_GETTILEVIEWINFO, 0, ptvi)
                     LVM_SETTILEINFO = LVM_FIRST + 164
 
 
                     def ListView_SetTileInfo(hwnd, pti):
-                        return SNDMSGhwnd, LVM_SETTILEINFO, 0, LPARAMpti
+                        return SNDMSG(hwnd, LVM_SETTILEINFO, 0, pti)
                     LVM_GETTILEINFO = LVM_FIRST + 165
 
 
                     def ListView_GetTileInfo(hwnd, pti):
-                        return SNDMSGhwnd, LVM_GETTILEINFO, 0, LPARAMpti
+                        return SNDMSG(hwnd, LVM_GETTILEINFO, 0, pti)
                     class LVINSERTMARK(ctypes.Structure):
                         pass
 
@@ -4981,32 +5047,32 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetInsertMark(hwnd, lvim):
-                        return BOOLSNDMSGhwnd, LVM_SETINSERTMARK, WPARAM 0, LPARAM lvim
+                        return SNDMSG(hwnd, LVM_SETINSERTMARK, WPARAM 0, lvim)
                     LVM_GETINSERTMARK = LVM_FIRST + 167
 
 
                     def ListView_GetInsertMark(hwnd, lvim):
-                        return BOOLSNDMSGhwnd, LVM_GETINSERTMARK, WPARAM 0, LPARAM lvim
+                        return SNDMSG(hwnd, LVM_GETINSERTMARK, 0, lvim)
                     LVM_INSERTMARKHITTEST = LVM_FIRST + 168
 
 
                     def ListView_InsertMarkHitTest(hwnd, point, lvim):
-                        return INTSNDMSGhwnd, LVM_INSERTMARKHITTEST, WPARAMLPPOINTpoint, LPARAMLPLVINSERTMARKlvim
+                        return SNDMSG(hwnd, LVM_INSERTMARKHITTEST, point, lvim)
                     LVM_GETINSERTMARKRECT = LVM_FIRST + 169
 
 
                     def ListView_GetInsertMarkRect(hwnd, rc):
-                        return INTSNDMSGhwnd, LVM_GETINSERTMARKRECT, WPARAM0, LPARAMLPRECTrc
+                        return SNDMSG(hwnd, LVM_GETINSERTMARKRECT, 0, rc)
                     LVM_SETINSERTMARKCOLOR = LVM_FIRST + 170
 
 
                     def ListView_SetInsertMarkColor(hwnd, color):
-                        return COLORREFSNDMSGhwnd, LVM_SETINSERTMARKCOLOR, WPARAM0, LPARAMCOLORREFcolor
+                        return SNDMSG(hwnd, LVM_SETINSERTMARKCOLOR, 0, color)
                     LVM_GETINSERTMARKCOLOR = LVM_FIRST + 171
 
 
                     def ListView_GetInsertMarkColor(hwnd):
-                        return COLORREFSNDMSG(hwnd, LVM_GETINSERTMARKCOLOR, WPARAM0, LPARAM0)
+                        return SNDMSG(hwnd, LVM_GETINSERTMARKCOLOR, 0, 0)
                     class tagLVSETINFOTIP(ctypes.Structure):
                         pass
 
@@ -5024,32 +5090,32 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_SetInfoTip(hwndLV, plvInfoTip):
-                        return BOOLSNDMSGhwndLV, LVM_SETINFOTIP, WPARAM0, LPARAMplvInfoTip
+                        return SNDMSG(hwndLV, LVM_SETINFOTIP, 0, LPARAMplvInfoTip
                     LVM_GETSELECTEDCOLUMN = LVM_FIRST + 174
 
 
                     def ListView_GetSelectedColumn(hwnd):
-                        return UINTSNDMSG(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0)
+                        return SNDMSG(hwnd, LVM_GETSELECTEDCOLUMN, 0, 0)
                     LVM_ISGROUPVIEWENABLED = LVM_FIRST + 175
 
 
                     def ListView_IsGroupViewEnabled(hwnd):
-                        return BOOLSNDMSG(hwnd, LVM_ISGROUPVIEWENABLED, 0, 0)
+                        return SNDMSG(hwnd, LVM_ISGROUPVIEWENABLED, 0, 0)
                     LVM_GETOUTLINECOLOR = LVM_FIRST + 176
 
 
                     def ListView_GetOutlineColor(hwnd):
-                        return COLORREFSNDMSG(hwnd, LVM_GETOUTLINECOLOR, 0, 0)
+                        return SNDMSG(hwnd, LVM_GETOUTLINECOLOR, 0, 0)
                     LVM_SETOUTLINECOLOR = LVM_FIRST + 177
 
 
                     def ListView_SetOutlineColor(hwnd, color):
-                        return COLORREFSNDMSGhwnd, LVM_SETOUTLINECOLOR, WPARAM0, LPARAMCOLORREFcolor
+                        return SNDMSG(hwnd, LVM_SETOUTLINECOLOR, 0, LPARAMCOLORREFcolor
                     LVM_CANCELEDITLABEL = LVM_FIRST + 179
 
 
                     def ListView_CancelEditLabel(hwnd):
-                        return VOIDSNDMSG(hwnd, LVM_CANCELEDITLABEL, WPARAM0, LPARAM0)
+                        return SNDMSG(hwnd, LVM_CANCELEDITLABEL, 0, 0)
 
                     # These next to methods make it easy to identify an item
                     # that can be repositioned
@@ -5066,37 +5132,37 @@ if not defined(_INC_COMMCTRL):
 
 
                     def ListView_MapIndexToID(hwnd, index):
-                        return UINTSNDMSG(hwnd, LVM_MAPINDEXTOID, WPARAMindex, LPARAM0)
+                        return SNDMSG(hwnd, LVM_MAPINDEXTOID, index, 0)
                     LVM_MAPIDTOINDEX = LVM_FIRST + 181
 
 
                     def ListView_MapIDToIndex(hwnd, id):
-                        return UINTSNDMSG(hwnd, LVM_MAPIDTOINDEX, WPARAMid, LPARAM0)
+                        return SNDMSG(hwnd, LVM_MAPIDTOINDEX, WPARAMid, 0)
                     LVM_ISITEMVISIBLE = LVM_FIRST + 182
 
 
                     def ListView_IsItemVisible(hwnd, index):
-                        return UINTSNDMSG(hwnd, LVM_ISITEMVISIBLE, WPARAMindex, LPARAM0)
+                        return SNDMSG(hwnd, LVM_ISITEMVISIBLE, index, 0)
 
                     if NTDDI_VERSION >= NTDDI_VISTA:
 
 
                         def ListView_SetGroupHeaderImageList(hwnd, himl):
-                            return HIMAGELISTSNDMSGhwnd, LVM_SETIMAGELIST, WPARAMLVSIL_GROUPHEADER, LPARAMHIMAGELISThiml
+                            return SNDMSG(hwnd, LVM_SETIMAGELIST, WPARAMLVSIL_GROUPHEADER, himl)
 
 
                         def ListView_GetGroupHeaderImageList(hwnd):
-                            return HIMAGELISTSNDMSG(hwnd, LVM_GETIMAGELIST, WPARAMLVSIL_GROUPHEADER, 0L)
+                            return SNDMSG(hwnd, LVM_GETIMAGELIST, WPARAMLVSIL_GROUPHEADER, 0)
                         LVM_GETEMPTYTEXT = LVM_FIRST + 204
 
 
                         def ListView_GetEmptyText(hwnd, pszText, cchText):
-                            return BOOLSNDMSGhwnd, LVM_GETEMPTYTEXT, WPARAMcchText, LPARAMpszText
+                            return SNDMSG(hwnd, LVM_GETEMPTYTEXT, cchText, pszText)
                         LVM_GETFOOTERRECT = LVM_FIRST + 205
 
 
                         def ListView_GetFooterRect(hwnd, prc):
-                            return BOOLSNDMSGhwnd, LVM_GETFOOTERRECT, WPARAM0, LPARAMprc
+                            return SNDMSG(hwnd, LVM_GETFOOTERRECT, 0, prc)
 
                         # footer flags
                         LVFF_ITEMCOUNT = 0x00000001
@@ -5116,12 +5182,12 @@ if not defined(_INC_COMMCTRL):
 
 
                         def ListView_GetFooterInfo(hwnd, plvfi):
-                            return BOOLSNDMSGhwnd, LVM_GETFOOTERINFO, WPARAM0, LPARAMplvfi
+                            return SNDMSG(hwnd, LVM_GETFOOTERINFO, 0, plvfi)
                         LVM_GETFOOTERITEMRECT = LVM_FIRST + 207
 
 
                         def ListView_GetFooterItemRect(hwnd, iItem, prc):
-                            return BOOLSNDMSGhwnd, LVM_GETFOOTERITEMRECT, WPARAMiItem, LPARAMprc
+                            return SNDMSG(hwnd, LVM_GETFOOTERITEMRECT, iItem, prc)
 
                         # footer item flags
                         LVFIF_TEXT = 0x00000001
@@ -5147,7 +5213,7 @@ if not defined(_INC_COMMCTRL):
 
 
                         def ListView_GetFooterItem(hwnd, iItem, pfi):
-                            return BOOLSNDMSGhwnd, LVM_GETFOOTERITEM, WPARAMiItem, LPARAMpfi
+                            return SNDMSG(hwnd, LVM_GETFOOTERITEM, iItem, pfi)
 
                         # supports a single item in multiple groups.
                         class tagLVITEMINDEX(ctypes.Structure):
@@ -5167,7 +5233,7 @@ if not defined(_INC_COMMCTRL):
 
 
                         def ListView_GetItemIndexRect(hwnd, plvii, iSubItem, code, prc):
-                            return BOOLSNDMSG(hwnd, LVM_GETITEMINDEXRECT, WPARAMLVITEMINDEX*plvii, (prc ? (((LPRECTprc) - >top = iSubItem), ((LPRECTprc) - >left = code), LPARAMprc) : LPARAMLPRECTNULL))
+                            return SNDMSG(hwnd, LVM_GETITEMINDEXRECT, WPARAMLVITEMINDEX*plvii, (prc ? (((LPRECTprc) - >top = iSubItem), ((LPRECTprc) - >left = code), prc)) : LPARAMLPRECTNULL))
                         LVM_SETITEMINDEXSTATE = LVM_FIRST + 210
 
 
@@ -5177,7 +5243,7 @@ if not defined(_INC_COMMCTRL):
 
 
                         def ListView_GetNextItemIndex(hwnd, plvii, flags):
-                            return BOOLSNDMSGhwnd, LVM_GETNEXTITEMINDEX, WPARAMLVITEMINDEX*plvii, MAKELPARAM(flags, 0)
+                            return SNDMSG(hwnd, LVM_GETNEXTITEMINDEX, ctypes.byref(plvii), MAKELPARAM(flags, 0))
                     # END IF
                 # END IF
 
@@ -5195,11 +5261,13 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ListView_SetBkImage(hwnd, plvbki):
-                    return BOOLSNDMSGhwnd, LVM_SETBKIMAGE, 0, LPARAMplvbki
+                    return SNDMSG(hwnd, LVM_SETBKIMAGE, 0, plvbki)
 
 
                 def ListView_GetBkImage(hwnd, plvbki):
-                    return BOOLSNDMSGhwnd, LVM_GETBKIMAGE, 0, LPARAMplvbki
+                    return SNDMSG(hwnd, LVM_GETBKIMAGE, 0, plvbki)
+
+
                 LPNM_LISTVIEW = LPNMLISTVIEW
                 NM_LISTVIEW = NMLISTVIEW
                 class tagNMLISTVIEW(ctypes.Structure):
@@ -5899,21 +5967,21 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_InsertItem(hwnd, lpis):
-                    return HTREEITEMSNDMSGhwnd, TVM_INSERTITEM, 0, LPARAMLPTV_INSERTSTRUCTlpis
+                    return HTREEITEMSNDMSG(hwnd, TVM_INSERTITEM, 0, LPARAMLPTV_INSERTSTRUCTlpis
                 TVM_DELETEITEM = TV_FIRST + 1
 
 
                 def TreeView_DeleteItem(hwnd, hitem):
-                    return BOOLSNDMSGhwnd, TVM_DELETEITEM, 0, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_DELETEITEM, 0, hitem)
 
 
                 def TreeView_DeleteAllItems(hwnd):
-                    return BOOLSNDMSG(hwnd, TVM_DELETEITEM, 0, LPARAMTVI_ROOT)
+                    return SNDMSG(hwnd, TVM_DELETEITEM, 0, LPARAMTVI_ROOT)
                 TVM_EXPAND = TV_FIRST + 2
 
 
                 def TreeView_Expand(hwnd, hitem, code):
-                    return BOOLSNDMSGhwnd, TVM_EXPAND, WPARAMcode, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_EXPAND, WPARAMcode, hitem)
                 TVE_COLLAPSE = 0x0001
                 TVE_EXPAND = 0x0002
                 TVE_TOGGLE = 0x0003
@@ -5923,39 +5991,39 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_GetItemRect(hwnd, hitem, prc, code):
-                    return (*HTREEITEM *prc = hitem, BOOLSNDMSGhwnd, TVM_GETITEMRECT, WPARAMcode, LPARAMRECT *prc)
+                    return (*HTREEITEM *prc = hitem, SNDMSG(hwnd, TVM_GETITEMRECT, WPARAMcode, LPARAMRECT *prc)
                 TVM_GETCOUNT = TV_FIRST + 5
 
 
                 def TreeView_GetCount(hwnd):
-                    return UINTSNDMSG(hwnd, TVM_GETCOUNT, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETCOUNT, 0, 0)
                 TVM_GETINDENT = TV_FIRST + 6
 
 
                 def TreeView_GetIndent(hwnd):
-                    return UINTSNDMSG(hwnd, TVM_GETINDENT, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETINDENT, 0, 0)
                 TVM_SETINDENT = TV_FIRST + 7
 
 
                 def TreeView_SetIndent(hwnd, indent):
-                    return BOOLSNDMSG(hwnd, TVM_SETINDENT, WPARAMindent, 0)
+                    return SNDMSG(hwnd, TVM_SETINDENT, WPARAMindent, 0)
                 TVM_GETIMAGELIST = TV_FIRST + 8
 
 
                 def TreeView_GetImageList(hwnd, iImage):
-                    return HIMAGELISTSNDMSG(hwnd, TVM_GETIMAGELIST, iImage, 0)
+                    return SNDMSG(hwnd, TVM_GETIMAGELIST, iImage, 0)
                 TVSIL_NORMAL = 0
                 TVSIL_STATE = 2
                 TVM_SETIMAGELIST = TV_FIRST + 9
 
 
                 def TreeView_SetImageList(hwnd, himl, iImage):
-                    return HIMAGELISTSNDMSGhwnd, TVM_SETIMAGELIST, iImage, LPARAMHIMAGELISThiml
+                    return SNDMSG(hwnd, TVM_SETIMAGELIST, iImage, himl)
                 TVM_GETNEXTITEM = TV_FIRST + 10
 
 
                 def TreeView_GetNextItem(hwnd, hitem, code):
-                    return HTREEITEMSNDMSGhwnd, TVM_GETNEXTITEM, WPARAMcode, LPARAMHTREEITEMhitem
+                    return HTREEITEMSNDMSG(hwnd, TVM_GETNEXTITEM, WPARAMcode, hitem)
                 TVGN_ROOT = 0x0000
                 TVGN_NEXT = 0x0001
                 TVGN_PREVIOUS = 0x0002
@@ -5978,71 +6046,73 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_GetChild(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_CHILD
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_CHILD)
 
 
                 def TreeView_GetNextSibling(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_NEXT
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_NEXT)
 
 
                 def TreeView_GetPrevSibling(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_PREVIOUS
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_PREVIOUS)
 
 
                 def TreeView_GetParent(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_PARENT
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_PARENT)
 
 
                 def TreeView_GetFirstVisible(hwnd):
-                    return TreeView_GetNextItemhwnd, NULL, TVGN_FIRSTVISIBLE
+                    return TreeView_GetNextItem(hwnd, NULL, TVGN_FIRSTVISIBLE)
 
 
                 def TreeView_GetNextVisible(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_NEXTVISIBLE
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_NEXTVISIBLE)
 
 
                 def TreeView_GetPrevVisible(hwnd, hitem):
-                    return TreeView_GetNextItemhwnd, hitem, TVGN_PREVIOUSVISIBLE
+                    return TreeView_GetNextItem(hwnd, hitem, TVGN_PREVIOUSVISIBLE)
 
 
                 def TreeView_GetSelection(hwnd):
-                    return TreeView_GetNextItemhwnd, NULL, TVGN_CARET
+                    return TreeView_GetNextItem(hwnd, NULL, TVGN_CARET)
 
 
                 def TreeView_GetDropHilight(hwnd):
-                    return TreeView_GetNextItemhwnd, NULL, TVGN_DROPHILITE
+                    return TreeView_GetNextItem(hwnd, NULL, TVGN_DROPHILITE)
 
 
                 def TreeView_GetRoot(hwnd):
-                    return TreeView_GetNextItemhwnd, NULL, TVGN_ROOT
+                    return TreeView_GetNextItem(hwnd, NULL, TVGN_ROOT)
 
 
                 def TreeView_GetLastVisible(hwnd):
-                    return TreeView_GetNextItemhwnd, NULL, TVGN_LASTVISIBLE
+                    return TreeView_GetNextItem(hwnd, NULL, TVGN_LASTVISIBLE)
 
                 if _WIN32_IE >= 0x0600:
 
 
                     def TreeView_GetNextSelected(hwnd, hitem):
-                        return TreeView_GetNextItemhwnd, hitem, TVGN_NEXTSELECTED
+                        return TreeView_GetNextItem(hwnd, hitem, TVGN_NEXTSELECTED)
                 # END IF
                 TVM_SELECTITEM = TV_FIRST + 11
 
 
                 def TreeView_Select(hwnd, hitem, code):
-                    return BOOLSNDMSGhwnd, TVM_SELECTITEM, WPARAMcode, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_SELECTITEM, code, hitem)
 
 
                 def TreeView_SelectItem(hwnd, hitem):
-                    return TreeView_Selecthwnd, hitem, TVGN_CARET
+                    return TreeView_Select(hwnd, hitem, TVGN_CARET)
 
 
                 def TreeView_SelectDropTarget(hwnd, hitem):
-                    return TreeView_Selecthwnd, hitem, TVGN_DROPHILITE
+                    return TreeView_Select(hwnd, hitem, TVGN_DROPHILITE)
 
 
                 def TreeView_SelectSetFirstVisible(hwnd, hitem):
-                    return TreeView_Selecthwnd, hitem, TVGN_FIRSTVISIBLE
+                    return TreeView_Select(hwnd, hitem, TVGN_FIRSTVISIBLE)
+
+
                 TVM_GETITEMA = TV_FIRST + 12
                 TVM_GETITEMW = TV_FIRST + 62
 
@@ -6054,7 +6124,9 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_GetItem(hwnd, pitem):
-                    return BOOLSNDMSGhwnd, TVM_GETITEM, 0, LPARAMTV_ITEM *pitem
+                    return SNDMSG(hwnd, TVM_GETITEM, 0, ctypes.byref(pitem))
+
+
                 TVM_SETITEMA = TV_FIRST + 13
                 TVM_SETITEMW = TV_FIRST + 63
 
@@ -6066,7 +6138,9 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_SetItem(hwnd, pitem):
-                    return BOOLSNDMSGhwnd, TVM_SETITEM, 0, LPARAMTV_ITEM *pitem
+                    return SNDMSG(hwnd, TVM_SETITEM, 0, ctypes.byref(pitem))
+
+
                 TVM_EDITLABELA = TV_FIRST + 14
                 TVM_EDITLABELW = TV_FIRST + 65
 
@@ -6078,24 +6152,34 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_EditLabel(hwnd, hitem):
-                    return HWNDSNDMSGhwnd, TVM_EDITLABEL, 0, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_EDITLABEL, 0, hitem)
+
+
                 TVM_GETEDITCONTROL = TV_FIRST + 15
 
 
                 def TreeView_GetEditControl(hwnd):
-                    return HWNDSNDMSG(hwnd, TVM_GETEDITCONTROL, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETEDITCONTROL, 0, 0)
+
+
                 TVM_GETVISIBLECOUNT = TV_FIRST + 16
 
 
                 def TreeView_GetVisibleCount(hwnd):
-                    return UINTSNDMSG(hwnd, TVM_GETVISIBLECOUNT, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETVISIBLECOUNT, 0, 0)
+
+
                 TVM_HITTEST = TV_FIRST + 17
 
 
                 def TreeView_HitTest(hwnd, lpht):
-                    return HTREEITEMSNDMSGhwnd, TVM_HITTEST, 0, LPARAMLPTV_HITTESTINFOlpht
+                    return SNDMSG(hwnd, TVM_HITTEST, 0, lpht)
+
+
                 LPTV_HITTESTINFO = LPTVHITTESTINFO
                 TV_HITTESTINFO = TVHITTESTINFO
+
+
                 class tagTVHITTESTINFO(ctypes.Structure):
                     pass
 
@@ -6127,27 +6211,33 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_CreateDragImage(hwnd, hitem):
-                    return HIMAGELISTSNDMSGhwnd, TVM_CREATEDRAGIMAGE, 0, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_CREATEDRAGIMAGE, 0, hitem)
                 TVM_SORTCHILDREN = TV_FIRST + 19
 
 
                 def TreeView_SortChildren(hwnd, hitem, recurse):
-                    return BOOLSNDMSGhwnd, TVM_SORTCHILDREN, WPARAMrecurse, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_SORTCHILDREN, WPARAMrecurse, hitem)
                 TVM_ENSUREVISIBLE = TV_FIRST + 20
 
 
                 def TreeView_EnsureVisible(hwnd, hitem):
-                    return BOOLSNDMSGhwnd, TVM_ENSUREVISIBLE, 0, LPARAMHTREEITEMhitem
+                    return SNDMSG(hwnd, TVM_ENSUREVISIBLE, 0, hitem)
+
+
                 TVM_SORTCHILDRENCB = TV_FIRST + 21
 
 
                 def TreeView_SortChildrenCB(hwnd, psort, recurse):
-                    return BOOLSNDMSGhwnd, TVM_SORTCHILDRENCB, WPARAMrecurse, LPARAMLPTV_SORTCBpsort
+                    return SNDMSG(hwnd, TVM_SORTCHILDRENCB, recurse, psort)
+
+
                 TVM_ENDEDITLABELNOW = TV_FIRST + 22
 
 
                 def TreeView_EndEditLabelNow(hwnd, fCancel):
-                    return BOOLSNDMSG(hwnd, TVM_ENDEDITLABELNOW, WPARAMfCancel, 0)
+                    return SNDMSG(hwnd, TVM_ENDEDITLABELNOW, fCancel, 0)
+
+
                 TVM_GETISEARCHSTRINGA = TV_FIRST + 23
                 TVM_GETISEARCHSTRINGW = TV_FIRST + 64
 
@@ -6160,86 +6250,112 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_SetToolTips(hwnd, hwndTT):
-                    return HWNDSNDMSG(hwnd, TVM_SETTOOLTIPS, WPARAMhwndTT, 0)
+                    return SNDMSG(hwnd, TVM_SETTOOLTIPS, hwndTT, 0)
+
+
                 TVM_GETTOOLTIPS = TV_FIRST + 25
 
 
                 def TreeView_GetToolTips(hwnd):
-                    return HWNDSNDMSG(hwnd, TVM_GETTOOLTIPS, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETTOOLTIPS, 0, 0)
 
 
                 def TreeView_GetISearchString(hwndTV, lpsz):
-                    return BOOLSNDMSGhwndTV, TVM_GETISEARCHSTRING, 0, LPARAMLPTSTRlpsz
+                    return SNDMSG(hwndTV, TVM_GETISEARCHSTRING, 0, lpsz)
+
+
                 TVM_SETINSERTMARK = TV_FIRST + 26
 
 
                 def TreeView_SetInsertMark(hwnd, hItem, fAfter):
-                    return BOOLSNDMSGhwnd, TVM_SETINSERTMARK, WPARAM fAfter, LPARAM hItem
+                    return SNDMSG(hwnd, TVM_SETINSERTMARK, fAfter, hItem)
+
+
                 TVM_SETUNICODEFORMAT = CCM_SETUNICODEFORMAT
 
 
                 def TreeView_SetUnicodeFormat(hwnd, fUnicode):
-                    return BOOLSNDMSG(hwnd, TVM_SETUNICODEFORMAT, WPARAMfUnicode, 0)
+                    return SNDMSG(hwnd, TVM_SETUNICODEFORMAT, fUnicode, 0)
+
+
                 TVM_GETUNICODEFORMAT = CCM_GETUNICODEFORMAT
 
 
                 def TreeView_GetUnicodeFormat(hwnd):
-                    return BOOLSNDMSG(hwnd, TVM_GETUNICODEFORMAT, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETUNICODEFORMAT, 0, 0)
+
+
                 TVM_SETITEMHEIGHT = TV_FIRST + 27
 
 
                 def TreeView_SetItemHeight(hwnd, iHeight):
-                    return INTSNDMSG(hwnd, TVM_SETITEMHEIGHT, WPARAMiHeight, 0)
+                    return SNDMSG(hwnd, TVM_SETITEMHEIGHT, iHeight, 0)
+
+
                 TVM_GETITEMHEIGHT = TV_FIRST + 28
 
 
                 def TreeView_GetItemHeight(hwnd):
-                    return INTSNDMSG(hwnd, TVM_GETITEMHEIGHT, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETITEMHEIGHT, 0, 0)
+
+
                 TVM_SETBKCOLOR = TV_FIRST + 29
 
 
                 def TreeView_SetBkColor(hwnd, clr):
-                    return COLORREFSNDMSGhwnd, TVM_SETBKCOLOR, 0, LPARAMclr
+                    return SNDMSG(hwnd, TVM_SETBKCOLOR, 0, clr)
+
+
                 TVM_SETTEXTCOLOR = TV_FIRST + 30
 
 
                 def TreeView_SetTextColor(hwnd, clr):
-                    return COLORREFSNDMSGhwnd, TVM_SETTEXTCOLOR, 0, LPARAMclr
+                    return SNDMSG(hwnd, TVM_SETTEXTCOLOR, 0, clr)
+
+
                 TVM_GETBKCOLOR = TV_FIRST + 31
 
 
                 def TreeView_GetBkColor(hwnd):
-                    return COLORREFSNDMSG(hwnd, TVM_GETBKCOLOR, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETBKCOLOR, 0, 0)
+
+
                 TVM_GETTEXTCOLOR = TV_FIRST + 32
 
 
                 def TreeView_GetTextColor(hwnd):
-                    return COLORREFSNDMSG(hwnd, TVM_GETTEXTCOLOR, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETTEXTCOLOR, 0, 0)
+
+
                 TVM_SETSCROLLTIME = TV_FIRST + 33
 
 
                 def TreeView_SetScrollTime(hwnd, uTime):
-                    return UINTSNDMSG(hwnd, TVM_SETSCROLLTIME, uTime, 0)
+                    return SNDMSG(hwnd, TVM_SETSCROLLTIME, uTime, 0)
+
+
                 TVM_GETSCROLLTIME = TV_FIRST + 34
 
 
                 def TreeView_GetScrollTime(hwnd):
-                    return UINTSNDMSG(hwnd, TVM_GETSCROLLTIME, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETSCROLLTIME, 0, 0)
                 TVM_SETINSERTMARKCOLOR = TV_FIRST + 37
 
 
                 def TreeView_SetInsertMarkColor(hwnd, clr):
-                    return COLORREFSNDMSGhwnd, TVM_SETINSERTMARKCOLOR, 0, LPARAMclr
+                    return SNDMSG(hwnd, TVM_SETINSERTMARKCOLOR, 0, clr)
                 TVM_GETINSERTMARKCOLOR = TV_FIRST + 38
 
 
                 def TreeView_GetInsertMarkColor(hwnd):
-                    return COLORREFSNDMSG(hwnd, TVM_GETINSERTMARKCOLOR, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETINSERTMARKCOLOR, 0, 0)
                 TVM_SETBORDER = TV_FIRST + 35
 
 
                 def TreeView_SetBorder(hwnd, dwFlags, xBorder, yBorder):
-                    return INTSNDMSGhwnd, TVM_SETBORDER, WPARAMdwFlags, MAKELPARAMxBorder, yBorder
+                    return SNDMSG(hwnd, TVM_SETBORDER, dwFlags, MAKELPARAM(xBorder, yBorder))
+
+
                 TVSBF_XBORDER = 0x00000001
                 TVSBF_YBORDER = 0x00000002
 
@@ -6253,71 +6369,87 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TreeView_SetCheckState(hwndTV, hti, fCheck):
-                    return TreeView_SetItemState(hwndTV, hti, INDEXTOSTATEIMAGEMASK(fCheck?2:1), TVIS_STATEIMAGEMASK)
+                    return TreeView_SetItemState(hwndTV, hti, INDEXTOSTATEIMAGEMASK(2 if fCheck else 1), TVIS_STATEIMAGEMASK)
+
+
                 TVM_GETITEMSTATE = TV_FIRST + 39
 
 
                 def TreeView_GetItemState(hwndTV, hti, mask):
-                    return UINTSNDMSGhwndTV, TVM_GETITEMSTATE, WPARAMhti, LPARAMmask
+                    return SNDMSG(hwndTV, TVM_GETITEMSTATE, hti, mask)
 
 
                 def TreeView_GetCheckState(hwndTV, hti):
-                    return (((UINT(SNDMSG(hwndTV, TVM_GETITEMSTATE, WPARAMhti, TVIS_STATEIMAGEMASK))) >> 12) - 1)
+                    return (SNDMSG(hwndTV, TVM_GETITEMSTATE, hti, TVIS_STATEIMAGEMASK) >> 12) - 1
+
+
                 TVM_SETLINECOLOR = TV_FIRST + 40
 
 
                 def TreeView_SetLineColor(hwnd, clr):
-                    return COLORREFSNDMSGhwnd, TVM_SETLINECOLOR, 0, LPARAMclr
+                    return SNDMSG(hwnd, TVM_SETLINECOLOR, 0, clr)
+
+
                 TVM_GETLINECOLOR = TV_FIRST + 41
 
 
                 def TreeView_GetLineColor(hwnd):
-                    return COLORREFSNDMSG(hwnd, TVM_GETLINECOLOR, 0, 0)
+                    return SNDMSG(hwnd, TVM_GETLINECOLOR, 0, 0)
 
                 if NTDDI_VERSION >= NTDDI_WINXP:
                     TVM_MAPACCIDTOHTREEITEM = TV_FIRST + 42
 
 
                     def TreeView_MapAccIDToHTREEITEM(hwnd, id):
-                        return HTREEITEMSNDMSG(hwnd, TVM_MAPACCIDTOHTREEITEM, id, 0)
+                        return SNDMSG(hwnd, TVM_MAPACCIDTOHTREEITEM, id, 0)
+
+
                     TVM_MAPHTREEITEMTOACCID = TV_FIRST + 43
 
 
                     def TreeView_MapHTREEITEMToAccID(hwnd, htreeitem):
-                        return UINTSNDMSG(hwnd, TVM_MAPHTREEITEMTOACCID, WPARAMhtreeitem, 0)
+                        return SNDMSG(hwnd, TVM_MAPHTREEITEMTOACCID, htreeitem, 0)
+
+
                     TVM_SETEXTENDEDSTYLE = TV_FIRST + 44
 
 
                     def TreeView_SetExtendedStyle(hwnd, dw, mask):
-                        return DWORDSNDMSG(hwnd, TVM_SETEXTENDEDSTYLE, mask, dw)
+                        return SNDMSG(hwnd, TVM_SETEXTENDEDSTYLE, mask, dw)
+
+
                     TVM_GETEXTENDEDSTYLE = TV_FIRST + 45
 
 
                     def TreeView_GetExtendedStyle(hwnd):
-                        return DWORDSNDMSG(hwnd, TVM_GETEXTENDEDSTYLE, 0, 0)
+                        return SNDMSG(hwnd, TVM_GETEXTENDEDSTYLE, 0, 0)
+
+
                     TVM_SETAUTOSCROLLINFO = TV_FIRST + 59
 
 
                     def TreeView_SetAutoScrollInfo(hwnd, uPixPerSec, uUpdateTime):
-                        return SNDMSGhwnd, TVM_SETAUTOSCROLLINFO, WPARAMuPixPerSec, LPARAMuUpdateTime
+                        return SNDMSG(hwnd, TVM_SETAUTOSCROLLINFO, uPixPerSec, uUpdateTime)
                 # END IF
                 TVM_SETHOT = TV_FIRST + 58
 
 
                 def TreeView_SetHot(hwnd, hitem):
-                    return SNDMSGhwnd, TVM_SETHOT, 0, LPARAMhitem
+                    return SNDMSG(hwnd, TVM_SETHOT, 0, hitem)
 
                 if NTDDI_VERSION >= NTDDI_VISTA:
                     TVM_GETSELECTEDCOUNT = TV_FIRST + 70
 
 
                     def TreeView_GetSelectedCount(hwnd):
-                        return DWORDSNDMSG(hwnd, TVM_GETSELECTEDCOUNT, 0, 0)
+                        return SNDMSG(hwnd, TVM_GETSELECTEDCOUNT, 0, 0)
+
+
                     TVM_SHOWINFOTIP = TV_FIRST + 71
 
 
                     def TreeView_ShowInfoTip(hwnd, hitem):
-                        return DWORDSNDMSGhwnd, TVM_SHOWINFOTIP, 0, LPARAMhitem
+                        return SNDMSG(hwnd, TVM_SHOWINFOTIP, 0, hitem)
 
 
                     class _TVITEMPART(ENUM):
@@ -6339,7 +6471,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def TreeView_GetItemPartRect(hwnd, hitem, prc, partid):
-                        return { TVGETITEMPARTRECTINFO info; info.hti = hitem; info.prc = prc; info.partID = partid; BOOLSNDMSG(hwnd, TVM_GETITEMPARTRECT, 0, LPARAM & info); }
+                        return { TVGETITEMPARTRECTINFO info; info.hti = hitem; info.prc = prc; info.partID = partid; SNDMSG(hwnd, TVM_GETITEMPARTRECT, 0, LPARAM & info); }
                 # END IF
                 (CALLBACK = INT
                 PFNTVCOMPARE)(LPARAM = POINTER(INT)
@@ -6685,6 +6817,8 @@ if not defined(_INC_COMMCTRL):
                 PCOMBOBOXEXITEMA = POINTER(tagCOMBOBOXEXITEMA)
                 CONST = COMBOBOXEXITEMA
                 PCCOMBOEXITEMA = POINTER(COMBOBOXEXITEMA)
+
+
                 class tagCOMBOBOXEXITEMW(ctypes.Structure):
                     pass
 
@@ -6714,6 +6848,7 @@ if not defined(_INC_COMMCTRL):
                     PCOMBOBOXEXITEM = PCOMBOBOXEXITEMA
                     PCCOMBOBOXEXITEM = PCCOMBOBOXEXITEMA
                 # END IF
+
                 CBEM_INSERTITEMA = WM_USER + 1
                 CBEM_SETIMAGELIST = WM_USER + 2
                 CBEM_GETIMAGELIST = WM_USER + 3
@@ -6746,6 +6881,7 @@ if not defined(_INC_COMMCTRL):
                 if NTDDI_VERSION >= NTDDI_WINXP:
                     CBEM_SETWINDOWTHEME = CCM_SETWINDOWTHEME
                 # END IF
+
                 CBES_EX_NOEDITIMAGE = 0x00000001
                 CBES_EX_NOEDITIMAGEINDENT = 0x00000002
                 CBES_EX_PATHWORDBREAKPROC = 0x00000004
@@ -6755,6 +6891,7 @@ if not defined(_INC_COMMCTRL):
                 if NTDDI_VERSION >= NTDDI_VISTA:
                     CBES_EX_TEXTENDELLIPSIS = 0x00000020
                 # END IF
+
                 class NMCOMBOBOXEXA(ctypes.Structure):
                     pass
 
@@ -6764,6 +6901,8 @@ if not defined(_INC_COMMCTRL):
                     ('ceItem', COMBOBOXEXITEMA),
                 ]
                 PNMCOMBOBOXEXA = POINTER(NMCOMBOBOXEXA)
+
+
                 class NMCOMBOBOXEXW(ctypes.Structure):
                     pass
 
@@ -6783,6 +6922,7 @@ if not defined(_INC_COMMCTRL):
                     PNMCOMBOBOXEX = PNMCOMBOBOXEXA
                     CBEN_GETDISPINFO = CBEN_GETDISPINFOA
                 # END IF
+
                 CBEN_GETDISPINFOA = CBEN_FIRST - 0
                 CBEN_INSERTITEM = CBEN_FIRST - 1
                 CBEN_DELETEITEM = CBEN_FIRST - 2
@@ -6806,6 +6946,7 @@ if not defined(_INC_COMMCTRL):
                 else:
                     CBEN_ENDEDIT = CBEN_ENDEDITA
                 # END IF
+
                 CBENF_KILLFOCUS = 1
                 CBENF_RETURN = 2
                 CBENF_ESCAPE = 3
@@ -6824,6 +6965,8 @@ if not defined(_INC_COMMCTRL):
                 ]
                 LPNMCBEDRAGBEGINW = POINTER(NMCBEDRAGBEGINW)
                 PNMCBEDRAGBEGINW = POINTER(NMCBEDRAGBEGINW)
+
+
                 class NMCBEDRAGBEGINA(ctypes.Structure):
                     pass
 
@@ -6847,12 +6990,9 @@ if not defined(_INC_COMMCTRL):
                 # END IF
 
                 # CBEN_ENDEDIT sends this information...
-
                 # fChanged if the user actually did anything
-
                 # iNewSelection gives what would be the new selection unless
                 # the notify is failed
-
                 # iNewSelection may be CB_ERR if there's no match
                 class NMCBEENDEDITW(ctypes.Structure):
                     pass
@@ -6867,6 +7007,8 @@ if not defined(_INC_COMMCTRL):
                 ]
                 LPNMCBEENDEDITW = POINTER(NMCBEENDEDITW)
                 PNMCBEENDEDITW = POINTER(NMCBEENDEDITW)
+
+
                 class NMCBEENDEDITA(ctypes.Structure):
                     pass
 
@@ -6940,17 +7082,17 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_GetImageList(hwnd):
-                    return HIMAGELISTSNDMSG(hwnd, TCM_GETIMAGELIST, 0, 0L)
+                    return SNDMSG(hwnd, TCM_GETIMAGELIST, 0, 0)
                 TCM_SETIMAGELIST = TCM_FIRST + 3
 
 
                 def TabCtrl_SetImageList(hwnd, himl):
-                    return HIMAGELISTSNDMSGhwnd, TCM_SETIMAGELIST, 0, LPARAMHIMAGELISThiml
+                    return SNDMSG(hwnd, TCM_SETIMAGELIST, 0, himl)
                 TCM_GETITEMCOUNT = TCM_FIRST + 4
 
 
                 def TabCtrl_GetItemCount(hwnd):
-                    return INTSNDMSG(hwnd, TCM_GETITEMCOUNT, 0, 0L)
+                    return SNDMSG(hwnd, TCM_GETITEMCOUNT, 0, 0)
                 TCIF_TEXT = 0x0001
                 TCIF_IMAGE = 0x0002
                 TCIF_RTLREADING = 0x0004
@@ -7049,7 +7191,7 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_GetItem(hwnd, iItem, pitem):
-                    return BOOLSNDMSGhwnd, TCM_GETITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
+                    return SNDMSG(hwnd, TCM_GETITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
                 TCM_SETITEMA = TCM_FIRST + 6
                 TCM_SETITEMW = TCM_FIRST + 61
 
@@ -7061,7 +7203,7 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_SetItem(hwnd, iItem, pitem):
-                    return BOOLSNDMSGhwnd, TCM_SETITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
+                    return SNDMSG(hwnd, TCM_SETITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
                 TCM_INSERTITEMA = TCM_FIRST + 7
                 TCM_INSERTITEMW = TCM_FIRST + 62
 
@@ -7073,32 +7215,32 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_InsertItem(hwnd, iItem, pitem):
-                    return INTSNDMSGhwnd, TCM_INSERTITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
+                    return SNDMSG(hwnd, TCM_INSERTITEM, WPARAMINTiItem, LPARAMTC_ITEM *pitem
                 TCM_DELETEITEM = TCM_FIRST + 8
 
 
                 def TabCtrl_DeleteItem(hwnd, i):
-                    return BOOLSNDMSG(hwnd, TCM_DELETEITEM, WPARAMINTi, 0L)
+                    return SNDMSG(hwnd, TCM_DELETEITEM, WPARAMINTi, 0)
                 TCM_DELETEALLITEMS = TCM_FIRST + 9
 
 
                 def TabCtrl_DeleteAllItems(hwnd):
-                    return BOOLSNDMSG(hwnd, TCM_DELETEALLITEMS, 0, 0L)
+                    return SNDMSG(hwnd, TCM_DELETEALLITEMS, 0, 0)
                 TCM_GETITEMRECT = TCM_FIRST + 10
 
 
                 def TabCtrl_GetItemRect(hwnd, i, prc):
-                    return BOOLSNDMSGhwnd, TCM_GETITEMRECT, WPARAMINTi, LPARAMRECT *prc
+                    return SNDMSG(hwnd, TCM_GETITEMRECT, WPARAMINTi, LPARAMRECT *prc
                 TCM_GETCURSEL = TCM_FIRST + 11
 
 
                 def TabCtrl_GetCurSel(hwnd):
-                    return INTSNDMSG(hwnd, TCM_GETCURSEL, 0, 0)
+                    return SNDMSG(hwnd, TCM_GETCURSEL, 0, 0)
                 TCM_SETCURSEL = TCM_FIRST + 12
 
 
                 def TabCtrl_SetCurSel(hwnd, i):
-                    return INTSNDMSG(hwnd, TCM_SETCURSEL, WPARAMi, 0)
+                    return SNDMSG(hwnd, TCM_SETCURSEL, WPARAMi, 0)
                 TCHT_NOWHERE = 0x0001
                 TCHT_ONITEMICON = 0x0002
                 TCHT_ONITEMLABEL = 0x0004
@@ -7119,52 +7261,52 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_HitTest(hwndTC, pinfo):
-                    return INTSNDMSGhwndTC, TCM_HITTEST, 0, LPARAMTC_HITTESTINFO *pinfo
+                    return SNDMSG(hwndTC, TCM_HITTEST, 0, LPARAMTC_HITTESTINFO *pinfo
                 TCM_SETITEMEXTRA = TCM_FIRST + 14
 
 
                 def TabCtrl_SetItemExtra(hwndTC, cb):
-                    return BOOLSNDMSG(hwndTC, TCM_SETITEMEXTRA, WPARAMcb, 0L)
+                    return SNDMSG(hwndTC, TCM_SETITEMEXTRA, WPARAMcb, 0)
                 TCM_ADJUSTRECT = TCM_FIRST + 40
 
 
                 def TabCtrl_AdjustRect(hwnd, bLarger, prc):
-                    return INTSNDMSG(hwnd, TCM_ADJUSTRECT, WPARAMBOOLbLarger, LPARAMRECT *prc)
+                    return SNDMSG(hwnd, TCM_ADJUSTRECT, WPARAMBOOLbLarger, LPARAMRECT *prc)
                 TCM_SETITEMSIZE = TCM_FIRST + 41
 
 
                 def TabCtrl_SetItemSize(hwnd, x, y):
-                    return DWORDSNDMSGhwnd, TCM_SETITEMSIZE, 0, MAKELPARAMx,y
+                    return SNDMSG(hwnd, TCM_SETITEMSIZE, 0, MAKELPARAMx,y
                 TCM_REMOVEIMAGE = TCM_FIRST + 42
 
 
                 def TabCtrl_RemoveImage(hwnd, i):
-                    return VOIDSNDMSG(hwnd, TCM_REMOVEIMAGE, i, 0L)
+                    return SNDMSG(hwnd, TCM_REMOVEIMAGE, i, 0)
                 TCM_SETPADDING = TCM_FIRST + 43
 
 
                 def TabCtrl_SetPadding(hwnd, cx, cy):
-                    return VOIDSNDMSGhwnd, TCM_SETPADDING, 0, MAKELPARAMcx, cy
+                    return SNDMSG(hwnd, TCM_SETPADDING, 0, MAKELPARAMcx, cy
                 TCM_GETROWCOUNT = TCM_FIRST + 44
 
 
                 def TabCtrl_GetRowCount(hwnd):
-                    return INTSNDMSG(hwnd, TCM_GETROWCOUNT, 0, 0L)
+                    return SNDMSG(hwnd, TCM_GETROWCOUNT, 0, 0)
                 TCM_GETTOOLTIPS = TCM_FIRST + 45
 
 
                 def TabCtrl_GetToolTips(hwnd):
-                    return HWNDSNDMSG(hwnd, TCM_GETTOOLTIPS, 0, 0L)
+                    return SNDMSG(hwnd, TCM_GETTOOLTIPS, 0, 0)
                 TCM_SETTOOLTIPS = TCM_FIRST + 46
 
 
                 def TabCtrl_SetToolTips(hwnd, hwndTT):
-                    return VOIDSNDMSG(hwnd, TCM_SETTOOLTIPS, WPARAMhwndTT, 0L)
+                    return SNDMSG(hwnd, TCM_SETTOOLTIPS, hwndTT, 0)
                 TCM_GETCURFOCUS = TCM_FIRST + 47
 
 
                 def TabCtrl_GetCurFocus(hwnd):
-                    return INTSNDMSG(hwnd, TCM_GETCURFOCUS, 0, 0)
+                    return SNDMSG(hwnd, TCM_GETCURFOCUS, 0, 0)
                 TCM_SETCURFOCUS = TCM_FIRST + 48
 
 
@@ -7174,43 +7316,54 @@ if not defined(_INC_COMMCTRL):
 
 
                 def TabCtrl_SetMinTabWidth(hwnd, x):
-                    return INTSNDMSG(hwnd, TCM_SETMINTABWIDTH, 0, x)
+                    return SNDMSG(hwnd, TCM_SETMINTABWIDTH, 0, x)
                 TCM_DESELECTALL = TCM_FIRST + 50
 
 
                 def TabCtrl_DeselectAll(hwnd, fExcludeFocus):
-                    return VOIDSNDMSG(hwnd, TCM_DESELECTALL, fExcludeFocus, 0)
+                    return SNDMSG(hwnd, TCM_DESELECTALL, fExcludeFocus, 0)
                 TCM_HIGHLIGHTITEM = TCM_FIRST + 51
 
 
                 def TabCtrl_HighlightItem(hwnd, i, fHighlight):
-                    return BOOLSNDMSGhwnd, TCM_HIGHLIGHTITEM, WPARAMi, LPARAMMAKELONG fHighlight, 0
+                    return SNDMSG(hwnd, TCM_HIGHLIGHTITEM, i, MAKELONG(fHighlight, 0))
+
+
                 TCM_SETEXTENDEDSTYLE = TCM_FIRST + 52
 
 
                 def TabCtrl_SetExtendedStyle(hwnd, dw):
-                    return DWORDSNDMSG(hwnd, TCM_SETEXTENDEDSTYLE, 0, dw)
+                    return SNDMSG(hwnd, TCM_SETEXTENDEDSTYLE, 0, dw)
+
+
                 TCM_GETEXTENDEDSTYLE = TCM_FIRST + 53
 
 
                 def TabCtrl_GetExtendedStyle(hwnd):
-                    return DWORDSNDMSG(hwnd, TCM_GETEXTENDEDSTYLE, 0, 0)
+                    return SNDMSG(hwnd, TCM_GETEXTENDEDSTYLE, 0, 0)
+
+
                 TCM_SETUNICODEFORMAT = CCM_SETUNICODEFORMAT
 
 
                 def TabCtrl_SetUnicodeFormat(hwnd, fUnicode):
-                    return BOOLSNDMSG(hwnd, TCM_SETUNICODEFORMAT, WPARAMfUnicode, 0)
+                    return SNDMSG(hwnd, TCM_SETUNICODEFORMAT, fUnicode, 0)
+
+
                 TCM_GETUNICODEFORMAT = CCM_GETUNICODEFORMAT
 
 
                 def TabCtrl_GetUnicodeFormat(hwnd):
-                    return BOOLSNDMSG(hwnd, TCM_GETUNICODEFORMAT, 0, 0)
+                    return SNDMSG(hwnd, TCM_GETUNICODEFORMAT, 0, 0)
+
+
                 TCN_KEYDOWN = TCN_FIRST - 0
                 TC_KEYDOWN = NMTCKEYDOWN
 
                 if defined(_WIN32):
                     pass
                 # END IF
+
                 class tagTCKEYDOWN(ctypes.Structure):
                     pass
 
@@ -7224,6 +7377,7 @@ if not defined(_INC_COMMCTRL):
                 if defined(_WIN32):
                     pass
                 # END IF
+
                 TCN_SELCHANGE = TCN_FIRST - 1
                 TCN_SELCHANGING = TCN_FIRST - 2
                 TCN_GETOBJECT = TCN_FIRST - 3
@@ -7267,35 +7421,35 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Animate_Create(hwndP, id, dwStyle, hInstance):
-                        return CreateWindow(ANIMATE_CLASS, NULL, dwStyle, 0, 0, 0, 0, hwndP, HMENUid, hInstance, NULL)
+                        return CreateWindow(ANIMATE_CLASS, NULL, dwStyle, 0, 0, 0, 0, hwndP, id, hInstance, NULL)
 
 
                     def Animate_Open(hwnd, szName):
-                        return BOOLSNDMSG(hwnd, ACM_OPEN, 0, LPARAMLPTSTRszName)
+                        return SNDMSG(hwnd, ACM_OPEN, 0, szName)
 
 
                     def Animate_OpenEx(hwnd, hInst, szName):
-                        return BOOLSNDMSG(hwnd, ACM_OPEN, WPARAMhInst, LPARAMLPTSTRszName)
+                        return SNDMSG(hwnd, ACM_OPEN, hInst, szName)
 
 
-                    def Animate_Play(hwnd, from, to, rep):
-                        return BOOLSNDMSG(hwnd, ACM_PLAY, WPARAMrep, LPARAMMAKELONGfrom, to)
+                    def Animate_Play(hwnd, frm, to, rep):
+                        return SNDMSG(hwnd, ACM_PLAY, rep, MAKELONG(frm, to))
 
 
                     def Animate_Stop(hwnd):
-                        return BOOLSNDMSGhwnd, ACM_STOP, 0, 0
+                        return SNDMSG(hwnd, ACM_STOP, 0, 0)
 
 
                     def Animate_IsPlaying(hwnd):
-                        return BOOLSNDMSGhwnd, ACM_ISPLAYING, 0, 0
+                        return SNDMSG(hwnd, ACM_ISPLAYING, 0, 0)
 
 
                     def Animate_Close(hwnd):
-                        return Animate_Openhwnd, NULL
+                        return Animate_Open(hwnd, NULL)
 
 
                     def Animate_Seek(hwnd, frame):
-                        return Animate_Playhwnd, frame, frame, 1
+                        return Animate_Play(hwnd, frame, frame, 1)
                 # END IF
             # END IF   NOANIMATE
 
@@ -7330,7 +7484,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetCurSel(hmc, pst):
-                        return BOOLSNDMSG(hmc, MCM_GETCURSEL, 0, LPARAMpst)
+                        return SNDMSG(hmc, MCM_GETCURSEL, 0, pst)
 
                     # BOOL MonthCal_SetCurSel(HWND hmc, LPSYSTEMTIME pst)
 
@@ -7342,7 +7496,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetCurSel(hmc, pst):
-                        return BOOLSNDMSG(hmc, MCM_SETCURSEL, 0, LPARAMpst)
+                        return SNDMSG(hmc, MCM_SETCURSEL, 0, pst)
 
                     # DWORD MonthCal_GetMaxSelCount(HWND hmc)
 
@@ -7351,7 +7505,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetMaxSelCount(hmc):
-                        return DWORDSNDMSGhmc, MCM_GETMAXSELCOUNT, 0, 0L
+                        return SNDMSG(hmc, MCM_GETMAXSELCOUNT, 0, 0)
 
                     # BOOL MonthCal_SetMaxSelCount(HWND hmc, UINT n)
 
@@ -7361,7 +7515,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetMaxSelCount(hmc, n):
-                        return BOOLSNDMSG(hmc, MCM_SETMAXSELCOUNT, WPARAMn, 0L)
+                        return SNDMSG(hmc, MCM_SETMAXSELCOUNT, n, 0)
 
                     # BOOL MonthCal_GetSelRange(HWND hmc, LPSYSTEMTIME rgst)
 
@@ -7372,7 +7526,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetSelRange(hmc, rgst):
-                        return SNDMSG(hmc, MCM_GETSELRANGE, 0, LPARAMrgst)
+                        return SNDMSG(hmc, MCM_GETSELRANGE, 0, rgst)
 
                     # BOOL MonthCal_SetSelRange(HWND hmc, LPSYSTEMTIME rgst)
 
@@ -7381,7 +7535,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetSelRange(hmc, rgst):
-                        return SNDMSG(hmc, MCM_SETSELRANGE, 0, LPARAMrgst)
+                        return SNDMSG(hmc, MCM_SETSELRANGE, 0, rgst)
 
                     # DWORD
                     # MonthCal_GetMonthRange(HWND hmc, gmr, LPSYSTEMTIME rgst)
@@ -7401,7 +7555,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetMonthRange(hmc, gmr, rgst):
-                        return DWORDSNDMSG(hmc, MCM_GETMONTHRANGE, WPARAMgmr, LPARAMrgst)
+                        return SNDMSG(hmc, MCM_GETMONTHRANGE, gmr, rgst)
 
                     # BOOL
                     # MonthCal_SetDayState(HWND hmc, INT cbds, DAYSTATE *rgds)
@@ -7424,7 +7578,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetDayState(hmc, cbds, rgds):
-                        return SNDMSG(hmc, MCM_SETDAYSTATE, WPARAMcbds, LPARAMrgds)
+                        return SNDMSG(hmc, MCM_SETDAYSTATE, cbds, rgds)
 
                     # BOOL MonthCal_GetMinReqRect(HWND hmc, LPRECT prc)
 
@@ -7450,19 +7604,19 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetMinReqRect(hmc, prc):
-                        return SNDMSG(hmc, MCM_GETMINREQRECT, 0, LPARAMprc)
+                        return SNDMSG(hmc, MCM_GETMINREQRECT, 0, prc))
 
                     # set colors to draw control with - - see MCSC_ bits below
                     MCM_SETCOLOR = MCM_FIRST + 10
 
 
                     def MonthCal_SetColor(hmc, iColor, clr):
-                        return SNDMSGhmc, MCM_SETCOLOR, iColor, clr
+                        return SNDMSG(hmc, MCM_SETCOLOR, iColor, clr)
                     MCM_GETCOLOR = MCM_FIRST + 11
 
 
                     def MonthCal_GetColor(hmc, iColor):
-                        return SNDMSGhmc, MCM_GETCOLOR, iColor, 0
+                        return SNDMSG(hmc, MCM_GETCOLOR, iColor, 0)
                     MCSC_BACKGROUND = 0
                     MCSC_TEXT = 1
                     MCSC_TITLEBK = 2
@@ -7476,7 +7630,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetToday(hmc, pst):
-                        return SNDMSG(hmc, MCM_SETTODAY, 0, LPARAMpst)
+                        return SNDMSG(hmc, MCM_SETTODAY, 0, pst)
 
                     # get what day is "today"
 
@@ -7485,14 +7639,16 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetToday(hmc, pst):
-                        return BOOLSNDMSG(hmc, MCM_GETTODAY, 0, LPARAMpst)
+                        return SNDMSG(hmc, MCM_GETTODAY, 0, pst)
 
                     # determine what pinfo - >pt is over
                     MCM_HITTEST = MCM_FIRST + 14
 
 
                     def MonthCal_HitTest(hmc, pinfo):
-                        return SNDMSG(hmc, MCM_HITTEST, 0, LPARAMPMCHITTESTINFOpinfo)
+                        return SNDMSG(hmc, MCM_HITTEST, 0, pinfo)
+
+
                     class MCHITTESTINFO(ctypes.Structure):
                         pass
 
@@ -7549,7 +7705,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetFirstDayOfWeek(hmc, iDay):
-                        return SNDMSGhmc, MCM_SETFIRSTDAYOFWEEK, 0, iDay
+                        return SNDMSG(hmc, MCM_SETFIRSTDAYOFWEEK, 0, iDay)
 
                     # DWORD result... low word has the day. high word is BOOL
                     # if this is app set
@@ -7559,7 +7715,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetFirstDayOfWeek(hmc):
-                        return DWORDSNDMSGhmc, MCM_GETFIRSTDAYOFWEEK, 0, 0
+                        return SNDMSG(hmc, MCM_GETFIRSTDAYOFWEEK, 0, 0)
 
                     # DWORD MonthCal_GetRange(HWND hmc, LPSYSTEMTIME rgst)
 
@@ -7575,7 +7731,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetRange(hmc, rgst):
-                        return DWORDSNDMSG(hmc, MCM_GETRANGE, 0, LPARAMrgst)
+                        return SNDMSG(hmc, MCM_GETRANGE, 0, rgst)
 
                     # BOOL
                     # MonthCal_SetRange(HWND hmc, DWORD gdtr, LPSYSTEMTIME rgst)
@@ -7593,7 +7749,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetRange(hmc, gd, rgst):
-                        return BOOLSNDMSG(hmc, MCM_SETRANGE, WPARAMgd, LPARAMrgst)
+                        return SNDMSG(hmc, MCM_SETRANGE, gd, rgst)
 
                     # INT MonthCal_GetMonthDelta(HWND hmc)
 
@@ -7603,7 +7759,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetMonthDelta(hmc):
-                        return INTSNDMSGhmc, MCM_GETMONTHDELTA, 0, 0
+                        return SNDMSG(hmc, MCM_GETMONTHDELTA, 0, 0)
 
                     # INT MonthCal_SetMonthDelta(HWND hmc, INT n)
 
@@ -7615,7 +7771,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_SetMonthDelta(hmc, n):
-                        return INTSNDMSGhmc, MCM_SETMONTHDELTA, n, 0
+                        return SNDMSG(hmc, MCM_SETMONTHDELTA, n, 0)
 
                     # DWORD MonthCal_GetMaxTodayWidth(HWND hmc, LPSIZE psz)
 
@@ -7628,17 +7784,17 @@ if not defined(_INC_COMMCTRL):
 
 
                     def MonthCal_GetMaxTodayWidth(hmc):
-                        return DWORDSNDMSGhmc, MCM_GETMAXTODAYWIDTH, 0, 0
+                        return SNDMSG(hmc, MCM_GETMAXTODAYWIDTH, 0, 0)
                     MCM_SETUNICODEFORMAT = CCM_SETUNICODEFORMAT
 
 
                     def MonthCal_SetUnicodeFormat(hwnd, fUnicode):
-                        return BOOLSNDMSG(hwnd, MCM_SETUNICODEFORMAT, WPARAMfUnicode, 0)
+                        return SNDMSG(hwnd, MCM_SETUNICODEFORMAT, WPARAMfUnicode, 0)
                     MCM_GETUNICODEFORMAT = CCM_GETUNICODEFORMAT
 
 
                     def MonthCal_GetUnicodeFormat(hwnd):
-                        return BOOLSNDMSG(hwnd, MCM_GETUNICODEFORMAT, 0, 0)
+                        return SNDMSG(hwnd, MCM_GETUNICODEFORMAT, 0, 0)
 
                     if NTDDI_VERSION >= NTDDI_VISTA:
 
@@ -7652,12 +7808,12 @@ if not defined(_INC_COMMCTRL):
 
 
                         def MonthCal_GetCurrentView(hmc):
-                            return DWORDSNDMSGhmc, MCM_GETCURRENTVIEW, 0, 0
+                            return SNDMSG(hmc, MCM_GETCURRENTVIEW, 0, 0)
                         MCM_GETCALENDARCOUNT = MCM_FIRST + 23
 
 
                         def MonthCal_GetCalendarCount(hmc):
-                            return DWORDSNDMSGhmc, MCM_GETCALENDARCOUNT, 0, 0
+                            return SNDMSG(hmc, MCM_GETCALENDARCOUNT, 0, 0)
 
                         # Part
                         MCGIP_CALENDARCONTROL = 0
@@ -7699,12 +7855,12 @@ if not defined(_INC_COMMCTRL):
 
 
                         def MonthCal_GetCalendarGridInfo(hmc, pmcGridInfo):
-                            return BOOLSNDMSG(hmc, MCM_GETCALENDARGRIDINFO, 0, LPARAMPMCGRIDINFOpmcGridInfo)
+                            return SNDMSG(hmc, MCM_GETCALENDARGRIDINFO, 0, LPARAMPMCGRIDINFOpmcGridInfo)
                         MCM_GETCALID = MCM_FIRST + 27
 
 
                         def MonthCal_GetCALID(hmc):
-                            return CALIDSNDMSGhmc, MCM_GETCALID, 0, 0
+                            return CALIDSNDMSG(hmc, MCM_GETCALID, 0, 0)
                         MCM_SETCALID = MCM_FIRST + 28
 
 
@@ -7717,7 +7873,7 @@ if not defined(_INC_COMMCTRL):
 
 
                         def MonthCal_SizeRectToMin(hmc, prc):
-                            return SNDMSG(hmc, MCM_SIZERECTTOMIN, 0, LPARAMprc)
+                            return SNDMSG(hmc, MCM_SIZERECTTOMIN, 0, prc))
                         MCM_SETCALENDARBORDER = MCM_FIRST + 30
 
 
@@ -7727,12 +7883,12 @@ if not defined(_INC_COMMCTRL):
 
 
                         def MonthCal_GetCalendarBorder(hmc):
-                            return INTSNDMSGhmc, MCM_GETCALENDARBORDER, 0, 0
+                            return SNDMSG(hmc, MCM_GETCALENDARBORDER, 0, 0
                         MCM_SETCURRENTVIEW = MCM_FIRST + 32
 
 
                         def MonthCal_SetCurrentView(hmc, dwNewView):
-                            return BOOLSNDMSG(hmc, MCM_SETCURRENTVIEW, 0, LPARAMdwNewView)
+                            return SNDMSG(hmc, MCM_SETCURRENTVIEW, 0, LPARAMdwNewView)
                     # END IF
 
                     # MCN_SELCHANGE is sent whenever the currently displayed
@@ -7868,7 +8024,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_GetSystemtime(hdp, pst):
-                        return DWORDSNDMSG(hdp, DTM_GETSYSTEMTIME, 0, LPARAMpst)
+                        return SNDMSG(hdp, DTM_GETSYSTEMTIME, 0, pst)
 
                     # BOOL
                     # DateTime_SetSystemtime(HWND hdp, DWORD gd, LPSYSTEMTIME pst)
@@ -7885,7 +8041,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_SetSystemtime(hdp, gd, pst):
-                        return BOOLSNDMSG(hdp, DTM_SETSYSTEMTIME, WPARAMgd, LPARAMpst)
+                        return SNDMSG(hdp, DTM_SETSYSTEMTIME, gd, pst)
 
                     # DWORD DateTime_GetRange(HWND hdp, LPSYSTEMTIME rgst)
 
@@ -7901,7 +8057,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_GetRange(hdp, rgst):
-                        return DWORDSNDMSG(hdp, DTM_GETRANGE, 0, LPARAMrgst)
+                        return SNDMSG(hdp, DTM_GETRANGE, 0, rgst)
 
                     # BOOL
                     # DateTime_SetRange(HWND hdp, DWORD gdtr, LPSYSTEMTIME rgst)
@@ -7919,7 +8075,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_SetRange(hdp, gd, rgst):
-                        return BOOLSNDMSG(hdp, DTM_SETRANGE, WPARAMgd, LPARAMrgst)
+                        return SNDMSG(hdp, DTM_SETRANGE, gd, rgst)
 
                     # BOOL DateTime_SetFormat(HWND hdp, LPCTSTR sz)
 
@@ -7945,17 +8101,17 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_SetFormat(hdp, sz):
-                        return BOOLSNDMSG(hdp, DTM_SETFORMAT, 0, LPARAMsz)
+                        return SNDMSG(hdp, DTM_SETFORMAT, 0, sz)
                     DTM_SETMCCOLOR = DTM_FIRST + 6
 
 
                     def DateTime_SetMonthCalColor(hdp, iColor, clr):
-                        return SNDMSGhdp, DTM_SETMCCOLOR, iColor, clr
+                        return SNDMSG(hdp, DTM_SETMCCOLOR, iColor, clr)
                     DTM_GETMCCOLOR = DTM_FIRST + 7
 
 
                     def DateTime_GetMonthCalColor(hdp, iColor):
-                        return SNDMSGhdp, DTM_GETMCCOLOR, iColor, 0
+                        return SNDMSG(hdp, DTM_GETMCCOLOR, iColor, 0)
 
                     # HWND DateTime_GetMonthCal(HWND hdp)
 
@@ -7966,7 +8122,7 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_GetMonthCal(hdp):
-                        return HWNDSNDMSGhdp, DTM_GETMONTHCAL, 0, 0
+                        return SNDMSG(hdp, DTM_GETMONTHCAL, 0, 0)
                     DTM_SETMCFONT = DTM_FIRST + 9
 
 
@@ -7976,24 +8132,24 @@ if not defined(_INC_COMMCTRL):
 
 
                     def DateTime_GetMonthCalFont(hdp):
-                        return SNDMSGhdp, DTM_GETMCFONT, 0, 0
+                        return SNDMSG(hdp, DTM_GETMCFONT, 0, 0)
 
                     if NTDDI_VERSION >= NTDDI_VISTA:
                         DTM_SETMCSTYLE = DTM_FIRST + 11
 
 
                         def DateTime_SetMonthCalStyle(hdp, dwStyle):
-                            return SNDMSG(hdp, DTM_SETMCSTYLE, 0, LPARAMdwStyle)
+                            return SNDMSG(hdp, DTM_SETMCSTYLE, 0, dwStyle)
                         DTM_GETMCSTYLE = DTM_FIRST + 12
 
 
                         def DateTime_GetMonthCalStyle(hdp):
-                            return SNDMSGhdp, DTM_GETMCSTYLE, 0, 0
+                            return SNDMSG(hdp, DTM_GETMCSTYLE, 0, 0)
                         DTM_CLOSEMONTHCAL = DTM_FIRST + 13
 
 
                         def DateTime_CloseMonthCal(hdp):
-                            return SNDMSGhdp, DTM_CLOSEMONTHCAL, 0, 0
+                            return SNDMSG(hdp, DTM_CLOSEMONTHCAL, 0, 0)
 
                         # DateTime_GetDateTimePickerInfo(HWND hdp, DATETIMEPICKERINFO* pdtpi)
                         #
@@ -8004,12 +8160,12 @@ if not defined(_INC_COMMCTRL):
 
 
                         def DateTime_GetDateTimePickerInfo(hdp, pdtpi):
-                            return SNDMSG(hdp, DTM_GETDATETIMEPICKERINFO, 0, LPARAMpdtpi)
+                            return SNDMSG(hdp, DTM_GETDATETIMEPICKERINFO, 0, pdtpi)
                         DTM_GETIDEALSIZE = DTM_FIRST + 15
 
 
                         def DateTime_GetIdealSize(hdp, psize):
-                            return BOOLSNDMSGhdp, DTM_GETIDEALSIZE, 0, LPARAMpsize
+                            return SNDMSG(hdp, DTM_GETIDEALSIZE, 0, psize)
                     # END IF   (NTDDI_VERSION >= NTDDI_VISTA)
 
                     # begin_r_commctrl
@@ -8345,72 +8501,72 @@ if not defined(_INC_COMMCTRL):
 
 
                 def Pager_SetChild(hwnd, hwndChild):
-                    return VOIDSNDMSGhwnd, PGM_SETCHILD, 0, LPARAMhwndChild
+                    return SNDMSG(hwnd, PGM_SETCHILD, 0, LPARAMhwndChild
                 PGM_RECALCSIZE = PGM_FIRST + 2
 
 
                 def Pager_RecalcSize(hwnd):
-                    return VOIDSNDMSG(hwnd, PGM_RECALCSIZE, 0, 0)
+                    return SNDMSG(hwnd, PGM_RECALCSIZE, 0, 0)
                 PGM_FORWARDMOUSE = PGM_FIRST + 3
 
 
                 def Pager_ForwardMouse(hwnd, bForward):
-                    return VOIDSNDMSG(hwnd, PGM_FORWARDMOUSE, WPARAMbForward, 0)
+                    return SNDMSG(hwnd, PGM_FORWARDMOUSE, WPARAMbForward, 0)
                 PGM_SETBKCOLOR = PGM_FIRST + 4
 
 
                 def Pager_SetBkColor(hwnd, clr):
-                    return COLORREFSNDMSGhwnd, PGM_SETBKCOLOR, 0, LPARAMclr
+                    return SNDMSG(hwnd, PGM_SETBKCOLOR, 0, LPARAMclr
                 PGM_GETBKCOLOR = PGM_FIRST + 5
 
 
                 def Pager_GetBkColor(hwnd):
-                    return COLORREFSNDMSG(hwnd, PGM_GETBKCOLOR, 0, 0)
+                    return SNDMSG(hwnd, PGM_GETBKCOLOR, 0, 0)
                 PGM_SETBORDER = PGM_FIRST + 6
 
 
                 def Pager_SetBorder(hwnd, iBorder):
-                    return INTSNDMSGhwnd, PGM_SETBORDER, 0, LPARAMiBorder
+                    return SNDMSG(hwnd, PGM_SETBORDER, 0, LPARAMiBorder
                 PGM_GETBORDER = PGM_FIRST + 7
 
 
                 def Pager_GetBorder(hwnd):
-                    return INTSNDMSG(hwnd, PGM_GETBORDER, 0, 0)
+                    return SNDMSG(hwnd, PGM_GETBORDER, 0, 0)
                 PGM_SETPOS = PGM_FIRST + 8
 
 
                 def Pager_SetPos(hwnd, iPos):
-                    return INTSNDMSGhwnd, PGM_SETPOS, 0, LPARAMiPos
+                    return SNDMSG(hwnd, PGM_SETPOS, 0, LPARAMiPos
                 PGM_GETPOS = PGM_FIRST + 9
 
 
                 def Pager_GetPos(hwnd):
-                    return INTSNDMSG(hwnd, PGM_GETPOS, 0, 0)
+                    return SNDMSG(hwnd, PGM_GETPOS, 0, 0)
                 PGM_SETBUTTONSIZE = PGM_FIRST + 10
 
 
                 def Pager_SetButtonSize(hwnd, iSize):
-                    return INTSNDMSGhwnd, PGM_SETBUTTONSIZE, 0, LPARAMiSize
+                    return SNDMSG(hwnd, PGM_SETBUTTONSIZE, 0, LPARAMiSize
                 PGM_GETBUTTONSIZE = PGM_FIRST + 11
 
 
                 def Pager_GetButtonSize(hwnd):
-                    return INTSNDMSG(hwnd, PGM_GETBUTTONSIZE, 0,0)
+                    return SNDMSG(hwnd, PGM_GETBUTTONSIZE, 0,0)
                 PGM_GETBUTTONSTATE = PGM_FIRST + 12
 
 
                 def Pager_GetButtonState(hwnd, iButton):
-                    return DWORDSNDMSGhwnd, PGM_GETBUTTONSTATE, 0, LPARAMiButton
+                    return SNDMSG(hwnd, PGM_GETBUTTONSTATE, 0, LPARAMiButton
                 PGM_GETDROPTARGET = CCM_GETDROPTARGET
 
 
                 def Pager_GetDropTarget(hwnd, ppdt):
-                    return VOIDSNDMSGhwnd, PGM_GETDROPTARGET, 0, LPARAMppdt
+                    return SNDMSG(hwnd, PGM_GETDROPTARGET, 0, LPARAMppdt
                 PGM_SETSCROLLINFO = PGM_FIRST + 13
 
 
                 def Pager_SetScrollInfo(hwnd, cTimeOut, cLinesPer, cPixelsPerLine):
-                    return VOID SNDMSGhwnd, PGM_SETSCROLLINFO, cTimeOut, MAKELONGcLinesPer, cPixelsPerLine
+                    return VOID SNDMSG(hwnd, PGM_SETSCROLLINFO, cTimeOut, MAKELONGcLinesPer, cPixelsPerLine
 
                 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -8571,27 +8727,27 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Button_GetIdealSize(hwnd, psize):
-                        return BOOLSNDMSGhwnd, BCM_GETIDEALSIZE, 0, LPARAMpsize
+                        return SNDMSG(hwnd, BCM_GETIDEALSIZE, 0, psize)
                     BCM_SETIMAGELIST = BCM_FIRST + 0x0002
 
 
                     def Button_SetImageList(hwnd, pbuttonImagelist):
-                        return BOOLSNDMSGhwnd, BCM_SETIMAGELIST, 0, LPARAMpbuttonImagelist
+                        return SNDMSG(hwnd, BCM_SETIMAGELIST, 0, LPARAMpbuttonImagelist
                     BCM_GETIMAGELIST = BCM_FIRST + 0x0003
 
 
                     def Button_GetImageList(hwnd, pbuttonImagelist):
-                        return BOOLSNDMSGhwnd, BCM_GETIMAGELIST, 0, LPARAMpbuttonImagelist
+                        return SNDMSG(hwnd, BCM_GETIMAGELIST, 0, LPARAMpbuttonImagelist
                     BCM_SETTEXTMARGIN = BCM_FIRST + 0x0004
 
 
                     def Button_SetTextMargin(hwnd, pmargin):
-                        return BOOLSNDMSGhwnd, BCM_SETTEXTMARGIN, 0, LPARAMpmargin
+                        return SNDMSG(hwnd, BCM_SETTEXTMARGIN, 0, LPARAMpmargin
                     BCM_GETTEXTMARGIN = BCM_FIRST + 0x0005
 
 
                     def Button_GetTextMargin(hwnd, pmargin):
-                        return BOOLSNDMSGhwnd, BCM_GETTEXTMARGIN, 0, LPARAMpmargin
+                        return SNDMSG(hwnd, BCM_GETTEXTMARGIN, 0, LPARAMpmargin
                     class tagNMBCHOTITEM(ctypes.Structure):
                         pass
 
@@ -8652,27 +8808,27 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Button_SetDropDownState(hwnd, fDropDown):
-                        return BOOLSNDMSG(hwnd, BCM_SETDROPDOWNSTATE, WPARAMfDropDown, 0)
+                        return SNDMSG(hwnd, BCM_SETDROPDOWNSTATE, WPARAMfDropDown, 0)
                     BCM_SETSPLITINFO = BCM_FIRST + 0x0007
 
 
                     def Button_SetSplitInfo(hwnd, pInfo):
-                        return BOOLSNDMSGhwnd, BCM_SETSPLITINFO, 0, LPARAMpInfo
+                        return SNDMSG(hwnd, BCM_SETSPLITINFO, 0, LPARAMpInfo
                     BCM_GETSPLITINFO = BCM_FIRST + 0x0008
 
 
                     def Button_GetSplitInfo(hwnd, pInfo):
-                        return BOOLSNDMSGhwnd, BCM_GETSPLITINFO, 0, LPARAMpInfo
+                        return SNDMSG(hwnd, BCM_GETSPLITINFO, 0, LPARAMpInfo
                     BCM_SETNOTE = BCM_FIRST + 0x0009
 
 
                     def Button_SetNote(hwnd, psz):
-                        return BOOLSNDMSGhwnd, BCM_SETNOTE, 0, LPARAMpsz
+                        return SNDMSG(hwnd, BCM_SETNOTE, 0, LPARAMpsz
                     BCM_GETNOTE = BCM_FIRST + 0x000A
 
 
                     def Button_GetNote(hwnd, psz, pcc):
-                        return BOOLSNDMSG(hwnd, BCM_GETNOTE, WPARAMpcc, LPARAMpsz)
+                        return SNDMSG(hwnd, BCM_GETNOTE, WPARAMpcc, LPARAMpsz)
                     BCM_GETNOTELENGTH = BCM_FIRST + 0x000B
 
 
@@ -8761,16 +8917,16 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Edit_SetCueBannerText(hwnd, lpcwText):
-                        return BOOLSNDMSGhwnd, EM_SETCUEBANNER, 0, LPARAMlpcwText
+                        return SNDMSG(hwnd, EM_SETCUEBANNER, 0, LPARAMlpcwText
 
 
                     def Edit_SetCueBannerTextFocused(hwnd, lpcwText, fDrawFocused):
-                        return BOOLSNDMSG(hwnd, EM_SETCUEBANNER, WPARAMfDrawFocused, LPARAMlpcwText)
+                        return SNDMSG(hwnd, EM_SETCUEBANNER, WPARAMfDrawFocused, LPARAMlpcwText)
                     EM_GETCUEBANNER = ECM_FIRST + 2
 
 
                     def Edit_GetCueBannerText(hwnd, lpwText, cchText):
-                        return BOOLSNDMSGhwnd, EM_GETCUEBANNER, WPARAMlpwText, LPARAMcchText
+                        return SNDMSG(hwnd, EM_GETCUEBANNER, WPARAMlpwText, LPARAMcchText
                     class _tagEDITBALLOONTIP(ctypes.Structure):
                         pass
 
@@ -8787,12 +8943,12 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Edit_ShowBalloonTip(hwnd, peditballoontip):
-                        return BOOLSNDMSGhwnd, EM_SHOWBALLOONTIP, 0, LPARAMpeditballoontip
+                        return SNDMSG(hwnd, EM_SHOWBALLOONTIP, 0, LPARAMpeditballoontip
                     EM_HIDEBALLOONTIP = ECM_FIRST + 4
 
 
                     def Edit_HideBalloonTip(hwnd):
-                        return BOOLSNDMSG(hwnd, EM_HIDEBALLOONTIP, 0, 0)
+                        return SNDMSG(hwnd, EM_HIDEBALLOONTIP, 0, 0)
                 # END IF
 
                 if NTDDI_VERSION >= NTDDI_VISTA:
@@ -8800,23 +8956,23 @@ if not defined(_INC_COMMCTRL):
 
 
                     def Edit_SetHilite(hwndCtl, ichStart, ichEnd):
-                        return (VOIDSNDMSG(hwndCtl, EM_SETHILITE, ichStart, ichEnd))
+                        return (SNDMSG(hwndCtl, EM_SETHILITE, ichStart, ichEnd))
                     EM_GETHILITE = ECM_FIRST + 6
 
 
                     def Edit_GetHilite(hwndCtl):
-                        return DWORDSNDMSG(hwndCtl, EM_GETHILITE, 0L, 0L)
+                        return SNDMSG(hwndCtl, EM_GETHILITE, 0, 0)
                 # END IF
                 EM_NOSETFOCUS = ECM_FIRST + 7
 
 
                 def Edit_NoSetFocus(hwndCtl):
-                    return DWORDSNDMSG(hwndCtl, EM_NOSETFOCUS, 0L, 0L)
+                    return SNDMSG(hwndCtl, EM_NOSETFOCUS, 0, 0)
                 EM_TAKEFOCUS = ECM_FIRST + 8
 
 
                 def Edit_TakeFocus(hwndCtl):
-                    return DWORDSNDMSG(hwndCtl, EM_TAKEFOCUS, 0L, 0L)
+                    return SNDMSG(hwndCtl, EM_TAKEFOCUS, 0, 0)
             # END IF   NOEDIT
 
             # == == == == == == == == == == = End Edit Control == == == == ==
@@ -8875,19 +9031,19 @@ if not defined(_INC_COMMCTRL):
 
 
                 def ComboBox_SetMinVisible(hwnd, iMinVisible):
-                    return BOOLSNDMSG(hwnd, CB_SETMINVISIBLE, WPARAMiMinVisible, 0)
+                    return SNDMSG(hwnd, CB_SETMINVISIBLE, WPARAMiMinVisible, 0)
 
 
                 def ComboBox_GetMinVisible(hwnd):
-                    return INTSNDMSG(hwnd, CB_GETMINVISIBLE, 0, 0)
+                    return SNDMSG(hwnd, CB_GETMINVISIBLE, 0, 0)
 
 
                 def ComboBox_SetCueBannerText(hwnd, lpcwText):
-                    return BOOLSNDMSGhwnd, CB_SETCUEBANNER, 0, LPARAMlpcwText
+                    return SNDMSG(hwnd, CB_SETCUEBANNER, 0, LPARAMlpcwText
 
 
                 def ComboBox_GetCueBannerText(hwnd, lpwText, cchText):
-                    return BOOLSNDMSGhwnd, CB_GETCUEBANNER, WPARAMlpwText, LPARAMcchText
+                    return SNDMSG(hwnd, CB_GETCUEBANNER, WPARAMlpwText, LPARAMcchText
             # END IF
 
             # == == == == == == == == == == = End Combobox Control == == == ==
@@ -8926,22 +9082,22 @@ if not defined(_INC_COMMCTRL):
                         pass
                     # END IF
                 if NTDDI_VERSION >= NTDDI_VISTA:
-                    (CALLBACK = HRESULT
-                    PFTASKDIALOGCALLBACK)(_In_ = POINTER(HRESULT)
-                    HWND = HRESULT
-                    hwnd = HRESULT
-                    _In_ = HRESULT
-                    UINT = HRESULT
-                    msg = HRESULT
-                    _In_ = HRESULT
-                    WPARAM = HRESULT
-                    wParam = HRESULT
-                    _In_ = HRESULT
-                    LPARAM = HRESULT
-                    lParam = HRESULT
-                    _In_ = HRESULT
-                    LONG_PTR = HRESULT
-                    lpRefData) = HRESULT
+                    # (CALLBACK = HRESULT
+                    # PFTASKDIALOGCALLBACK)(_In_ = POINTER(HRESULT)
+                    # HWND = HRESULT
+                    # hwnd = HRESULT
+                    # _In_ = HRESULT
+                    # UINT = HRESULT
+                    # msg = HRESULT
+                    # _In_ = HRESULT
+                    # WPARAM = HRESULT
+                    # wParam = HRESULT
+                    # _In_ = HRESULT
+                    # LPARAM = HRESULT
+                    # lParam = HRESULT
+                    # _In_ = HRESULT
+                    # LONG_PTR = HRESULT
+                    # lpRefData) = HRESULT
                     class _TASKDIALOG_FLAGS(ENUM):
                         TDF_ENABLE_HYPERLINKS = 0x0001
                         TDF_USE_HICON_MAIN = 0x0002
@@ -8989,54 +9145,56 @@ if not defined(_INC_COMMCTRL):
                     TDF_NO_DEFAULT_RADIO_BUTTON = _TASKDIALOG_FLAGS.TDF_NO_DEFAULT_RADIO_BUTTON
                     TDF_CAN_BE_MINIMIZED = _TASKDIALOG_FLAGS.TDF_CAN_BE_MINIMIZED
                     TDF_NO_SET_FOREGROUND = _TASKDIALOG_FLAGS.TDF_NO_SET_FOREGROUND
-                TDF_SIZE_TO_CONTENT = _TASKDIALOG_FLAGS.TDF_SIZE_TO_CONTENT
+                    TDF_SIZE_TO_CONTENT = _TASKDIALOG_FLAGS.TDF_SIZE_TO_CONTENT
+
                     if NTDDI_VERSION >= NTDDI_WIN8:
                         pass
                     # END IF   (NTDDI_VERSION >= NTDDI_WIN8)
+
                     TASKDIALOG_FLAGS = INT
                     class _TASKDIALOG_MESSAGES(ENUM):
-                        #~#~#~ TDM_NAVIGATE_PAGE                   = WM_USER + 101
-                        #~#~#~ TDM_CLICK_BUTTON                    = WM_USER + 102
-                        #~#~#~ TDM_SET_MARQUEE_PROGRESS_BAR        = WM_USER + 103
-                        #~#~#~ TDM_SET_PROGRESS_BAR_STATE          = WM_USER + 104
-                        #~#~#~ TDM_SET_PROGRESS_BAR_RANGE          = WM_USER + 105
-                        #~#~#~ TDM_SET_PROGRESS_BAR_POS            = WM_USER + 106
+                        TDM_NAVIGATE_PAGE = WM_USER + 101
+                        TDM_CLICK_BUTTON = WM_USER + 102
+                        TDM_SET_MARQUEE_PROGRESS_BAR = WM_USER + 103
+                        TDM_SET_PROGRESS_BAR_STATE = WM_USER + 104
+                        TDM_SET_PROGRESS_BAR_RANGE = WM_USER + 105
+                        TDM_SET_PROGRESS_BAR_POS = WM_USER + 106
 
                         # wParam = 0 (stop marquee), wParam != 0
                         # (start marquee), lparam = speed
                         # (milliseconds between repaints)
-                        #~#~#~ TDM_SET_PROGRESS_BAR_MARQUEE        = WM_USER + 107
+                        TDM_SET_PROGRESS_BAR_MARQUEE = WM_USER + 107
 
                         # wParam = element (TASKDIALOG_ELEMENTS), lParam = new
                         # element text (LPCWSTR)
-                        #~#~#~ TDM_SET_ELEMENT_TEXT                = WM_USER + 108
-                        #~#~#~ TDM_CLICK_RADIO_BUTTON              = WM_USER + 110
+                        TDM_SET_ELEMENT_TEXT = WM_USER + 108
+                        TDM_CLICK_RADIO_BUTTON = WM_USER + 110
 
                         # lParam = 0 (disable), lParam != 0 (enable), wParam =
                         # Button ID
-                        #~#~#~ TDM_ENABLE_BUTTON                   = WM_USER + 111
+                        TDM_ENABLE_BUTTON = WM_USER + 111
 
                         # lParam = 0 (disable), lParam != 0 (enable), wParam =
                         # Radio Button ID
-                        #~#~#~ TDM_ENABLE_RADIO_BUTTON             = WM_USER + 112
+                        TDM_ENABLE_RADIO_BUTTON = WM_USER + 112
 
                         # wParam = 0 (unchecked), 1 (checked), lParam = 1
                         # (set key focus)
-                        #~#~#~ TDM_CLICK_VERIFICATION              = WM_USER + 113
+                        TDM_CLICK_VERIFICATION = WM_USER + 113
 
                         # wParam = element (TASKDIALOG_ELEMENTS), lParam = new
                         # element text (LPCWSTR)
-                        #~#~#~ TDM_UPDATE_ELEMENT_TEXT             = WM_USER + 114
+                        TDM_UPDATE_ELEMENT_TEXT = WM_USER + 114
 
                         # wParam = Button ID, lParam = 0
                         # (elevation not required), lParam != 0
                         # (elevation required)
-                        #~#~#~ TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE = WM_USER + 115
+                        TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE = WM_USER + 115
 
                         # wParam = icon element (TASKDIALOG_ICON_ELEMENTS),
                         # lParam = new icon
                         # (hIcon if TDF_USE_HICON_* was set, PCWSTR otherwise)
-                        #~#~#~ TDM_UPDATE_ICON                     = WM_USER + 116
+                        TDM_UPDATE_ICON = WM_USER + 116
                         pass
 
 
@@ -9111,7 +9269,13 @@ if not defined(_INC_COMMCTRL):
                     TDCBF_RETRY_BUTTON = _TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_RETRY_BUTTON
                     TDCBF_CLOSE_BUTTON = _TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_CLOSE_BUTTON
                     TASKDIALOG_COMMON_BUTTON_FLAGS = INT
+
+
                     class _TASKDIALOGCONFIG(ctypes.Structure):
+                        pass
+
+
+                    class DUMMYUNIONNAME(ctypes.Union):
                         pass
 
 
@@ -9120,6 +9284,8 @@ if not defined(_INC_COMMCTRL):
                         ('pszMainIcon', PCWSTR),
                     ]
                     _TASKDIALOGCONFIG.DUMMYUNIONNAME = DUMMYUNIONNAME
+
+
                     class DUMMYUNIONNAME2(ctypes.Union):
                         pass
 
@@ -9162,14 +9328,7 @@ if not defined(_INC_COMMCTRL):
                         ('cxWidth', UINT),
                     ]
                     TASKDIALOGCONFIG = _TASKDIALOGCONFIG
-                    DUMMYUNIONNAME._fields_ = [
-                        ('hMainIcon', HICON),
-                        ('pszMainIcon', PCWSTR),
-                    ]
-                    DUMMYUNIONNAME2._fields_ = [
-                        ('hFooterIcon', HICON),
-                        ('pszFooterIcon', PCWSTR),
-                    ]
+
                     if defined(_WIN32):
                         pass
                     # END IF

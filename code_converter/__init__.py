@@ -430,15 +430,20 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                 parse_macro(step_indent, step.strip(), True)
                 steps[j] = None
-    print('import comtypes')
-    print('__cplusplus = None')
-    print('CINTERFACE = 1\n\n')
-    print('def defined(value):\n    return value is not None\n\n')
+
+    print('import ctypes')
+    print('from pyWinAPI import *')
+    print('from pyWinAPI.shared.wtypes_h import *')
+    print('from pyWinAPI.shared.winapifamily_h import *')
+    print('from pyWinAPI.shared.sdkddkver_h import *')
+    print('from pyWinAPI.shared.guiddef_h import *\n\n')
 
     if interfaces:
         print('''def annotation(value):\n    if '_opt_' in value:\n        return comtypes.defaultvalue(None)\n    else:\n        return None\n''')
 
     for i, line in enumerate(string_data):
+
+
         if 'COBJMACROS' in line and not COBJMACROS:
             COBJMACROS = True
             continue
@@ -562,6 +567,12 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     libraries.remove(interface_data)
                 break
             else:
+                if skip_lines is not None:
+                    start, stop = skip_lines
+                    if start <= i <= stop:
+                        continue
+
+                    skip_lines = None
 
                 if line.startswith('DECLARE_HANDLE'):
                     var_name = line.split('(', 1)[1].split(')', 1)[0]
@@ -602,6 +613,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     handle_preprocessor()
                     if parse_define('    ' * (len(steps) - 1), define, Importer):
                         new_lines = '\n'
+                    else:
+                        skip_lines = None
 
                 new_line, comment = parse_comment(line)
 
@@ -718,15 +731,9 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                         anon_union_count,
                         union_struct_fwd_definitions
                     )
+                    continue
 
                 else:
-                    if skip_lines is not None:
-                        start, stop = skip_lines
-                        if start <= i <= stop:
-                            continue
-
-                        skip_lines = None
-
                     chained_comment = False
 
                     if line.strip().startswith('typedef') and ';' in line:
@@ -829,24 +836,53 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                         new_line, comment = parse_comment(comment)
 
-                    if line.endswith(';'):
+                    if line and ';' not in line:
+                        start = i
+                        stop = i
+
+                        data = []
+                        for j, ln in enumerate(string_data[i:]):
+                            stop = i + j
+
+                            if ln.strip().startswith('//'):
+                                ln = ln.replace('//', '#')
+                                continue
+
+                            if not ln:
+                                continue
+
+                            if ln.endswith('\\'):
+                                ln = ln[:-1]
+                            data += [ln.strip()]
+
+                            if ';' in ln:
+                                break
+                        guid_line = parse_guid(indent, data)
+                        if guid_line:
+                            handle_preprocessor()
+                            print(guid_line)
+                            skip_lines = [start, stop]
+                            continue
+                        else:
+                            skip_lines = None
+                    else:
                         guid_line = parse_guid(indent, line.split('\n'))
                         if guid_line:
                             handle_preprocessor()
                             if comment:
                                 comment = equalize_width(indent, comment)
-                                print('\n' +comment)
+                                print('\n' + comment)
                             print(guid_line)
+                            continue
 
-                        else:
-                            line = parse_dll(indent, line.split('\n'), found_dlls)
-                            if line:
-                                handle_preprocessor()
-                                if comment:
-                                    comment = equalize_width(indent, comment)
-                                    print('\n' +comment)
-                                print(line)
-                                continue
+                        line = parse_dll(indent, line.split('\n'), found_dlls)
+                        if line:
+                            handle_preprocessor()
+                            if comment:
+                                comment = equalize_width(indent, comment)
+                                print('\n' +comment)
+                            print(line)
+                            continue
 
                     if not new_line.strip() and comment:
                         comment = equalize_width(indent, comment)
@@ -995,7 +1031,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 # output_file = r'C:\Users\Administrator\Desktop\New folder (18)\pyWinAPI'# ks_h.py'
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\commctrl.h' # ks.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\wdm.h' # ks.h'
 # COMMENTS = False
 #
 # # if there is a specific dll that is created fro an h file the name of that
@@ -1027,16 +1063,33 @@ if __name__ == '__main__':
 
 
     class STDOut(object):
+        line_buffer = []
 
         def write(self, data):
             with print_lock:
                 _stdout.write(data)
                 _stdout.flush()
                 try:
-                    output_file.write(data)
-                    output_file.flush()
+                    self.line_buffer += [data]
+                    if len(self.line_buffer) == 3:
+                        if (
+                            self.line_buffer[0].strip().startswith('#') and
+                            self.line_buffer[2].strip().startswith('#') and
+                            not self.line_buffer[1].strip()
+                        ):
+                            self.line_buffer.pop(1)
+                        output_file.write(self.line_buffer.pop(0))
+                        output_file.flush()
+
                 except ValueError:
                     pass
+
+        def close(self):
+            for line in self.line_buffer:
+                output_file.write(line)
+                output_file.flush()
+
+            output_file.close()
 
         def __getattr__(self, item):
             if item in self.__dict__:
@@ -1047,11 +1100,8 @@ if __name__ == '__main__':
 
     sys.stdout = STDOut()
     gen_code(input_file)
+    sys.stdout.close()
 
-    import time
-
-    time.sleep(2)
-    output_file.close()
 #
 # class STDErr(object):
 #

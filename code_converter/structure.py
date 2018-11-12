@@ -31,8 +31,7 @@ TEMPLATE_DECLARATION = '''{indent}class {cls_name}({parent_cls}):
 TEMPLATE_DECLARATION_FIELDS_START = '''{indent}{cls_name}._fields_ = ['''
 TEMPLATE_DECLARATION_FIELDS_END = '''{indent}]'''
 TEMPLATE_DECLARATION_FIELD = '''{indent}    ('{field_name}', {field_data_type}),{comment}'''
-TEMPLATE_DECLARATION_FIELD_BIT = '''{indent}    ('{field_name}', {field_data_type}, {bit}),'''
-
+TEMPLATE_DECLARATION_FIELD_BIT = '''{indent}    ('{field_name}', {field_data_type}, {field_bit}),{comment}'''
 TEMPLATE_DECLARATION_ANONYMOUS_START = '''{indent}{cls_name}._anonymous_ = ('''
 TEMPLATE_DECLARATION_ANONYMOUS_END = '''{indent})'''
 TEMPLATE_DECLARATION_ANONYMOUS = '''{indent}    '{anonymous}','''
@@ -269,7 +268,11 @@ def parse_struct_union(
     if extra.strip():
         lines.insert(0, extra)
 
-    parent_cls, cls_name = start_data.rstrip().rsplit(' ', 1)
+    try:
+        parent_cls, cls_name = start_data.rstrip().rsplit(' ', 1)
+    except ValueError:
+        return struct_count, union_count
+
     parent_cls = parent_cls.replace('typedef', '')
     cls_name = cls_name.replace('typedef', '')
 
@@ -282,7 +285,7 @@ def parse_struct_union(
         cls_name = cls_name.replace('union', '').strip()
         data_type = 'ctypes.Union'
 
-    if not parent_cls:
+    if not parent_cls or 'DECLSPEC_ALIGN' in parent_cls:
         parent_cls = data_type
 
     cls_name = cls_name.replace('{', '').strip()
@@ -307,6 +310,7 @@ def parse_struct_union(
                 cls_name, parent_cls = process_param(cls_name, parent_cls)
                 print(indent + cls_name + ' = ' + parent_cls)
             else:
+
                 declarations += [cls_name.strip()]
                 print(
                     TEMPLATE_DECLARATION.format(
@@ -341,6 +345,9 @@ def parse_struct_union(
             )
         )
         print('\n')
+
+    else:
+        return struct_count, union_count
 
     anonymous = []
     fields = []
@@ -542,7 +549,7 @@ def parse_struct_union(
                         importer,
                         struct_count,
                         union_count,
-                        declarations
+                        []
                     )
 
                     f_data_type = cls_name + '.' + f_name
@@ -569,29 +576,47 @@ def parse_struct_union(
                 field_comment = ' ' + field_comment[field_comment.find('#'):]
 
             if mult:
-                fields += [
-                    [
-                        field_macro,
-                        TEMPLATE_DECLARATION_FIELD.format(
-                            indent=indent,
-                            field_name=f_name,
-                            field_data_type=f_data_type + ' * ' + mult,
-                            comment=field_comment
-                        )
-                    ]
-                ]
+                if ':' in f_name:
+                    f_name,  f_bit = f_name.split(':')
+                    f_name = f_name.strip()
+                    f_bit = f_bit.strip()
+                    template = TEMPLATE_DECLARATION_FIELD_BIT.format(
+                        indent=indent,
+                        field_name=f_name,
+                        field_data_type=f_data_type + ' * ' + mult,
+                        field_bit=f_bit,
+                        comment=field_comment
+                    )
+                else:
+                    template = TEMPLATE_DECLARATION_FIELD.format(
+                        indent=indent,
+                        field_name=f_name,
+                        field_data_type=f_data_type + ' * ' + mult,
+                        comment=field_comment
+                    )
+
+                fields += [[field_macro, template]]
             else:
-                fields += [
-                    [
-                        field_macro,
-                        TEMPLATE_DECLARATION_FIELD.format(
-                            indent=indent,
-                            field_name=f_name,
-                            field_data_type=f_data_type,
-                            comment=field_comment
-                        )
-                    ]
-                ]
+                if ':' in f_name:
+                    f_name,  f_bit = f_name.split(':')
+                    f_name = f_name.strip()
+                    f_bit = f_bit.strip()
+                    template = TEMPLATE_DECLARATION_FIELD_BIT.format(
+                        indent=indent,
+                        field_name=f_name,
+                        field_data_type=f_data_type,
+                        field_bit=f_bit,
+                        comment=field_comment
+                    )
+                else:
+                    template = TEMPLATE_DECLARATION_FIELD.format(
+                        indent=indent,
+                        field_name=f_name,
+                        field_data_type=f_data_type,
+                        comment=field_comment
+                    )
+
+                fields += [[field_macro, template]]
 
             field_macro = ''
             field_comment = ''
@@ -689,21 +714,45 @@ def parse_struct_union(
             elif field_comment:
                 field_comment = ' ' + field_comment[field_comment.find('#'):]
 
-            fields += [
-                [
-                    field_macro,
-                    TEMPLATE_DECLARATION_FIELD.format(
-                        indent=indent,
-                        field_name=field_name,
-                        field_data_type=field_data_types[i],
-                        comment=field_comment
-                    )
-                ]
-            ]
+            if field_name is None:
+                continue
+
+            if field_data_types[i] in ('_In_', '_Out_', 'IN', 'OUT'):
+                field_data_types[i], field_name = field_name.split(' ', 1)
+                field_data_types[i] = field_data_types[i].strip()
+                field_name = field_name.strip()
+
+                field_name, field_data_types[i] = process_param(field_name, field_data_types[i])
+
+            if ':' in field_name:
+                field_name, field_bit = field_name.split(':')
+                field_name = field_name.strip()
+                field_bit = field_bit.strip()
+                template = TEMPLATE_DECLARATION_FIELD_BIT.format(
+                    indent=indent,
+                    field_name=field_name,
+                    field_data_type=field_data_types[i],
+                    field_bit=field_bit,
+                    comment=field_comment
+                )
+            else:
+                template = TEMPLATE_DECLARATION_FIELD.format(
+                    indent=indent,
+                    field_name=field_name,
+                    field_data_type=field_data_types[i],
+                    comment=field_comment
+                )
+
+            fields += [[field_macro, template]]
 
         field_macro = ''
         field_comment = ''
         field = ''
+
+    if not cls_name:
+        return struct_count, union_count
+
+
 
     if anonymous:
         print(

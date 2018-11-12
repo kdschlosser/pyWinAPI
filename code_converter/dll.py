@@ -60,8 +60,10 @@ def parse_dll(indent, data, found_dlls):
 
     if len(return_values) >= 3:
         return_value = return_values[-2]
-    else:
+    elif return_values:
         return_value = return_values[-1]
+    else:
+        return ''
 
     original_lines = '\n'.join(indent + '# ' + ln for ln in data)
     lines += [
