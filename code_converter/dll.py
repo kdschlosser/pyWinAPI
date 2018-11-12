@@ -30,7 +30,7 @@ TEMPLATE_FUNCTION = '''{original_lines}
 def parse_dll(indent, data, found_dlls):
     data = list(d.strip() for d in data)
     new_data = ' '.join(data)
-    pos_funcs = new_data.split('(')
+    pos_funcs = new_data.split('(', 1)
     for i, pos_func in enumerate(pos_funcs):
         pos_func = pos_func.split(' ')[-1]
         for dll, known_funcs in WIN_FUNCTIONS.items():
@@ -58,8 +58,8 @@ def parse_dll(indent, data, found_dlls):
     return_values = pos_funcs[i].replace(pos_func, '').strip()
     return_values = list(item for item in return_values.split(' ') if item)
 
-    if len(return_values) == 3:
-        return_value = return_values[1]
+    if len(return_values) >= 3:
+        return_value = return_values[-2]
     else:
         return_value = return_values[-1]
 

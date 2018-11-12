@@ -105,187 +105,272 @@ class _GUID(ctypes.Structure):
         return result
 
 
-TEMPLATE = '''{var_name} = {func_name}(
+TEMPLATE = '''{indent}{var_name} = {func_name}(
 {hex_codes}
-)'''
+{indent})'''
 
 
 def EXTERN_GUID(*args):
     return _GUID(*args)
 
 
-class GUID(object):
+def parse_guid(indent, guid):
+    line = ' '.join(g.strip() for g in guid)
 
-    def __init__(self, importer, data):
-        self.importer = importer
-        self._guids = []
-        self.lines = {}
-        self.all = set()
-        start = None
-        builder = False
-        print "\n\n-- GUID -----------------------------------------------\n\n"
-        for i, line in enumerate(data[:]):
-            if line.startswith('EXTERN_GUID'):
-                print line
-                start = i
-                new_importer = importer.add_importer('guiddef_h')
-                new_importer.add('EXTERN_GUID')
+    if 'EXTERN_GUID' in line:
+        func_name = 'EXTERN_GUID'
 
-            elif line.startswith('DEFINE_GUID'):
-                start = i
-                new_importer = importer.add_importer('guiddef_h')
-                new_importer.add('DEFINE_GUID')
+    elif 'DEFINE_GUIDSTRUCT' in line:
+        func_name = 'DEFINE_GUIDSTRUCT'
 
-            elif line.startswith('DEFINE_OLEGUID'):
-                start = i
-                new_importer = importer.add_importer('guiddef_h')
-                new_importer.add('DEFINE_OLEGUID')
+    elif 'DEFINE_GUID' in line:
+        func_name = 'DEFINE_GUID'
 
-            elif line.startswith('DEFINE_DEVPROPKEY'):
-                start = i
-                new_importer = importer.add_importer('devpropdef_h')
-                new_importer.add('DEFINE_DEVPROPKEY')
+    elif 'DEFINE_OLEGUID' in line:
+        func_name = 'DEFINE_OLEGUID'
 
-            elif line.startswith('DEFINE_PROPERTYKEY'):
-                start = i
-                new_importer = importer.add_importer('propkeydef_h')
-                new_importer.add('DEFINE_PROPERTYKEY')
+    elif 'DEFINE_DEVPROPKEY' in line:
+        func_name = 'DEFINE_DEVPROPKEY'
 
-            elif line.startswith('DEFINE_GUIDSTRUCT'):
-                start = i
-                new_importer = importer.add_importer('guiddef_h')
-                new_importer.add('DEFINE_GUIDSTRUCT')
-            elif line.startswith('DEFINE_GUIDNAMED'):
-                start = i
-                new_importer = importer.add_importer('guiddef_h')
-                new_importer.add('DEFINE_GUIDNAMED')
-            elif 'GUID_BUILDER' in line:
-                start = i
-                builder = True
-                new_importer = importer.add_importer('adoguids_h')
-                new_importer.add('GUID_BUILDER')
+    elif 'DEFINE_PROPERTYKEY' in line:
+        func_name = 'DEFINE_PROPERTYKEY'
 
-            if start is not None:
-                if builder and line.strip().endswith(')'):
-                    self.lines[start] = data[start:i + 1]
-                    print self.lines[start]
-                    start = None
-                    builder = False
+    elif 'DEFINE_GUIDNAMED' in line:
+        func_name = 'DEFINE_GUIDNAMED'
 
-                elif not builder and line.rstrip().endswith(';'):
-                    self.lines[start] = data[start:i + 1]
-                    print self.lines[start]
-                    start = None
+    elif 'GUID_BUILDER' in line:
+        func_name = 'GUID_BUILDER'
+    else:
+        return False
 
-    def process(self):
-        # if self._guids:
-        #     for g in self._guids:
-        #         yield g['line_num'], g['code']
+    if func_name in ('DEFINE_GUIDSTRUCT', 'DEFINE_GUIDNAMED'):
+        line = line.replace(func_name + '(', '').replace(')', '')
+        line = line.replace(';', '').strip()
+        guid_str, var_name = line.split(',', 1)
+        var_name = var_name.strip()
+        hex_codes = indent + '    ' + guid_str.strip()
 
-        for line_num, lines in self.lines.items()[:]:
-            line = ' '.join(lines)
-            if 'EXTERN_GUID' in line:
-                func_name = 'EXTERN_GUID'
+    elif func_name == 'GUID_BUILDER':
+        # define  LIBID_ADOR25 GUID_BUILDER(LIBID_ADOR25,00000305,0000,0010,80,00,00,AA,00,6D,2E,A4)
+        line = line.strip()[line.find('GUID_BUILDER(') + 13:-1]
+        line = list(item.strip() for item in line.split(','))
+        var_name = line[0]
+        hex_codes = line[1:]
+        for i, item in enumerate(hex_codes[:]):
+            if item.startswith('0x'):
+                item = item[2:]
+            hex_codes[i] = item.upper()
 
-            elif 'DEFINE_GUIDSTRUCT' in line:
-                func_name = 'DEFINE_GUIDSTRUCT'
-
-            elif 'DEFINE_GUID' in line:
-                func_name = 'DEFINE_GUID'
-
-            elif 'DEFINE_OLEGUID' in line:
-                func_name = 'DEFINE_OLEGUID'
-
-            elif 'DEFINE_DEVPROPKEY' in line:
-                func_name = 'DEFINE_DEVPROPKEY'
-
-            elif 'DEFINE_PROPERTYKEY' in line:
-                func_name = 'DEFINE_PROPERTYKEY'
-
-            elif 'DEFINE_GUIDNAMED' in line:
-                func_name = 'DEFINE_GUIDNAMED'
-
-            elif 'GUID_BUILDER' in line:
-                func_name = 'GUID_BUILDER'
-            else:
-                continue
-
-            if func_name in ('DEFINE_GUIDSTRUCT', 'DEFINE_GUIDNAMED'):
-                line = line.replace(func_name + '(', '').replace(')', '')
-                line = line.replace(';', '').strip()
-                guid_str, var_name = line.split(',', 1)
-                var_name = var_name.strip()
-                hex_codes = '    ' + guid_str.strip()
-
-            elif func_name == 'GUID_BUILDER':
-                # define  LIBID_ADOR25 GUID_BUILDER(LIBID_ADOR25,00000305,0000,0010,80,00,00,AA,00,6D,2E,A4)
-                line = line.strip()[line.find('GUID_BUILDER(') + 13:-1]
-                line = list(item.strip() for item in line.split(','))
-                var_name = line[0]
-                hex_codes = line[1:]
-                for i, item in enumerate(hex_codes[:]):
-                    if item.startswith('0x'):
-                        item = item[2:]
-                    hex_codes[i] = item.upper()
-
-                hex_codes = '\n'.join(
-                    '    0x' + code + ','
-                    for code in hex_codes
-                )
-
-            else:
-                line = line.replace(func_name + '(', '').replace(')', '')
-                line = line.replace(';', '').strip()
-                var_name, hex_codes = line.split(',', 1)
-                var_name = var_name.strip()
-                hex_codes = hex_codes.strip()
-
-                hex_codes = hex_codes.split(',')
-                codes = hex_codes[:11]
-
-                if 'PROPKEY' in func_name or 'PROPERTYKEY' in func_name:
-                    try:
-                        codes += [hex(int(hex_codes[-1]))]
-                    except ValueError:
-                        pass
-
-                hex_codes = '\n'.join(
-                    '    0x' + code.strip()[2:].upper() + ','
-                    for code in codes
-                )[:-1]
-
-            yield line_num, TEMPLATE.format(
-                var_name=var_name.strip(),
-                func_name=func_name,
-                hex_codes=hex_codes
-            )
-
-            self.all.add(var_name)
-
-    def __getitem__(self, item):
-        namespace = dict(
-            EXTERN_GUID=EXTERN_GUID
+        hex_codes = '\n'.join(
+            indent + '    0x' + code.replace('L', '') + ','
+            for code in hex_codes
         )
-        if not self._guids:
-            for line_num, code in self.process():
-                try:
-                    exec(code, {}, namespace)
-                except SyntaxError:
-                    print code
-                    continue
-                for iid_name, iid in namespace.items():
-                    if isinstance(iid, _GUID):
-                        self._guids += [
-                            dict(
-                                code=code,
-                                guid=str(iid),
-                                name=iid_name,
-                                line_num=line_num
-                            )
-                        ]
-        for g in self._guids:
-            if item.upper() in (g['guid'].upper(), g['name'].upper()):
-                return g['name']
 
-        raise KeyError(item)
+    else:
+        line = line.replace(func_name + '(', '').replace(')', '')
+        line = line.replace(';', '').strip()
 
+        var_name, hex_codes = line.split(',', 1)
+        var_name = var_name.strip()
+        hex_codes = hex_codes.strip()
+
+        hex_codes = hex_codes.split(',')
+        codes = hex_codes[:11]
+
+        if 'PROPKEY' in func_name or 'PROPERTYKEY' in func_name:
+            try:
+                codes += [hex(int(hex_codes[-1]))]
+            except ValueError:
+                pass
+
+        hex_codes = '\n'.join(
+            indent + '    0x' + code.strip()[2:].upper().replace('L', '') + ','
+            for code in codes
+        )[:-1]
+
+    return (
+        TEMPLATE.format(
+            indent=indent,
+            var_name=var_name.strip(),
+            func_name=func_name,
+            hex_codes=hex_codes
+        )
+    )
+
+#
+#
+# class GUID(object):
+#
+#     def __init__(self, importer, data):
+#         self.importer = importer
+#         self._guids = []
+#         self.lines = {}
+#         self.all = set()
+#         start = None
+#         builder = False
+#         print "\n\n-- GUID -----------------------------------------------\n\n"
+#         for i, line in enumerate(data[:]):
+#             if line.startswith('EXTERN_GUID'):
+#                 print line
+#                 start = i
+#                 new_importer = importer.add_importer('guiddef_h')
+#                 new_importer.add('EXTERN_GUID')
+#
+#             elif line.startswith('DEFINE_GUID'):
+#                 start = i
+#                 new_importer = importer.add_importer('guiddef_h')
+#                 new_importer.add('DEFINE_GUID')
+#
+#             elif line.startswith('DEFINE_OLEGUID'):
+#                 start = i
+#                 new_importer = importer.add_importer('guiddef_h')
+#                 new_importer.add('DEFINE_OLEGUID')
+#
+#             elif line.startswith('DEFINE_DEVPROPKEY'):
+#                 start = i
+#                 new_importer = importer.add_importer('devpropdef_h')
+#                 new_importer.add('DEFINE_DEVPROPKEY')
+#
+#             elif line.startswith('DEFINE_PROPERTYKEY'):
+#                 start = i
+#                 new_importer = importer.add_importer('propkeydef_h')
+#                 new_importer.add('DEFINE_PROPERTYKEY')
+#
+#             elif line.startswith('DEFINE_GUIDSTRUCT'):
+#                 start = i
+#                 new_importer = importer.add_importer('guiddef_h')
+#                 new_importer.add('DEFINE_GUIDSTRUCT')
+#             elif line.startswith('DEFINE_GUIDNAMED'):
+#                 start = i
+#                 new_importer = importer.add_importer('guiddef_h')
+#                 new_importer.add('DEFINE_GUIDNAMED')
+#             elif 'GUID_BUILDER' in line:
+#                 start = i
+#                 builder = True
+#                 new_importer = importer.add_importer('adoguids_h')
+#                 new_importer.add('GUID_BUILDER')
+#
+#             if start is not None:
+#                 if builder and line.strip().endswith(')'):
+#                     self.lines[start] = data[start:i + 1]
+#                     print self.lines[start]
+#                     start = None
+#                     builder = False
+#
+#                 elif not builder and line.rstrip().endswith(';'):
+#                     self.lines[start] = data[start:i + 1]
+#                     print self.lines[start]
+#                     start = None
+#
+#     def process(self):
+#         # if self._guids:
+#         #     for g in self._guids:
+#         #         yield g['line_num'], g['code']
+#
+#         for line_num, lines in self.lines.items()[:]:
+#             line = ' '.join(lines)
+#             if 'EXTERN_GUID' in line:
+#                 func_name = 'EXTERN_GUID'
+#
+#             elif 'DEFINE_GUIDSTRUCT' in line:
+#                 func_name = 'DEFINE_GUIDSTRUCT'
+#
+#             elif 'DEFINE_GUID' in line:
+#                 func_name = 'DEFINE_GUID'
+#
+#             elif 'DEFINE_OLEGUID' in line:
+#                 func_name = 'DEFINE_OLEGUID'
+#
+#             elif 'DEFINE_DEVPROPKEY' in line:
+#                 func_name = 'DEFINE_DEVPROPKEY'
+#
+#             elif 'DEFINE_PROPERTYKEY' in line:
+#                 func_name = 'DEFINE_PROPERTYKEY'
+#
+#             elif 'DEFINE_GUIDNAMED' in line:
+#                 func_name = 'DEFINE_GUIDNAMED'
+#
+#             elif 'GUID_BUILDER' in line:
+#                 func_name = 'GUID_BUILDER'
+#             else:
+#                 continue
+#
+#             if func_name in ('DEFINE_GUIDSTRUCT', 'DEFINE_GUIDNAMED'):
+#                 line = line.replace(func_name + '(', '').replace(')', '')
+#                 line = line.replace(';', '').strip()
+#                 guid_str, var_name = line.split(',', 1)
+#                 var_name = var_name.strip()
+#                 hex_codes = '    ' + guid_str.strip()
+#
+#             elif func_name == 'GUID_BUILDER':
+#                 # define  LIBID_ADOR25 GUID_BUILDER(LIBID_ADOR25,00000305,0000,0010,80,00,00,AA,00,6D,2E,A4)
+#                 line = line.strip()[line.find('GUID_BUILDER(') + 13:-1]
+#                 line = list(item.strip() for item in line.split(','))
+#                 var_name = line[0]
+#                 hex_codes = line[1:]
+#                 for i, item in enumerate(hex_codes[:]):
+#                     if item.startswith('0x'):
+#                         item = item[2:]
+#                     hex_codes[i] = item.upper()
+#
+#                 hex_codes = '\n'.join(
+#                     '    0x' + code + ','
+#                     for code in hex_codes
+#                 )
+#
+#             else:
+#                 line = line.replace(func_name + '(', '').replace(')', '')
+#                 line = line.replace(';', '').strip()
+#                 var_name, hex_codes = line.split(',', 1)
+#                 var_name = var_name.strip()
+#                 hex_codes = hex_codes.strip()
+#
+#                 hex_codes = hex_codes.split(',')
+#                 codes = hex_codes[:11]
+#
+#                 if 'PROPKEY' in func_name or 'PROPERTYKEY' in func_name:
+#                     try:
+#                         codes += [hex(int(hex_codes[-1]))]
+#                     except ValueError:
+#                         pass
+#
+#                 hex_codes = '\n'.join(
+#                     '    0x' + code.strip()[2:].upper() + ','
+#                     for code in codes
+#                 )[:-1]
+#
+#             yield line_num, TEMPLATE.format(
+#                 var_name=var_name.strip(),
+#                 func_name=func_name,
+#                 hex_codes=hex_codes
+#             )
+#
+#             self.all.add(var_name)
+#
+#     def __getitem__(self, item):
+#         namespace = dict(
+#             EXTERN_GUID=EXTERN_GUID
+#         )
+#         if not self._guids:
+#             for line_num, code in self.process():
+#                 try:
+#                     exec(code, {}, namespace)
+#                 except SyntaxError:
+#                     print code
+#                     continue
+#                 for iid_name, iid in namespace.items():
+#                     if isinstance(iid, _GUID):
+#                         self._guids += [
+#                             dict(
+#                                 code=code,
+#                                 guid=str(iid),
+#                                 name=iid_name,
+#                                 line_num=line_num
+#                             )
+#                         ]
+#         for g in self._guids:
+#             if item.upper() in (g['guid'].upper(), g['name'].upper()):
+#                 return g['name']
+#
+#         raise KeyError(item)
+#

@@ -162,9 +162,9 @@ def parse_define(indent, define, importer):
 
         if var_name.startswith('def '):
             ret = (
-                '\n\n' +
+                '\n\n' + indent +
                 var_name +
-                '    return ' +
+                indent + '    return ' +
                 value
             )
 
@@ -173,27 +173,27 @@ def parse_define(indent, define, importer):
             value = (
                 'CTL_CODE(\n' +
                 '\n'.join(
-                    '    ' + val.strip() + ','
-                        for val in value.split(',')
+                    indent + '    ' + val.strip() + ','
+                    for val in value.split(',')
                 ) +
-                '\n)'
+                '\n' + indent + ')'
             )
             ret = var_name + ' = ' + value
 
-        elif 'DEFINE_GUIDNAMED' in value:
-            # new_name, value = value.split(' ', 1)
-
-            value = value.replace('DEFINE_GUIDNAMED(', '')[:-1]
-            value = (
-                'DEFINE_GUIDNAMED(\n' +
-                '\n'.join(
-                    '    ' + val.strip()
-                        for val in value.split(',')
-                ) +
-                '\n)'
-            )
-
-            ret = var_name + ' = ' + value
+        # elif 'DEFINE_GUIDNAMED' in value:
+        #     # new_name, value = value.split(' ', 1)
+        #
+        #     value = value.replace('DEFINE_GUIDNAMED(', '')[:-1]
+        #     value = (
+        #         'DEFINE_GUIDNAMED(\n' +
+        #         '\n'.join(
+        #             '    ' + val.strip()
+        #             for val in value.split(',')
+        #         ) +
+        #         '\n)'
+        #     )
+        #
+        #     ret = var_name + ' = ' + value
 
         elif value and var_name != value:
             value = value.replace('{', '[').replace('}', ']')
@@ -223,7 +223,7 @@ def parse_define(indent, define, importer):
 
             ret = var_name + ' = ' + value
 
-            if len(ret) > 76:
+            if len(indent + ret) > 76:
                 if (
                     ',' in ret and
                     (
@@ -239,17 +239,13 @@ def parse_define(indent, define, importer):
                         end_marker = ')'
                     beg, end = ret.split(start_marker, 1)
                     end = end[:-1].split(',')
-                    end = list('    ' + itm.strip() + ',' for itm in end)
+                    end = list(indent + '    ' + itm.strip() + ',' for itm in end)
                     beg += start_marker + '\n' + '\n'.join(
-                        end) + '\n' + end_marker
+                        end) + '\n' + indent + end_marker
                     ret = beg
 
         else:
             ret = ''
-
-        if ret.endswith('A') and '0x' not in ret:
-            ret = '# ' + ret
-            return ret
 
         return ret
 
@@ -389,11 +385,11 @@ def parse_define(indent, define, importer):
             value = value.split(splitter)
             value = marker.join(d.strip() for d in value)
 
-            if len(get_ret()) > 79:
+            if len(indent + get_ret()) > 79:
                 value = (
-                    '(\n    ' +
-                    (marker + '\n    ').join(value.split(splitter)) +
-                    '\n)'
+                    '(\n' + indent + '    ' +
+                    (marker + '\n' + indent + '    ').join(v.strip() for v in value.split(splitter)) +
+                    '\n' + indent + ')'
                 )
 
     res = get_ret()
@@ -404,10 +400,10 @@ def parse_define(indent, define, importer):
                 importer.add(nm)
                 return False
 
-            if len(res) > 79 and '\n' not in res.strip():
+            if len(indent + res) > 79 and '\n' not in res.strip():
                 beg, end = res.split(' = ', 1)
                 beg += ' = (\n'
-                end = '    ' + end.strip() + '\n)'
+                end = indent + '    ' + end.strip() + '\n' + indent + ')'
                 res = beg + end
 
         print(DEFINE_TEMPLATE.format(indent, res, comment))

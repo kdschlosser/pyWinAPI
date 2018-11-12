@@ -245,7 +245,7 @@ def parse_struct_union(
 
         attr_name, value = process_param(attr_name, value)
         try:
-            print(indent + attr_name + ' = ' + value + '\n\n')
+            print(indent + attr_name + ' = ' + value + '\n')
         except TypeError:
             return struct_count, union_count
         return struct_count, union_count
@@ -297,6 +297,7 @@ def parse_struct_union(
                     parent_cls=parent_cls
                 )
             )
+            print('\n')
             return struct_count, union_count
         else:
             if parent_cls == cls_name:
@@ -314,27 +315,8 @@ def parse_struct_union(
                         parent_cls=parent_cls
                     )
                 )
+                print('\n')
             return struct_count, union_count
-
-    if cls_name not in declarations:
-        declarations += [cls_name]
-        print(
-            TEMPLATE_DECLARATION.format(
-                indent=indent,
-                cls_name=cls_name.strip(),
-                parent_cls=parent_cls
-            )
-        )
-
-    anonymous = []
-    fields = []
-    sub_structure = []
-    sub_structure_type = None
-    brace_count = 0
-    field = ''
-    chained_comment = False
-    field_comment = ''
-    field_macro = ''
 
     var_names = data.rsplit('}', 1)[1].replace(';', '')
     var_names = list(n.strip() for n in var_names.split(','))
@@ -348,6 +330,27 @@ def parse_struct_union(
 
     if cls_name in var_names:
         var_names.remove(cls_name)
+
+    if cls_name not in declarations:
+        declarations += [cls_name]
+        print(
+            TEMPLATE_DECLARATION.format(
+                indent=indent,
+                cls_name=cls_name.strip(),
+                parent_cls=parent_cls
+            )
+        )
+        print('\n')
+
+    anonymous = []
+    fields = []
+    sub_structure = []
+    sub_structure_type = None
+    brace_count = 0
+    field = ''
+    chained_comment = False
+    field_comment = ''
+    field_macro = ''
 
     data_fields = '~~~~'.join(lines)
     data_fields = data_fields[:data_fields.rfind('}')].split('~~~~')
@@ -473,9 +476,7 @@ def parse_struct_union(
                             parent_cls=p_cls
                         )
                     )
-
                     print('\n')
-
                     print(
                         TEMPLATE_DECLARATION_SUBSTRUCTURE.format(
                             indent=indent,
@@ -786,12 +787,8 @@ def parse_struct_union(
         var_names[i] = indent + var_name + ' = ' + value
 
     if var_names:
-        print('\n')
-
         for var_name in var_names:
             print(var_name)
-
-    print('\n')
 
     return struct_count, union_count
 

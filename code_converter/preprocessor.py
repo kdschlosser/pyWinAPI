@@ -127,7 +127,7 @@ def parse_macro(indent, lne, macro=False):
                 return '', indent + '    '
         else:
             if macro:
-                print(indent[:-4] + line)
+                print(indent + line)
             else:
                 print(indent + line)
                 return '', indent

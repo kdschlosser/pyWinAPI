@@ -17,6 +17,7 @@ from code_converter.comment import parse_comment, equalize_width
 from code_converter.structure import parse_struct_union
 from code_converter.interface import parse_interface
 from code_converter.dll import parse_dll
+from code_converter.guid import parse_guid
 
 from code_converter import preprocessor
 
@@ -602,7 +603,18 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     if parse_define('    ' * (len(steps) - 1), define, Importer):
                         new_lines = '\n'
 
-                elif line.startswith('enum') or line.startswith('typedef enum'):
+                new_line, comment = parse_comment(line)
+
+                if new_line:
+                    guid_line = parse_guid(indent, [new_line])
+                    if guid_line:
+                        handle_preprocessor()
+                        if comment:
+                            print(comment)
+                        print(guid_line)
+                        continue
+
+                if line.startswith('enum') or line.startswith('typedef enum'):
                     if new_lines:
                         print(new_lines)
                         new_lines = ''
@@ -708,8 +720,6 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     )
 
                 else:
-                    tdef = False
-
                     if skip_lines is not None:
                         start, stop = skip_lines
                         if start <= i <= stop:
@@ -719,9 +729,69 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                     chained_comment = False
 
+                    if line.strip().startswith('typedef') and ';' in line:
+                        handle_preprocessor()
+                        line, comment = parse_comment(line)
+
+                        line = line.replace('typedef', '').strip()
+                        line = line.replace(';', '').strip()
+                        var_names = []
+                        hold_over = ''
+                        for l in line.split(' '):
+                            if not l.strip():
+                                continue
+
+                            if hold_over:
+                                l = hold_over + l
+                                hold_over = ''
+                            if l == '*':
+                                hold_over = '*'
+                                continue
+                            if l == '**':
+                                hold_over = '**'
+                                continue
+                            l = l.strip().rstrip(',')
+                            for v in l.split(','):
+                                v = v.strip()
+                                var_names += [v]
+                        value = var_names[0]
+                        var_names = var_names[1:]
+                        from code_converter.utils import process_param
+
+                        if comment:
+                            print(indent + comment)
+                        for var_name in var_names:
+                            new_var_name, new_value = process_param(
+                                var_name,
+                                value
+                            )
+
+                            if new_var_name != new_value:
+                                print(indent + new_var_name + ' = ' + new_value)
+                        continue
+
+                    temp_line = line
+                    for j in range(1, 5):
+                        temp_line = '#' + (' ' * (5 - j))
+
+                    if temp_line.strip().startswith('#include'):
+                        line, comment = parse_comment(temp_line)
+                        line = line.replace('#include', '').strip()
+                        line = line.replace('<', '').replace('>', '')
+                        line = line.replace('"', '').strip()
+                        line = line.replace('.h', '_h')
+                        line = line.replace('/', '.').replace('\\', '.')
+                        handle_preprocessor()
+                        print(indent + 'from {0} import * # NOQA'.format(line))
+                        continue
+
+                    tdef = False
+
                     new_line, comment = parse_comment(string_data[i])
 
                     if new_line is not None and new_line.strip() and ';' not in new_line:
+                        if new_line.strip().startswith('#'):
+                            continue
                         start = i
                         stop = i
 
@@ -731,18 +801,13 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                             if ln.endswith('\\'):
                                 ln = ln[:-1]
-                            data += [ln]
+                            data += [ln.strip()]
 
                             if ln.endswith(';'):
                                 break
 
                         skip_lines = [start, stop]
-
-                        line = parse_dll(indent, data, found_dlls)
-                        if line:
-                            handle_preprocessor()
-                            print(line)
-                            continue
+                        line = '\n'.join(data)
 
                     if new_line is None and comment is None:
                         # /*
@@ -763,6 +828,25 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                                 break
 
                         new_line, comment = parse_comment(comment)
+
+                    if line.endswith(';'):
+                        guid_line = parse_guid(indent, line.split('\n'))
+                        if guid_line:
+                            handle_preprocessor()
+                            if comment:
+                                comment = equalize_width(indent, comment)
+                                print('\n' +comment)
+                            print(guid_line)
+
+                        else:
+                            line = parse_dll(indent, line.split('\n'), found_dlls)
+                            if line:
+                                handle_preprocessor()
+                                if comment:
+                                    comment = equalize_width(indent, comment)
+                                    print('\n' +comment)
+                                print(line)
+                                continue
 
                     if not new_line.strip() and comment:
                         comment = equalize_width(indent, comment)
@@ -911,7 +995,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 # output_file = r'C:\Users\Administrator\Desktop\New folder (18)\pyWinAPI'# ks_h.py'
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\authz.h' # ks.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\commctrl.h' # ks.h'
 # COMMENTS = False
 #
 # # if there is a specific dll that is created fro an h file the name of that
