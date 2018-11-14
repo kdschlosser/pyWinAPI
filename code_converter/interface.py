@@ -148,6 +148,8 @@ TEMPLATE_PARAM2 = '''
 TEMPLATE_HELPSTRING = '''\n{indent}    """{indent}\n    {helpstring}\n{indent}    """'''
 
 
+interface_declarations = []
+
 class Options(dict):
 
     def __init__(self, options):
@@ -360,30 +362,28 @@ def parse_interface(indent, methods, importer, interface_data, dec):
 
         if interface_data['co_class']:
             co_class = TEMPLATE_COCLASS.format(
-                indent=indent,
+                indent='',
                 helpstring=help_string,
                 **interface_data
             )
-            print(co_class)
-            print()
+            interface_declarations.append(co_class)
 
         elif interface_data['library']:
             library = TEMPLATE_LIBRARY.format(
-                indent=indent,
+                indent='',
                 helpstring=help_string,
                 **interface_data
             )
 
-            print(library)
-            print()
+            interface_declarations.append(library)
         else:
             interface = TEMPLATE_INTERFACE.format(
-                indent=indent,
+                indent='',
                 helpstring=help_string,
                 **interface_data
             )
-            print(interface)
-            print()
+
+            interface_declarations.append(interface)
         return
 
     if interface_data['co_class'] or interface_data['library']:

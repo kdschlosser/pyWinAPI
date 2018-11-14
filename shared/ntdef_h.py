@@ -926,20 +926,27 @@ def ARGUMENT_PRESENT(ArgumentPointer):
     return ArgumentPointer != CHAR
 
 
-def FIELD_OFFSET(type):
-    return ctypes.byref(type(0))
+def FIELD_OFFSET(type, field):
+    t = POINTER(type)()
+    f = getattr(t, field)
+    return LONG(LONG_PTR(ctypes.byref(f).value).value).value
 
 
-def UFIELD_OFFSET(type):
-    return ctypes.byref(type(0))
+def UFIELD_OFFSET(type, field):
+    t = POINTER(type)()
+    f = getattr(t, field)
+    return ULONG(LONG_PTR(ctypes.byref(f).value).value).value
 
 
-def RTL_FIELD_SIZE(type):
-    return ctypes.sizeof(ctypes.byref(type(0)))
+def RTL_FIELD_SIZE(type, field):
+    t = POINTER(type)()
+    f = getattr(t, field)
+    return ctypes.sizeof(f)
 
 
-def RTL_SIZEOF_THROUGH_FIELD(type):
-    return FIELD_OFFSET(type) + RTL_FIELD_SIZE(type)
+def RTL_SIZEOF_THROUGH_FIELD(type, field):
+
+    return FIELD_OFFSET(type, field) + RTL_FIELD_SIZE(type, field)
 
 
 def RTL_CONTAINS_FIELD(Struct, Size, Field):

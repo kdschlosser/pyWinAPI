@@ -82,6 +82,6 @@ def process_param(key, value):
 
     while key.startswith('*'):
         value = 'POINTER(' + value + ')'
-        key = key[1:]
+        key = key[1:].strip()
 
     return key, value

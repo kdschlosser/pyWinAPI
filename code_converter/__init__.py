@@ -14,9 +14,9 @@ from code_converter.includes import parse_include
 from code_converter.enum import parse_enum
 from code_converter.define import parse_define
 from code_converter.comment import parse_comment, equalize_width
-from code_converter.structure import parse_struct_union
-from code_converter.interface import parse_interface
-from code_converter.dll import parse_dll
+from code_converter.structure import parse_struct_union, u_s_declarations
+from code_converter.interface import parse_interface, interface_declarations
+from code_converter.dll import parse_dll, write_functions, print_not_found
 from code_converter.guid import parse_guid
 
 from code_converter import preprocessor
@@ -431,18 +431,10 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 parse_macro(step_indent, step.strip(), True)
                 steps[j] = None
 
-    print('import ctypes')
-    print('from pyWinAPI import *')
-    print('from pyWinAPI.shared.wtypes_h import *')
-    print('from pyWinAPI.shared.winapifamily_h import *')
-    print('from pyWinAPI.shared.sdkddkver_h import *')
-    print('from pyWinAPI.shared.guiddef_h import *\n\n')
-
     if interfaces:
         print('''def annotation(value):\n    if '_opt_' in value:\n        return comtypes.defaultvalue(None)\n    else:\n        return None\n''')
 
     for i, line in enumerate(string_data):
-
 
         if 'COBJMACROS' in line and not COBJMACROS:
             COBJMACROS = True
@@ -729,7 +721,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                         Importer,
                         anon_struct_count,
                         anon_union_count,
-                        union_struct_fwd_definitions
+                        union_struct_fwd_definitions,
+                        True
                     )
                     continue
 
@@ -777,12 +770,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                                 print(indent + new_var_name + ' = ' + new_value)
                         continue
 
-                    temp_line = line
-                    for j in range(1, 5):
-                        temp_line = '#' + (' ' * (5 - j))
-
-                    if temp_line.strip().startswith('#include'):
-                        line, comment = parse_comment(temp_line)
+                    if line.strip().startswith('#include'):
+                        line, comment = parse_comment(line)
                         line = line.replace('#include', '').strip()
                         line = line.replace('<', '').replace('>', '')
                         line = line.replace('"', '').strip()
@@ -814,9 +803,9 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                                 break
 
                         skip_lines = [start, stop]
-                        line = '\n'.join(data)
+                        new_line = '\n'.join(data)
 
-                    if new_line is None and comment is None:
+                    elif new_line is None and comment is None:
                         # /*
                         # * Aliases for StringPrep
                         # */
@@ -836,46 +825,16 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                         new_line, comment = parse_comment(comment)
 
-                    if line and ';' not in line:
-                        start = i
-                        stop = i
-
-                        data = []
-                        for j, ln in enumerate(string_data[i:]):
-                            stop = i + j
-
-                            if ln.strip().startswith('//'):
-                                ln = ln.replace('//', '#')
-                                continue
-
-                            if not ln:
-                                continue
-
-                            if ln.endswith('\\'):
-                                ln = ln[:-1]
-                            data += [ln.strip()]
-
-                            if ';' in ln:
-                                break
-                        guid_line = parse_guid(indent, data)
-                        if guid_line:
-                            handle_preprocessor()
-                            print(guid_line)
-                            skip_lines = [start, stop]
-                            continue
-                        else:
-                            skip_lines = None
-                    else:
-                        guid_line = parse_guid(indent, line.split('\n'))
+                    if new_line:
+                        guid_line = parse_guid(indent, new_line.split('\n'))
                         if guid_line:
                             handle_preprocessor()
                             if comment:
-                                comment = equalize_width(indent, comment)
                                 print('\n' + comment)
                             print(guid_line)
                             continue
 
-                        line = parse_dll(indent, line.split('\n'), found_dlls)
+                        line = parse_dll(indent, new_line.split('\n'), found_dlls)
                         if line:
                             handle_preprocessor()
                             if comment:
@@ -1059,16 +1018,15 @@ if __name__ == '__main__':
         if raw_input("delete file " + output_file).lower() == 'n':
             sys.exit(0)
 
-    output_file = open(output_file, 'w')
-
 
     class STDOut(object):
         line_buffer = []
+        out_buffer = []
 
         def write(self, data):
             with print_lock:
-                _stdout.write(data)
-                _stdout.flush()
+                # _stdout.write(data)
+                # _stdout.flush()
                 try:
                     self.line_buffer += [data]
                     if len(self.line_buffer) == 3:
@@ -1078,18 +1036,83 @@ if __name__ == '__main__':
                             not self.line_buffer[1].strip()
                         ):
                             self.line_buffer.pop(1)
-                        output_file.write(self.line_buffer.pop(0))
-                        output_file.flush()
+
+                        self.out_buffer += [self.line_buffer.pop(0)]
 
                 except ValueError:
                     pass
 
         def close(self):
             for line in self.line_buffer:
-                output_file.write(line)
-                output_file.flush()
+                self.out_buffer += [line]
 
-            output_file.close()
+            if interface_declarations:
+                temp_buffer = '\n\n'.join(interface_declarations).split('\n')
+                temp_buffer += ['', '']
+            else:
+                temp_buffer = []
+
+            temp_buffer += '\n\n'.join(u_s_declarations).split('\n')
+            if u_s_declarations:
+                temp_buffer += ['', '']
+
+            temp_buffer += ''.join(self.out_buffer).split('\n')
+
+            # for item in temp_buffer:
+            #     sys.stderr.write(repr(item) + '\n')
+
+            out_buffer = []
+
+            for line in temp_buffer:
+                try:
+                    back_2 = out_buffer[-2].strip()
+                    back_1 = out_buffer[-1].strip()
+                except IndexError:
+                    out_buffer += [line]
+                    continue
+
+                if not line.strip() and not back_1 and not back_2:
+                    continue
+
+                if (
+                    not line.strip() and
+                    (
+                        back_1.startswith('if') or
+                        back_1.startswith('elif') or
+                        back_1.startswith('else') or
+                        back_1.startswith('#')
+                    )
+                ):
+                    continue
+
+                if line.strip().startswith('class '):
+                    if back_1:
+                        if (
+                            back_1.startswith('if') or
+                            back_1.startswith('elif') or
+                            back_1.startswith('else') or
+                            back_1.startswith('#')
+                        ):
+                            out_buffer += [line]
+                        else:
+                            out_buffer += ['', '', line]
+
+                        continue
+
+                    if back_2:
+                        out_buffer += ['', line]
+                        continue
+
+                out_buffer += [line]
+
+            with open(output_file, 'w') as f:
+                f.write('import ctypes\n')
+                f.write('from pyWinAPI import *\n')
+                f.write('from pyWinAPI.shared.wtypes_h import *\n')
+                f.write('from pyWinAPI.shared.winapifamily_h import *\n')
+                f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
+                f.write('from pyWinAPI.shared.guiddef_h import *\n')
+                f.write('\n'.join(out_buffer) + '\n')
 
         def __getattr__(self, item):
             if item in self.__dict__:
@@ -1101,6 +1124,9 @@ if __name__ == '__main__':
     sys.stdout = STDOut()
     gen_code(input_file)
     sys.stdout.close()
+
+    write_functions()
+    print_not_found()
 
 #
 # class STDErr(object):

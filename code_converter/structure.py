@@ -23,10 +23,14 @@ from code_converter.comment import equalize_width, parse_comment
 from code_converter.preprocessor import parse_macro
 
 
+u_s_declarations = []
+
+
 # ******************* Forward declarations
 
 TEMPLATE_DECLARATION = '''{indent}class {cls_name}({parent_cls}):
-{indent}    pass'''
+{indent}    pass
+'''
 
 TEMPLATE_DECLARATION_FIELDS_START = '''{indent}{cls_name}._fields_ = ['''
 TEMPLATE_DECLARATION_FIELDS_END = '''{indent}]'''
@@ -35,9 +39,8 @@ TEMPLATE_DECLARATION_FIELD_BIT = '''{indent}    ('{field_name}', {field_data_typ
 TEMPLATE_DECLARATION_ANONYMOUS_START = '''{indent}{cls_name}._anonymous_ = ('''
 TEMPLATE_DECLARATION_ANONYMOUS_END = '''{indent})'''
 TEMPLATE_DECLARATION_ANONYMOUS = '''{indent}    '{anonymous}','''
-
-
-TEMPLATE_DECLARATION_SUBSTRUCTURE = '''{indent}{cls_name}.{child_cls} = {child_cls}'''
+TEMPLATE_DECLARATION_SUBSTRUCTURE = '''{indent}{cls_name}.{child_cls} = {child_cls}
+'''
 #
 #
 # # *********************** normal struct
@@ -219,7 +222,8 @@ def parse_struct_union(
     importer,
     struct_count,
     union_count,
-    declarations
+    declarations,
+    declare=False
 ):
 
     lines = data.split('\n')
@@ -293,14 +297,23 @@ def parse_struct_union(
     if ';' in cls_name:
         cls_name = cls_name.replace(';', '')
         if parent_cls in ('ctypes.Structure', 'ctypes.Union'):
-            print(
-                TEMPLATE_DECLARATION.format(
-                    indent=indent,
-                    cls_name=cls_name.strip(),
-                    parent_cls=parent_cls
+            if declare:
+                u_s_declarations.append(
+                    TEMPLATE_DECLARATION.format(
+                        indent='',
+                        cls_name=cls_name.strip(),
+                        parent_cls=parent_cls
+                    )
                 )
-            )
-            print('\n')
+            else:
+                print(
+                    TEMPLATE_DECLARATION.format(
+                        indent=indent,
+                        cls_name=cls_name.strip(),
+                        parent_cls=parent_cls
+                    )
+                )
+                print('\n')
             return struct_count, union_count
         else:
             if parent_cls == cls_name:
@@ -310,16 +323,26 @@ def parse_struct_union(
                 cls_name, parent_cls = process_param(cls_name, parent_cls)
                 print(indent + cls_name + ' = ' + parent_cls)
             else:
-
                 declarations += [cls_name.strip()]
-                print(
-                    TEMPLATE_DECLARATION.format(
-                        indent=indent,
-                        cls_name=cls_name.strip(),
-                        parent_cls=parent_cls
+
+                if declare:
+                    u_s_declarations.append(
+                        TEMPLATE_DECLARATION.format(
+                            indent='',
+                            cls_name=cls_name.strip(),
+                            parent_cls=parent_cls
+                        )
                     )
-                )
-                print('\n')
+                else:
+                    print(
+                        TEMPLATE_DECLARATION.format(
+                            indent=indent,
+                            cls_name=cls_name.strip(),
+                            parent_cls=parent_cls
+                        )
+                    )
+                    print('\n')
+
             return struct_count, union_count
 
     var_names = data.rsplit('}', 1)[1].replace(';', '')
@@ -336,16 +359,25 @@ def parse_struct_union(
         var_names.remove(cls_name)
 
     if cls_name not in declarations:
-        declarations += [cls_name]
-        print(
-            TEMPLATE_DECLARATION.format(
-                indent=indent,
-                cls_name=cls_name.strip(),
-                parent_cls=parent_cls
-            )
-        )
-        print('\n')
+        declarations += [cls_name.strip()]
 
+        if declare:
+            u_s_declarations.append(
+                TEMPLATE_DECLARATION.format(
+                    indent='',
+                    cls_name=cls_name.strip(),
+                    parent_cls=parent_cls
+                )
+            )
+        else:
+            print(
+                TEMPLATE_DECLARATION.format(
+                    indent=indent,
+                    cls_name=cls_name.strip(),
+                    parent_cls=parent_cls
+                )
+            )
+            print('\n')
     else:
         return struct_count, union_count
 
@@ -717,7 +749,7 @@ def parse_struct_union(
             if field_name is None:
                 continue
 
-            if field_data_types[i] in ('_In_', '_Out_', 'IN', 'OUT'):
+            if field_data_types[i] in ('_In_', '_Out_', 'IN', 'OUT', '_Inout_'):
                 field_data_types[i], field_name = field_name.split(' ', 1)
                 field_data_types[i] = field_data_types[i].strip()
                 field_name = field_name.strip()
@@ -751,8 +783,6 @@ def parse_struct_union(
 
     if not cls_name:
         return struct_count, union_count
-
-
 
     if anonymous:
         print(
@@ -820,9 +850,10 @@ def parse_struct_union(
                 '{0}{1}._fields_ = _temp_fields_'.format(indent, cls_name)
             )
 
-    for i, var_name in enumerate(var_names[:]):
+    variables = []
+
+    for var_name in var_names:
         if not var_name:
-            var_names.pop(i)
             continue
 
         var_name, value = process_param(
@@ -833,11 +864,18 @@ def parse_struct_union(
         if var_name is None:
             continue
 
-        var_names[i] = indent + var_name + ' = ' + value
+        if declare:
+            variables += [var_name + ' = ' + value]
 
-    if var_names:
-        for var_name in var_names:
-            print(var_name)
+        else:
+            variables += [indent + var_name + ' = ' + value]
+
+    if variables:
+        variables = '\n'.join(variables)
+        if declare:
+            u_s_declarations.append('\n' + variables + '\n')
+        else:
+            print(variables)
 
     return struct_count, union_count
 
