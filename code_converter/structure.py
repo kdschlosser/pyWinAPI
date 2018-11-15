@@ -297,8 +297,25 @@ def parse_struct_union(
         if line.startswith('#'):
             continue
 
-        if '_Field_size_' in line:
-            line = line.split(')', 1)[1]
+        if '_Field_' in line:
+            chunk_1, chunk_2 = line.split('_Field_', 1)
+            chunk_2 = chunk_2.split('(', 1)[1]
+            bad_chunk = ''
+            brace_count = 1
+            for char in list(chunk_2):
+                brace_count += char.count('(')
+                brace_count -= char.count(')')
+                bad_chunk += char
+                if not brace_count:
+                    break
+            else:
+                continue
+
+            chunk_2 = chunk_2.replace(bad_chunk, '', 1)
+            line = chunk_1 + chunk_2
+
+            if not line.strip():
+                continue
 
         if 'OPTIONAL' in line:
             line = line[:line.find('OPTIONAL') - 1].rstrip()
@@ -448,15 +465,21 @@ def parse_struct_union(
                         field_name=f_name,
                         field_data_type=f_data_type + ' * ' + mult,
                         field_bit=f_bit,
-                        comment=field_comment
+                        comment=''
                     )
+
                 else:
                     template = TEMPLATE_DECLARATION_FIELD.format(
                         indent=indent,
                         field_name=f_name,
                         field_data_type=f_data_type + ' * ' + mult,
-                        comment=field_comment
+                        comment=''
                     )
+
+                if field_comment is not None and field_comment.strip():
+                    field_comment = equalize_width(indent + '    ',
+                        field_comment)
+                    template = '\n\n' + field_comment + '\n' + template
 
                 fields += [[field_macro, template]]
             else:
@@ -469,15 +492,20 @@ def parse_struct_union(
                         field_name=f_name,
                         field_data_type=f_data_type,
                         field_bit=f_bit,
-                        comment=field_comment
+                        comment=''
                     )
+
                 else:
                     template = TEMPLATE_DECLARATION_FIELD.format(
                         indent=indent,
                         field_name=f_name,
                         field_data_type=f_data_type,
-                        comment=field_comment
+                        comment=''
                     )
+
+                if field_comment is not None and field_comment.strip():
+                    field_comment = equalize_width(indent + '    ', field_comment)
+                    template = '\n\n' + field_comment + '\n' + template
 
                 fields += [[field_macro, template]]
 
@@ -601,15 +629,20 @@ def parse_struct_union(
                     field_name=field_name,
                     field_data_type=field_data_types[i],
                     field_bit=field_bit,
-                    comment=field_comment
+                    comment=''
                 )
+
             else:
                 template = TEMPLATE_DECLARATION_FIELD.format(
                     indent=indent,
                     field_name=field_name,
                     field_data_type=field_data_types[i],
-                    comment=field_comment
+                    comment=''
                 )
+
+            if field_comment is not None and field_comment.strip():
+                field_comment = equalize_width(indent + '    ', field_comment)
+                template = '\n\n' + field_comment + '\n' + template
 
             fields += [[field_macro, template]]
 
@@ -659,8 +692,12 @@ def parse_struct_union(
                     cls_name=cls_name
                 )
             )
-
+        last_field = ''
         for _, field in fields:
+            if field.startswith('\n\n') and last_field.endswith('\n'):
+                field = field[2:]
+
+            last_field = field
             print(field)
 
         print(

@@ -234,7 +234,7 @@ def convert(data):
     data = re.sub(r"\(int\( ", '(INT(', data)
     data = re.sub(r" void ", ' VOID ', data)
     data = re.sub(r"\nvoid ", '\nVOID ', data)
-    data = re.sub(r"\(void)", '(VOID)', data)
+    data = re.sub(r"\(void\)", '(VOID)', data)
     data = re.sub(r"\( void \)", '(VOID)', data)
     data = re.sub(r"\( void", '(VOID', data)
     data = re.sub(r"\(void", '(VOID', data)
@@ -577,15 +577,55 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 if new_lines:
                     print()
                     new_lines = ''
+
+                if line.strip().endswith('\\'):
+                    start = i
+                    stop = i
+                    data = ''
+                    for j, ln in enumerate(string_data[i:]):
+                        stop = i + j
+
+                        if ln.endswith('\\'):
+                            ln = ln[:-1]
+                            data += ' ' + ln.strip()
+                        else:
+                            data += ' ' + ln.strip()
+                            break
+
+                    steps += [data]
+                    skip_lines = [start, stop]
+                    break
+
                 steps += [line]
                 break
+            if skip_lines:
+                continue
         else:
             for item in ('elif', 'else'):
                 if line.strip().startswith('#' + item):
                     COBJMACROS = False
                     check_state_step()
+                    if item == 'elif' and line.strip().endswith('\\'):
+                        start = i
+                        stop = i
+                        data = ''
+                        for j, ln in enumerate(string_data[i:]):
+                            stop = i + j
+
+                            if ln.endswith('\\'):
+                                ln = ln[:-1]
+                                data += ' ' + ln.strip()
+                            else:
+                                data += ' ' + ln.strip()
+                                break
+
+                        steps[len(steps) - 1] = data
+                        skip_lines = [start, stop]
+                        break
+
                     steps[len(steps) - 1] = line
                     break
+
             else:
                 if line.strip().startswith('#endif'):
                     if COBJMACROS:
@@ -597,6 +637,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                     parse_macro('    ' * (len(steps) - 1), line.strip(), True)
                     continue
+            if skip_lines:
+                continue
 
         if COBJMACROS:
             continue
@@ -1013,7 +1055,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\propvarutil.h' # ks.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\bluetoothapis.h' # ks.h'
 
 import sys
 
@@ -1071,7 +1113,12 @@ if __name__ == '__main__':
             temp_buffer += ''.join(self.out_buffer).split('\n')
             out_buffer = []
 
+            class_dec_indent = ''
+
             for line in temp_buffer:
+                if line.strip() and class_dec_indent and not line.startswith(class_dec_indent):
+                    class_dec_indent = ''
+
                 try:
                     back_2 = out_buffer[-2].strip()
                     back_1 = out_buffer[-1].strip()
@@ -1079,8 +1126,12 @@ if __name__ == '__main__':
                     out_buffer += [line]
                     continue
 
-                if not line.strip() and not back_1 and not back_2:
-                    continue
+                if class_dec_indent:
+                    if not line.strip() and not back_1:
+                        continue
+                else:
+                    if not line.strip() and not back_1 and not back_2:
+                        continue
 
                 if (
                     not line.strip() and
@@ -1093,7 +1144,13 @@ if __name__ == '__main__':
                 ):
                     continue
 
+                if not class_dec_indent:
+                    if line.strip().endswith('= [') or line.strip().endswith('= ('):
+                        class_dec_indent = '    ' * line.count('    ') + '    '
+
                 if line.strip().startswith('class '):
+                    class_dec_indent = '    ' * line.count('    ') + '    '
+
                     if back_1:
                         if (
                             back_1.startswith('if') or

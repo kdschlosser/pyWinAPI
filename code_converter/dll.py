@@ -208,4 +208,4 @@ def parse_dll(indent, data, found_dlls):
         )
     ]
 
-    return '\n'.join(lines) + '\n'
+    return '\n'.join(lines) + '\n\n'
