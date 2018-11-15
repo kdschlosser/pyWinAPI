@@ -16,7 +16,24 @@
 # You should have received a copy of the GNU General Public License along
 # with EventGhost. If not, see <http://www.gnu.org/licenses/>.
 
+
+# this module iterates over the sdk directory which is shown below in the
+# "in_path", The out_path is one folder level down from this module. it will
+# make a replica of the SDK folder at this location.
+# this module opens up every .h file and indents the file based on the
+# preprocessor syntax, #ifndef, #ifdef, #if, #elif and #else.
+#
+# By doing this it make it far easier to follow the nested
+# preprocessor commands. It is with these commands where most of the issue
+# arise from so being able to easily read the .h file to be able to fix a
+# converted file is extremely important.
+
 from __future__ import print_function, absolute_import
+import os
+
+in_path = r'C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0'
+out_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
 
 class SortCode(object):
 
@@ -57,18 +74,12 @@ class SortCode(object):
         return '\n'.join(self.lines)
 
 
-in_path = r'C:\Program Files (x86)\Windows Kits\10\Include\10.0.17134.0'
-out_path = r'C:\Users\Administrator\Desktop\New folder (30)'
-
-import os
-
-
 def iter_path(p, indent=''):
     files = os.listdir(p)
     root = p.replace(in_path, out_path)
     if os.path.isdir(p) and not os.path.exists(root):
         os.makedirs(root)
-    print indent + p
+    print(indent + p)
 
     for f in files:
         in_file = os.path.join(p, f)
@@ -77,12 +88,12 @@ def iter_path(p, indent=''):
         if os.path.isdir(in_file):
             iter_path(in_file, indent + '    ')
         elif f.endswith('.h'):
-            print indent + '    ' + f
+            print(indent + '    ' + f)
             with open(in_file, 'r') as f1:
                 with open(out_file, 'w') as f2:
                     f2.write(str(SortCode(f1.read().split('\n'))))
         else:
-            print indent + '    ' + f
+            print(indent + '    ' + f)
             with open(in_file, 'r') as f1:
                 with open(out_file, 'w') as f2:
                     f2.write(f1.read())

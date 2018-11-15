@@ -27,7 +27,7 @@ from .guiddef_h import (
     DEFINE_GUIDSTRUCT,
     DEFINE_GUIDNAMED
 )
-from .devioctl_h import (
+from .devioctl_h1 import (
     CTL_CODE,
     FILE_DEVICE_KS,
     METHOD_NEITHER,

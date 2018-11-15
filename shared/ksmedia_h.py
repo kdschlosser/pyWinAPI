@@ -48,7 +48,7 @@ from .guiddef_h import (
 )
 import ctypes
 from .devpropdef_h import DEFINE_DEVPROPKEY
-from .dciddi_h import RGNDATAHEADER
+from .dciddi_h1 import RGNDATAHEADER
 from .strmif_h import COLORKEY
 
 ANYSIZE_ARRAY = 1

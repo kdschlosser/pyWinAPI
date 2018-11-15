@@ -4,7 +4,7 @@ from pyWinAPI.shared.wtypes_h import *
 from pyWinAPI.shared.sdkddkver_h import *
 from pyWinAPI.shared.guiddef_h import *
 from pyWinAPI.shared.bthdef_h import *
-from pyWinAPI.km.wdm_h import *
+from pyWinAPI.km.wdm_h1 import *
 
 
 __BTHDDI_H__ = None

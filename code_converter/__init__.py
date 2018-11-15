@@ -1,15 +1,6 @@
-# from define import Define
-# from guid import GUID
-# from interface import Interface
-# from importer import Importer
-# from enum import Enum
-# from structure import Structure
-# from union import Union
-# from comment import Comment
-# from includes import Includes
-# from typedef import Typedef
 from __future__ import print_function, absolute_import
-
+import os
+import re
 from code_converter.includes import parse_include
 from code_converter.enum import parse_enum
 from code_converter.define import parse_define
@@ -19,16 +10,9 @@ from code_converter.interface import parse_interface, interface_declarations
 from code_converter.dll import parse_dll, write_functions, print_not_found
 from code_converter.guid import parse_guid
 from code_converter.utils import process_param
-
 from code_converter import preprocessor
 
-for key in sorted(preprocessor.__dict__.keys()):
-    print(key)
-
-
 parse_macro = preprocessor.parse_macro
-
-import re
 
 
 class Allowed:
@@ -46,7 +30,6 @@ class Importer:
     @staticmethod
     def add(*args, **kwargs):
         pass
-
 
 
 FUNDAMENTAL_TYPES = {
@@ -107,29 +90,189 @@ FUNDAMENTAL_TYPES = {
     '&gt;': '>'
 }
 
-import os
-import re
 
 def convert(data):
-
-    for key, value in FUNDAMENTAL_TYPES.items():
-        data = data.replace(key, value)
-
-    data = re.sub("!(?!=)", 'not ', data)
-    data = re.sub("(?! )==(?! )", ' == ', data)
+    data = re.sub(r" unsigned short int ", ' USHORT ', data)
+    data = re.sub(r"\nunsigned short int ", '\nUSHORT ', data)
+    data = re.sub(r" signed short int ", ' SHORT ', data)
+    data = re.sub(r"\nsigned short int ", '\nSHORT ', data)
+    data = re.sub(r" unsigned short ", ' USHORT ', data)
+    data = re.sub(r"\nunsigned short ", '\nUSHORT ', data)
+    data = re.sub(r" signed short ", ' SHORT ', data)
+    data = re.sub(r"\nsigned short ", '\nSHORT ', data)
+    data = re.sub(r" short int ", ' SHORT ', data)
+    data = re.sub(r"\nshort int ", '\nSHORT ', data)
+    data = re.sub(r" short ", ' SHORT ', data)
+    data = re.sub(r"\nshort ", '\nSHORT ', data)
+    data = re.sub(r"\(short\) ", '(SHORT)', data)
+    data = re.sub(r"\(short\( ", '(SHORT(', data)
+    data = re.sub(r" boolean ", ' BOOLEAN ', data)
+    data = re.sub(r"\nboolean ", '\nBOOLEAN ', data)
+    data = re.sub(r"\(boolean\)", '(BOOLEAN)', data)
+    data = re.sub(r"\( boolean \)", '(BOOLEAN)', data)
+    data = re.sub(r"\( boolean", '(BOOLEAN', data)
+    data = re.sub(r"\(boolean", '(BOOLEAN', data)
+    data = re.sub(r" bool ", ' BOOL ', data)
+    data = re.sub(r"\nbool ", '\nBOOL ', data)
+    data = re.sub(r"\(bool\)", '(BOOL)', data)
+    data = re.sub(r"\( bool \)", '(BOOL)', data)
+    data = re.sub(r"\( bool", '(BOOL', data)
+    data = re.sub(r"\(bool", '(BOOL', data)
+    data = re.sub(r" float ", ' FLOAT ', data)
+    data = re.sub(r"\nfloat ", '\nFLOAT ', data)
+    data = re.sub(r"\(float\)", '(FLOAT)', data)
+    data = re.sub(r"\( float \)", '(FLOAT)', data)
+    data = re.sub(r"\( float", '(FLOAT', data)
+    data = re.sub(r"\(float", '(FLOAT', data)
+    data = re.sub(r" long double ", ' LONG ', data)
+    data = re.sub(r"\nlong double ", '\nLONG ', data)
+    data = re.sub(r"\(long double\)", '(LONG)', data)
+    data = re.sub(r"\( long double \)", '(LONG)', data)
+    data = re.sub(r"\( long double", '(LONG', data)
+    data = re.sub(r"\(long double", '(LONG', data)
+    data = re.sub(r" double ", ' DOUBLE ', data)
+    data = re.sub(r"\ndouble ", '\nDOUBLE ', data)
+    data = re.sub(r"\(double\)", '(DOUBLE)', data)
+    data = re.sub(r"\( double \)", '(DOUBLE)', data)
+    data = re.sub(r"\( double", '(DOUBLE', data)
+    data = re.sub(r"\(double", '(DOUBLE', data)
+    data = re.sub(r" unsigned char ", ' UCHAR ', data)
+    data = re.sub(r"\nunsigned char ", '\nUCHAR ', data)
+    data = re.sub(r"\(unsigned char\)", '(UCHAR)', data)
+    data = re.sub(r"\( unsigned char \)", '(UCHAR)', data)
+    data = re.sub(r"\( unsigned char", '(UCHAR', data)
+    data = re.sub(r"\(unsigned char", '(UCHAR', data)
+    data = re.sub(r" signed char ", ' CHAR ', data)
+    data = re.sub(r"\nsigned char ", '\nCHAR ', data)
+    data = re.sub(r"\(signed char\)", '(CHAR)', data)
+    data = re.sub(r"\( signed char \)", '(CHAR)', data)
+    data = re.sub(r"\( signed char", '(CHAR', data)
+    data = re.sub(r"\(signed char", '(CHAR', data)
+    data = re.sub(r" __wchar_t ", ' WCHAR ', data)
+    data = re.sub(r"\n__wchar_t ", '\nWCHAR ', data)
+    data = re.sub(r"\(__wchar_t\)", '(WCHAR)', data)
+    data = re.sub(r"\( __wchar_t \)", '(WCHAR)', data)
+    data = re.sub(r"\( __wchar_t", '(WCHAR', data)
+    data = re.sub(r"\(__wchar_t", '(WCHAR', data)
+    data = re.sub(r" wchar_t ", ' WCHAR ', data)
+    data = re.sub(r"\nwchar_t ", '\nWCHAR ', data)
+    data = re.sub(r"\(wchar_t\)", '(WCHAR)', data)
+    data = re.sub(r"\( wchar_t \)", '(WCHAR)', data)
+    data = re.sub(r"\( wchar_t", '(WCHAR', data)
+    data = re.sub(r"\(wchar_t", '(WCHAR', data)
+    data = re.sub(r" char ", ' CHAR ', data)
+    data = re.sub(r"\nchar ", '\nCHAR ', data)
+    data = re.sub(r"\(char\)", '(CHAR)', data)
+    data = re.sub(r"\( char \)", '(CHAR)', data)
+    data = re.sub(r"\( char", '(CHAR', data)
+    data = re.sub(r"\(char", '(CHAR', data)
+    data = re.sub(r" unsigned long long int ", ' ULONGLONG ', data)
+    data = re.sub(r"\nunsigned long long int ", '\nULONGLONG ', data)
+    data = re.sub(r" signed long long int ", ' LONGLONG ', data)
+    data = re.sub(r"\nsigned long long int ", '\nLONGLONG ', data)
+    data = re.sub(r" unsigned long long ", ' ULONGLONG ', data)
+    data = re.sub(r"\nunsigned long long ", '\nULONGLONG ', data)
+    data = re.sub(r" signed long long ", ' LONGLONG ', data)
+    data = re.sub(r"\nsigned long long ", '\nLONGLONG ', data)
+    data = re.sub(r" long long int ", ' LONGLONG ', data)
+    data = re.sub(r"\nlong long int ", '\nLONGLONG ', data)
+    data = re.sub(r" long long ", ' LONGLONG ', data)
+    data = re.sub(r"\nlong long ", '\nLONGLONG ', data)
+    data = re.sub(r" unsigned long int ", ' ULONG ', data)
+    data = re.sub(r"\nunsigned long int ", '\nULONG ', data)
+    data = re.sub(r" signed long int ", ' LONG ', data)
+    data = re.sub(r"\nsigned long int ", '\nLONG ', data)
+    data = re.sub(r" unsigned long ", ' ULONG ', data)
+    data = re.sub(r"\nunsigned long ", '\nULONG ', data)
+    data = re.sub(r" signed long ", ' LONG ', data)
+    data = re.sub(r"\nsigned long ", '\nLONG ', data)
+    data = re.sub(r" long int ", ' ULONG ', data)
+    data = re.sub(r"\nlong int ", '\nULONG ', data)
+    data = re.sub(r" long ", ' LONG ', data)
+    data = re.sub(r"\nlong ", '\nLONG ', data)
+    data = re.sub(r" unsigned int ", ' UINT ', data)
+    data = re.sub(r"\nunsigned int ", '\nUINT ', data)
+    data = re.sub(r" signed int ", ' INT ', data)
+    data = re.sub(r"\nsigned int ", '\nINT ', data)
+    data = re.sub(r" signed ", ' INT ', data)
+    data = re.sub(r"\nsigned ", '\nINT ', data)
+    data = re.sub(r" unsigned ", ' UINT ', data)
+    data = re.sub(r"\nunsigned ", '\nUINT ', data)
+    data = re.sub(r" __INT64 ", ' INT64 ', data)
+    data = re.sub(r"\n__INT64 ", '\nINT64 ', data)
+    data = re.sub(r"\(__INT64\)", '(INT64)', data)
+    data = re.sub(r"\( __INT64 \)", '(INT64)', data)
+    data = re.sub(r"\( __INT64", '(INT64', data)
+    data = re.sub(r"\(__INT64", '(INT64', data)
+    data = re.sub(r" __int8 ", ' INT8 ', data)
+    data = re.sub(r"\n__int8 ", '\nINT8 ', data)
+    data = re.sub(r"\(__int8\)", '(INT8)', data)
+    data = re.sub(r"\( __int8 \)", '(INT8)', data)
+    data = re.sub(r"\( __int8", '(INT8', data)
+    data = re.sub(r"\(__int8", '(INT8', data)
+    data = re.sub(r" __int16 ", ' CHAR ', data)
+    data = re.sub(r"\n__int16 ", '\nCHAR ', data)
+    data = re.sub(r"\(__int16\)", '(CHAR)', data)
+    data = re.sub(r"\( __int16 \)", '(CHAR)', data)
+    data = re.sub(r"\( __int16", '(CHAR', data)
+    data = re.sub(r"\(__int16", '(CHAR', data)
+    data = re.sub(r" __int32 ", ' INT32 ', data)
+    data = re.sub(r"\n__int32 ", '\nINT32 ', data)
+    data = re.sub(r"\(__int32\)", '(INT32)', data)
+    data = re.sub(r"\( __int32 \)", '(INT32)', data)
+    data = re.sub(r"\( __int32", '(INT32', data)
+    data = re.sub(r"\(__int32", '(INT32', data)
+    data = re.sub(r" __int64 ", ' INT64 ', data)
+    data = re.sub(r"\nchar ", '\nINT64 ', data)
+    data = re.sub(r"\(__int64\)", '(INT64)', data)
+    data = re.sub(r"\( __int64 \)", '(INT64)', data)
+    data = re.sub(r"\( __int64", '(INT64', data)
+    data = re.sub(r"\(__int64", '(INT64', data)
+    data = re.sub(r" int ", ' INT ', data)
+    data = re.sub(r"\nint ", '\nINT ', data)
+    data = re.sub(r"\(int\) ", '(INT)', data)
+    data = re.sub(r"\(int\( ", '(INT(', data)
+    data = re.sub(r" void ", ' VOID ', data)
+    data = re.sub(r"\nvoid ", '\nVOID ', data)
+    data = re.sub(r"\(void)", '(VOID)', data)
+    data = re.sub(r"\( void \)", '(VOID)', data)
+    data = re.sub(r"\( void", '(VOID', data)
+    data = re.sub(r"\(void", '(VOID', data)
+    data = re.sub(r"sizeof", '(ctypes.sizeof', data)
+    data = re.sub(r"memmove", '(ctypes.memmove', data)
+    data = re.sub(r"memset", '(ctypes.memset', data)
+    data = re.sub(r" const ", ' ', data)
+    data = re.sub(r"\nconst ", '\n', data)
+    data = re.sub(r"\(const", '(', data)
+    data = re.sub(r"\( const", '(', data)
+    data = re.sub(r"\[const", '[', data)
+    data = re.sub(r"\[ const", '[', data)
+    data = re.sub(r"__export", '', data)
+    data = re.sub(r"__override", '', data)
+    data = re.sub(r"__WRAPPED__", '', data)
+    data = re.sub(r"_Struct_size_bytes_\(Size\)", '', data)
+    data = re.sub(r"_Union_size_bytes_\(Size\)", '', data)
+    data = re.sub(r"\[ \]", '[]', data)
+    data = re.sub(r"\[  \]", '[]', data)
+    data = re.sub(r" \|\| ", ' or ', data)
+    data = re.sub(r"(?! )\|\|(?! )", ' or ', data)
+    data = re.sub(r" && ", ' and ', data)
+    data = re.sub(r"(?! )&&(?! )", ' and ', data)
+    data = re.sub(r"!(?!=)", 'not ', data)
+    data = re.sub(r"(?! )==(?! )", ' == ', data)
     data = re.sub(r"(?! )\+(?! )", ' + ', data)
     data = re.sub(r"(?! )\-(?! )", ' - ', data)
-    data = re.sub("(?! )<=(?! )", ' <= ', data)
-    data = re.sub("(?! )>=(?! )", ' >= ', data)
-    data = re.sub("(?! )!=(?! )", ' != ', data)
-    data = re.sub("(?! )<<(?! )", ' << ', data)
-    data = re.sub("(?! )>>(?! )", ' >> ', data)
+    data = re.sub(r"(?! )<=(?! )", ' <= ', data)
+    data = re.sub(r"(?! )>=(?! )", ' >= ', data)
+    data = re.sub(r"(?! )!=(?! )", ' != ', data)
+    data = re.sub(r"(?! )<<(?! )", ' << ', data)
+    data = re.sub(r"(?! )>>(?! )", ' >> ', data)
     data = re.sub(r"(?! )\|(?! )", ' | ', data)
-    data = re.sub("(?! )(?!>)>(?!>)(?! )", ' > ', data)
-    data = re.sub("(?! )(?!<)<(?!<)(?! )", ' < ', data)
-    data = re.sub("(?! )&(?! )", ' & ', data)
-    data = re.sub("  or  ", ' or ', data)
-    data = re.sub("  and  ", ' and ', data)
+    data = re.sub(r"(?! )(?!>)>(?!>)(?! )", ' > ', data)
+    data = re.sub(r"(?! )(?!<)<(?!<)(?! )", ' < ', data)
+    data = re.sub(r"(?! )&(?! )", ' & ', data)
+    data = re.sub(r"&lt;", '<', data)
+    data = re.sub(r"&gt;", '>', data)
 
     return data
 
@@ -146,7 +289,6 @@ TEMPLATE_DECLSPEC = '''DECLSPEC_UUID(
 
 
 def gen_code(file_path=None, output='', string_data=None, dll=None):
-    # output_path = os.path.dirname(output)
 
     idl_file = os.path.splitext(file_path)[0] + '.idl'
 
@@ -162,8 +304,6 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
         idl = list(l.rstrip() for l in idl.split('\n'))
         idl_brace_count = 0
-        found_struct = False
-        found_enum = False
         found_interface = ''
         interface_capture = None
         found_library = None
@@ -228,14 +368,6 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     options = interface_capture[:]
                     interface_capture = None
 
-            # if line.strip().startswith('cpp_quote'):
-            #     line = line.replace('cpp_quote', '', 1).strip()[2:-2]
-            #     continue
-            #
-            # if line.strip().startswith('import'):
-            #     line = line.replace('import', '#include', 1)[:-1].replace('.idl', '.h')
-            #     continue
-
             if line.strip().startswith('coclass'):
                 found_coclass = line.replace('coclass', '').strip()
 
@@ -277,28 +409,6 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 for library in libraries:
                     if library['cls_name'] == found_coclass:
                         library['com_interfaces'] = [co_interface]
-
-            #
-            # if line.strip().startswith('typedef enum'):
-            #     found_enum = True
-            #
-            # if line.strip().startswith('typedef struct'):
-            #     found_struct = True
-            #
-            # if found_struct or found_enum:
-            #     idl_brace_count += line.count('{')
-            #     idl_brace_count -= line.count('}')
-            #
-            #     if ';' in line and idl_brace_count == 0:
-            #         found_enum = False
-            #         found_struct = False
-            #         continue
-            #
-            # if found_struct and line.strip().startswith('['):
-            #     s_indent, line = line.split('[', 1)
-            #     line = line.split(']', 1)[1]
-            #     line = s_indent + line
-            #     idl[i] = line
 
             if line.startswith('interface'):
                 line = line.replace('interface', '')
@@ -433,7 +543,14 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 steps[j] = None
 
     if interfaces:
-        print('''def annotation(value):\n    if '_opt_' in value:\n        return comtypes.defaultvalue(None)\n    else:\n        return None\n''')
+        print(
+            'def annotation(value):\n'
+            '    if \'_opt_\' in value:\n'
+            '        return comtypes.defaultvalue(None)\n'
+            '    else:\n'
+            '        return None\n'
+            '\n'
+        )
 
     for i, line in enumerate(string_data):
 
@@ -894,140 +1011,15 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             interface_data,
             False
         )
-        # elif line.startswith('#include') or line.startswith('# include'):
-        #     parse_include(indent, line, os.path.split(file_path)[0])
-
-    # print 'importer'
-    # importer = Importer(path=output_path)
-    # print 'comment'
-    # comment = Comment(string_data, COMMENTS)
-    # print 'guid'
-    # guid = GUID(importer, string_data)
-    # print 'interface'
-    # interface = Interface(importer, guid, string_data, file_path, comment)
-    # print 'includes'
-    # includes = Includes(string_data)
-    # print 'define'
-    # define = Define(importer, string_data)
-    # print 'enum'
-    # enum = Enum(importer, string_data)
-    # print 'structure'
-    # structure = Structure(importer, string_data)
-    # print 'union'
-    # union = Union(importer, string_data)
-    # print 'typedef'
-    # typedef = Typedef(importer, string_data)
-    #
-    # if dll is not None:
-    #     dll_string = dll
-    #     from dll import Dll
-    #     dll = Dll(dll_string, importer, string_data)
-    #
-    # lines = []
-    #
-    # print 'process interface'
-    # lines += list(interface.process())
-    # print 'process comment'
-    # lines += list(comment.process(importer))
-    # print 'process  includes'
-    # lines += list(includes.process())
-    # print 'process define'
-    # lines += list(define.process())
-    # print 'process enum'
-    # lines += list(enum.process())
-    # print 'process guid'
-    # lines += list(guid.process())
-    # print 'process structure'
-    # lines += list(structure.process())
-    # print 'process union'
-    # lines += list(union.process())
-    # print 'process typedef'
-    # lines += list(typedef.process())
-    #
-    # if dll is not None:
-    #     print 'process dll'
-    #     lines += list(dll.process())
-    #
-    # all_set = []
-    # allowed = importer.allowed
-    # for cls in (interface, define, enum, guid, structure, union, typedef, dll):
-    #     if cls is None:
-    #         continue
-    #
-    #     for itm in cls.all:
-    #         if not itm:
-    #             continue
-    #         itm = itm.split('(')[0].split(' ')[0].replace('def ', '').strip()
-    #         if itm not in all_set and itm not in allowed:
-    #             all_set += [itm]
-    #
-    # lines = sorted(lines)
-    # lines = '\n'.join(line[1] for line in lines)
-    #
-    # lines += '\n\n__all__ = (\n'
-    #
-    # output = ['']
-    #
-    # for item in all_set:
-    #     item = "'" + item + "', "
-    #     for i, ln in enumerate(output[:]):
-    #         if len(ln) + len(item) <= 75:
-    #             ln += item
-    #             output[i] = ln
-    #             break
-    #     else:
-    #         output += [item]
-    #
-    # for ln in output:
-    #     lines += '    ' + ln + '\n'
-    #
-    # lines += ')\n'
-    #
-    # imports = '\n\n'
-    # print 'process importer'
-    # for impt in importer.process():
-    #     imports += impt
-    #
-    # imports += '\n\n'
-    # return imports + lines
-
-
-# this code converter is by no means complete and without error. it is
-# designed to ease the amount of work that needs to be done. The output file
-# still needs to be gone over and checked for consistency and accuracy.
-
-
-# there are 2 files in this code builder that will need to copied over to
-# the folder you are saving the API conversions to.data_types.py
-# and guiddef_h.py.
-
-# Enter the output path and filename here be sure to keep the filename the
-# same and append _h to the filename
-
-# a lot of the microsoft h files do not have a dll they are married to. but
-# some do. as an example setupapi.h is what creates setupapi.dll if this is
-# the case do not tack on the _h
-# output_file = r'C:\Users\Administrator\Desktop\New folder (18)\pyWinAPI'# ks_h.py'
 
 # enter the input filename here
 input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\propvarutil.h' # ks.h'
-# COMMENTS = False
-#
-# # if there is a specific dll that is created fro an h file the name of that
-# # dll needs to be entered here without the .dll extension
-# load_dll = None
-#
-#
+
 import sys
-# from StringIO import StringIO
-#
-# log = StringIO()
-#
 
 if __name__ == '__main__':
     _stdout = sys.stdout
-    # _stderr = sys.stderr
-    #
+
     import threading
 
     print_lock = threading.Lock()
@@ -1077,10 +1069,6 @@ if __name__ == '__main__':
                 temp_buffer += ['', '']
 
             temp_buffer += ''.join(self.out_buffer).split('\n')
-
-            # for item in temp_buffer:
-            #     sys.stderr.write(repr(item) + '\n')
-
             out_buffer = []
 
             for line in temp_buffer:
@@ -1147,83 +1135,5 @@ if __name__ == '__main__':
 
     write_functions()
     print_not_found()
-
-#
-# class STDErr(object):
-#
-#     def write(self, data):
-#         with print_lock:
-#             _stderr.write(data)
-#             _stderr.flush()
-#             log.write(data)
-#
-#     def __getattr__(self, item):
-#         if item in self.__dict__:
-#             return self.__dict__[item]
-#         with print_lock:
-#             return getattr(_stderr, item)
-#
-
-
-#
-#
-# if os.path.isdir(input_file):
-#     sys.stderr = STDErr()
-#     sys.stdout = STDOut()
-#     files = os.listdir(input_file)
-#     for f in files:
-#         if f.endswith('.h'):
-#             # if f in ('CertSrv.h', 'CompPkgSup.h', 'contentpartner.h', 'dwrite_3.h', 'icu.h'):
-#             #     continue
-#             o_file = os.path.join(output_file, f.lower().replace('.h', '_h.py'))
-#             if os.path.exists(o_file):
-#                 continue
-#
-#             l_file = o_file + '.log'
-#             try:
-#                 _stdout.write(f + '\n')
-#                 _stdout.flush()
-#                 code = gen_code(
-#                     os.path.join(input_file, f),
-#                     output=o_file,
-#                     dll=load_dll
-#                 )
-#             except:
-#                 import traceback
-#                 traceback.print_exc()
-#             else:
-#                 with open(o_file, 'w') as fl:
-#                     fl.write(code)
-#
-#             log.seek(0)
-#             with open(l_file, 'w') as fl:
-#                 fl.write(log.read())
-#
-#             log = StringIO()
-# else:
-#     o_file = os.path.join(output_file, os.path.split(input_file)[1].replace('.h', '_h.py'))
-#     l_file = o_file + '.log'
-#     _stdout.write(input_file + '\n')
-#     _stdout.flush()
-#     code = gen_code(
-#         input_file,
-#         output=o_file,
-#         dll=load_dll
-#     )
-#     with open(o_file, 'w') as fl:
-#         fl.write(code)
-#
-#     log.seek(0)
-#
-#     with open(l_file, 'w') as fl:
-#         fl.write(log.read())
-# if output_file is None:
-#     print code
-#
-# else:
-#     with open(output_file, 'w') as f:
-#         f.write(code)
-
-
 
 

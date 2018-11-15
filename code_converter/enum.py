@@ -39,17 +39,6 @@ ENTRY_TEMPLATE = '''    {entry} = {value}'''
 VAR_NAME_TEMPLATE = '''{var_name} = {value}'''
 
 
-
-'''
-            if line.startswith('typedef') or line.startswith('enum'):
-                if 'enum' in line:
-                    line = line.replace('_Enum_is_bitflag_', '')
-                    start = i
-                elif 'enum' in data[i + 1] and 'typedef' not in data[i + 1]:
-                    start = i
-'''
-
-
 def parse_enum(indent, enum, namespace):
     cls_name = None
     module_level = None

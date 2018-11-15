@@ -18,28 +18,10 @@
 
 from __future__ import print_function, absolute_import
 from code_converter.comment import parse_comment
-import os
-import atexit
-from code_converter import known_defines
 
 new_defines = []
 
 module_name = ''
-
-def save_defines():
-
-    path = os.path.join(os.path.dirname(__file__), 'known_defines.py')
-    with open(path, 'w') as f:
-        printed_module_name = False
-        for key, value in known_defines.__dict__.items():
-            if isinstance(value, str) and value == 'NEW':
-                if not printed_module_name:
-                    printed_module_name = True
-                    f.write('# ' + module_name + '\n')
-                f.write(key + ' = None\n')
-
-
-atexit.register(save_defines)
 
 
 def parse_macro(indent, lne, macro=False):
@@ -69,9 +51,6 @@ def parse_macro(indent, lne, macro=False):
             while define.startswith('('):
                 open_brackets += define[:1]
                 define = define[1:]
-
-            if not hasattr(known_defines, define):
-                setattr(known_defines, define, 'NEW')
 
             define = open_brackets + add + define
             define += ')'
