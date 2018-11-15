@@ -114,6 +114,7 @@ def get_dll_name(func):
             response = response.split('<td><strong>DLL</strong></td>')[1]
             response = response.split('/td>')[0]
             dll = response.split('>')[-1]
+            dll = dll.split(' ')[0]
             return os.path.splitext(dll)[0]
 
     not_found_funcs.append(func)

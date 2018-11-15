@@ -174,7 +174,7 @@ def parse_define(indent, define, importer):
                 'CTL_CODE(\n' +
                 '\n'.join(
                     indent + '    ' + val.strip() + ','
-                    for val in value.split(',')
+                    for val in value[1:].split(',')
                 ) +
                 '\n' + indent + ')'
             )

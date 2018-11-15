@@ -113,14 +113,20 @@ TEMPLATE = '''{indent}{var_name} = {func_name}(
 def EXTERN_GUID(*args):
     return _GUID(*args)
 
+import sys
 
 def parse_guid(indent, guid):
     line = ' '.join(g.strip() for g in guid)
     if line.startswith('#'):
         return ''
 
+    sys.stderr.write(str(guid) + '\n')
+
     if 'EXTERN_GUID' in line:
         func_name = 'EXTERN_GUID'
+
+    elif 'DEFINE_CODECAPI_GUID' in line:
+        func_name = 'DEFINE_CODECAPI_GUID'
 
     elif 'DEFINE_GUIDSTRUCT' in line:
         func_name = 'DEFINE_GUIDSTRUCT'
@@ -170,6 +176,24 @@ def parse_guid(indent, guid):
             indent + '    0x' + code.replace('L', '') + ','
             for code in hex_codes
         )
+
+    elif func_name == 'DEFINE_CODECAPI_GUID':
+        line = line.replace(func_name + '(', '').replace(')', '')
+        line = line.replace(';', '').strip()
+
+        var_name, string_guid, hex_codes = line.split(',', 2)
+        var_name = var_name.strip()
+        string_guid = indent + '    ' + string_guid.strip().upper().replace(' ', '')
+        hex_codes = list(h_code.strip() for h_code in hex_codes.split(','))
+
+        hex_codes = '\n'.join(
+            indent + '    0x' + code.strip()[2:].upper().replace('L', '') + ','
+            for code in hex_codes
+        )[:-1]
+
+        var_name = 'CODECAPI_' + var_name
+
+        hex_codes = string_guid + ',\n' + hex_codes
 
     else:
         line = line.replace(func_name + '(', '').replace(')', '')

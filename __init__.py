@@ -396,12 +396,14 @@ if sys.maxsize > 2**32:
     __64BIT__ = 1
     _WIN64 = 1
     _AMD64_ = 1
+    WIN64 = 1
     _X86_ = None
 else:
     _M_AMD64 = None
     _M_X64 = None
     __64BIT__ = None
     _WIN64 = None
+    WIN64 = None
     _AMD64_ = None
     _X86_ = 1
 
@@ -489,7 +491,8 @@ __all__ = (
     '__WINDOWS_DONT_DISABLE_PRAGMA_PACK_WARNING__', '_FILETIME_', '_MAC',
     'UNICODE', 'GUID_DEFS_ONLY', 'NO_GUID_DEFS', 'MAX_PATH', '_WIN32_WINDOWS',
     '__LPGUID_DEFINED__', 'DUMMYUNIONNAME', '_DEBUG', '_HRESULT_DEFINED',
-    '_AMD64_', '_X86_', '_WIN32_WINNT_WIN10_RS2', '_WIN32_WINNT_WIN10_RS3'
+    '_AMD64_', '_X86_', '_WIN32_WINNT_WIN10_RS2', '_WIN32_WINNT_WIN10_RS3',
+    'WIN64'
 )
 
 from shared.sdkddkver_h import * # NOQA

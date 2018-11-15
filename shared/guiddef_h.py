@@ -107,11 +107,15 @@ def DEFINE_GUID(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8):
 
 
 def DEFINE_OLEGUID(l, w1, w2):
-    return DEFINE_GUID(l, w1, w2, 0xC0, 0, 0, 0, 0, 0, 0, 0x46)
+    return DEFINE_GUID(l, w1, w2, 0xC0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x46)
 
 
 def EXTERN_GUID(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8):
     return GUID(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8)
+
+
+def MIDL_INTERFACE(g):
+    return GUID(g)
 
 
 LPGUID = POINTER(GUID)
@@ -182,5 +186,5 @@ __all__ = (
     'IID_NULL', 'IsEqualIID', 'CLSID', 'LPCLSID', 'CLSID_NULL', 'IsEqualCLSID',
     'FMTID', 'LPFMTID', 'FMTID_NULL', 'IsEqualFMTID', 'REFGUID', 'REFIID',
     'REFCLSID', 'REFFMTID', 'DEFINE_GUIDSTRUCT', 'DEFINE_GUIDNAMED',
-    'DECLSPEC_UUID', 'PROPERTYKEY', 'uuid'
+    'DECLSPEC_UUID', 'PROPERTYKEY', 'uuid', 'MIDL_INTERFACE'
 )

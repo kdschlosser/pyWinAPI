@@ -5,6 +5,7 @@ __pycache__/
 *$py.class
 
 *.*
+!code_converter/win_functions_not_found.txt
 !*.py
 !LICENSE.md
 !README.md

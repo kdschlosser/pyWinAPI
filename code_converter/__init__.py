@@ -18,6 +18,7 @@ from code_converter.structure import parse_struct_union, u_s_declarations
 from code_converter.interface import parse_interface, interface_declarations
 from code_converter.dll import parse_dll, write_functions, print_not_found
 from code_converter.guid import parse_guid
+from code_converter.utils import process_param
 
 from code_converter import preprocessor
 
@@ -483,7 +484,24 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         if COBJMACROS:
             continue
 
-        line, _ = parse_comment(line.strip())
+        line, comment = parse_comment(line.strip())
+
+        if line is None and comment is None:
+            start = i
+            stop = i
+            comments = []
+            for j, d in enumerate(string_data[i:]):
+                stop = i + j
+                comments += [d.strip()]
+                if '*/' in d:
+                    break
+
+            skip_lines = [start, stop]
+            comment = parse_comment(' '.join(comments))[1]
+            comment = equalize_width(indent, comment)
+            print('\n' + comment)
+            continue
+
         if line is None:
             line = string_data[i].split('/*')[0]
 
@@ -608,10 +626,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     else:
                         skip_lines = None
 
-                new_line, comment = parse_comment(line)
-
-                if new_line:
-                    guid_line = parse_guid(indent, [new_line])
+                if line.strip() and line.strip().endswith(';'):
+                    guid_line = parse_guid(indent, [line])
                     if guid_line:
                         handle_preprocessor()
                         if comment:
@@ -619,7 +635,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                         print(guid_line)
                         continue
 
-                if line.startswith('enum') or line.startswith('typedef enum'):
+                if line.strip().startswith('enum') or line.strip().startswith('typedef enum'):
                     if new_lines:
                         print(new_lines)
                         new_lines = ''
@@ -731,67 +747,52 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
                     if line.strip().startswith('typedef') and ';' in line:
                         handle_preprocessor()
-                        line, comment = parse_comment(line)
-
                         line = line.replace('typedef', '').strip()
                         line = line.replace(';', '').strip()
-                        var_names = []
-                        hold_over = ''
-                        for l in line.split(' '):
-                            if not l.strip():
-                                continue
+                        value, var_names = line.split(' ', 1)
 
-                            if hold_over:
-                                l = hold_over + l
-                                hold_over = ''
-                            if l == '*':
-                                hold_over = '*'
-                                continue
-                            if l == '**':
-                                hold_over = '**'
-                                continue
-                            l = l.strip().rstrip(',')
-                            for v in l.split(','):
-                                v = v.strip()
-                                var_names += [v]
-                        value = var_names[0]
-                        var_names = var_names[1:]
-                        from code_converter.utils import process_param
+                        var_names = list(
+                            v_name.strip() for v_name in var_names.split(',')
+                        )
+
+                        while value.endswith('*'):
+                            value = value[:-1].strip()
+                            var_names[0] = '*' + var_names[0]
 
                         if comment:
-                            print(indent + comment)
-                        for var_name in var_names:
-                            new_var_name, new_value = process_param(
-                                var_name,
-                                value
-                            )
+                            comment = equalize_width(indent, comment)
+                            print('\n' + comment)
 
-                            if new_var_name != new_value:
-                                print(indent + new_var_name + ' = ' + new_value)
+                        for v_name in var_names:
+                            v_name, new_val = process_param(v_name, value)
+                            print(indent + v_name + ' = ' + new_val)
+
                         continue
 
                     if line.strip().startswith('#include'):
-                        line, comment = parse_comment(line)
                         line = line.replace('#include', '').strip()
                         line = line.replace('<', '').replace('>', '')
                         line = line.replace('"', '').strip()
                         line = line.replace('.h', '_h')
                         line = line.replace('/', '.').replace('\\', '.')
                         handle_preprocessor()
+                        if comment:
+                            comment = equalize_width(indent, comment)
+                            print('\n' + comment)
+
                         print(indent + 'from {0} import * # NOQA'.format(line))
                         continue
 
                     tdef = False
 
-                    new_line, comment = parse_comment(string_data[i])
-
-                    if new_line is not None and new_line.strip() and ';' not in new_line:
-                        if new_line.strip().startswith('#'):
+                    if line and line.strip() and ';' not in line:
+                        if line.strip().startswith('#'):
                             continue
                         start = i
                         stop = i
 
                         data = []
+                        found_guid = False
                         for j, ln in enumerate(string_data[i:]):
                             stop = i + j
 
@@ -802,10 +803,26 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                             if ln.endswith(';'):
                                 break
 
-                        skip_lines = [start, stop]
-                        new_line = '\n'.join(data)
+                            if 'OUR_GUID_ENTRY' in ln or 'DEFINE_CODECAPI_GUID' in ln:
+                                found_guid = True
 
-                    elif new_line is None and comment is None:
+                            if found_guid is True and ')' in ln:
+                                break
+
+                        if found_guid:
+                            guid_line = parse_guid(indent, data)
+                            if guid_line:
+                                handle_preprocessor()
+                                skip_lines = [start, stop]
+                                if comment:
+                                    comment = equalize_width(indent, comment)
+                                    print('\n' + comment)
+                                print(guid_line)
+                                continue
+
+                        line = '\n'.join(data)
+
+                    elif line is None and comment is None:
                         # /*
                         # * Aliases for StringPrep
                         # */
@@ -823,30 +840,33 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                             if '*/' in comnt:
                                 break
 
-                        new_line, comment = parse_comment(comment)
+                        line, comment = parse_comment(comment)
+                        line = line.strip()
 
-                    if new_line:
-                        guid_line = parse_guid(indent, new_line.split('\n'))
+                    if line:
+                        guid_line = parse_guid(indent, line.split('\n'))
                         if guid_line:
                             handle_preprocessor()
                             if comment:
+                                comment = equalize_width(indent, comment)
                                 print('\n' + comment)
                             print(guid_line)
                             continue
 
-                        line = parse_dll(indent, new_line.split('\n'), found_dlls)
-                        if line:
+                        dll_line = parse_dll(indent, line.split('\n'), found_dlls)
+                        if dll_line:
                             handle_preprocessor()
                             if comment:
                                 comment = equalize_width(indent, comment)
-                                print('\n' +comment)
-                            print(line)
+                                print('\n' + comment)
+                            print(dll_line)
                             continue
 
-                    if not new_line.strip() and comment:
-                        comment = equalize_width(indent, comment)
+                    if comment:
                         handle_preprocessor()
+                        comment = equalize_width(indent, comment)
                         print('\n' + comment)
+
                         continue
 
     for interface_data in interfaces:
@@ -990,7 +1010,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 # output_file = r'C:\Users\Administrator\Desktop\New folder (18)\pyWinAPI'# ks_h.py'
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\wdm.h' # ks.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\propvarutil.h' # ks.h'
 # COMMENTS = False
 #
 # # if there is a specific dll that is created fro an h file the name of that

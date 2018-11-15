@@ -241,6 +241,9 @@ def parse_struct_union(
             line = l1 + l2
             lines[i] = line
 
+    if ':' in lines[0]:
+        return struct_count, union_count
+
     if len(lines) == 1:
         lines = lines[0].split(' ')
         attr_name = lines[-1].replace(';', '').strip()
@@ -293,7 +296,6 @@ def parse_struct_union(
         parent_cls = data_type
 
     cls_name = cls_name.replace('{', '').strip()
-
     if ';' in cls_name:
         cls_name = cls_name.replace(';', '')
         if parent_cls in ('ctypes.Structure', 'ctypes.Union'):
@@ -344,8 +346,11 @@ def parse_struct_union(
                     print('\n')
 
             return struct_count, union_count
+    try:
+        var_names = data.rsplit('}', 1)[1].replace(';', '')
+    except:
+        var_names = data.replace(';', '')
 
-    var_names = data.rsplit('}', 1)[1].replace(';', '')
     var_names = list(n.strip() for n in var_names.split(','))
 
     if not cls_name and var_names:
@@ -395,6 +400,11 @@ def parse_struct_union(
     data_fields = data_fields[:data_fields.rfind('}')].split('~~~~')
 
     for line_num, line in enumerate(data_fields):
+        if 'public' in line and '{' in line:
+            return struct_count, union_count
+
+        if ' ' not in line.strip():
+            continue
         if chained_comment and '*/' not in line:
             continue
 
@@ -677,7 +687,12 @@ def parse_struct_union(
                 field[:-1].replace(';', '').strip().split(' ', 1)
             )
         except ValueError:
-            print('*******', field)
+
+            if '}' in field:
+                continue
+
+            import sys
+            sys.stderr.write('******* ' + str(field) + '\n')
             raise
 
         if ',' in field_name:
