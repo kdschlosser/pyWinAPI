@@ -223,7 +223,36 @@ def parse_struct_union(
     data_fields = '~~~~'.join(lines)
     data_fields = data_fields[:data_fields.rfind('}')].split('~~~~')
 
+    found_defines = []
     for line_num, line in enumerate(data_fields):
+
+        if (
+            line.strip().startswith('# define') or
+            line.strip().startswith('#define')
+        ):
+            var_name, var_value = line.strip()[1:].replace('define', '', 1).strip().split(' ', 1)
+            var_name = var_name.strip()
+            var_value = var_value.strip()
+
+            if var_value.startswith('('):
+                var_value = var_value[1:].strip()
+
+            def_template = '{0}{1} = {2}'.format(
+                indent,
+                var_name,
+                var_value
+            )
+
+            if len(def_template) > 76:
+                def_template = '{0}{1} = (\n{0}    {2}\n{0})'.format(
+                    indent,
+                    var_name,
+                    var_value
+                )
+
+            found_defines += [def_template]
+            continue
+
         if 'public' in line and '{' in line:
             return struct_count, union_count
 
@@ -673,6 +702,10 @@ def parse_struct_union(
                 indent=indent,
             )
         )
+
+    print(('\n'.join(found_defines)))
+    if found_defines:
+        print()
 
     if fields:
         macro_indexes = []

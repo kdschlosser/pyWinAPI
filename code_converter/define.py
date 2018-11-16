@@ -138,19 +138,49 @@ def parse_define(indent, define, importer):
                         ('[' in ret and ret.endswith(']'))
                     )
                 ):
-                    if ret.endswith(']'):
-                        start_marker = '['
-                        end_marker = ']'
-                    else:
-                        start_marker = '('
-                        end_marker = ')'
-                    beg, end = ret.split(start_marker, 1)
-                    end = end[:-1].split(',')
-                    end = list(indent + '    ' + itm.strip() + ',' for itm in end)
-                    beg += start_marker + '\n' + '\n'.join(
-                        end) + '\n' + indent + end_marker
-                    ret = beg
 
+                    new_ret, ret = ret.split(' = ', 1)
+                    new_ret += ' = '
+                    while ret:
+                        try:
+                            test_ret, ret = ret.split(',', 1)
+                            test_ret = test_ret.strip()
+                            if test_ret.startswith('[') or test_ret.startswith('('):
+                                new_ret += test_ret[0] + '\n'
+                                test_ret = test_ret[1:].strip()
+
+                            new_ret += indent + '    ' + test_ret + ',\n'
+
+                            if ret.strip().startswith('['):
+                                test_ret = ret[:ret.find(']') + 1]
+                                ret = ret.replace(test_ret, '', 1)
+
+                                test_ret = ', '.join(
+                                    itm.strip()
+                                    for itm in test_ret.strip()[1:-1].split(',')
+                                )
+                                test_ret = '[' + test_ret + ']'
+                                if ret.startswith(','):
+                                    ret = ret[1:]
+                                new_ret += indent + '    ' + test_ret + ',\n'
+                        except:
+                            new_ret += indent + '    ' + ret[:-1] + '\n'
+                            new_ret += indent + ret[-1]
+                            break
+                    ret = new_ret
+
+                    # if ret.endswith(']'):
+                    #     start_marker = '['
+                    #     end_marker = ']'
+                    # else:
+                    #     start_marker = '('
+                    #     end_marker = ')'
+                    # beg, end = ret.split(start_marker, 1)
+                    # end = end[:-1].split(',')
+                    # end = list(indent + '    ' + itm.strip() + ',' for itm in end)
+                    # beg += start_marker + '\n' + '\n'.join(
+                    #     end) + '\n' + indent + end_marker
+                    # ret = beg
         else:
             ret = ''
 
@@ -300,6 +330,28 @@ def parse_define(indent, define, importer):
                 )
 
     res = get_ret()
+
+    if 'FIELD_OFFSET' in res:
+
+        beg, end = res.split('FIELD_OFFSET(', 1)
+        brace_count = 1
+        mid = ''
+        for char in list(end):
+            if char == '(':
+                brace_count += 1
+            if char == ')':
+                brace_count -= 1
+            if brace_count == 0:
+                break
+            mid += char
+
+        end = end.replace(mid, '', 1)
+        mid, param = mid.strip().rsplit(',', 1)
+        param = ", '{0}'".format(param.strip())
+        mid += param
+        beg += 'FIELD_OFFSET(' + mid + end
+        res = beg
+
     if res:
         if ' = ' in res and not res.startswith('#'):
             nm = res.split(' = ')[0]
@@ -312,6 +364,10 @@ def parse_define(indent, define, importer):
                 beg += ' = (\n'
                 end = indent + '    ' + end.strip() + '\n' + indent + ')'
                 res = beg + end
+
+        if '+' in res and 'FIELD_OFFSET' in res:
+            res = res.replace('+ ', '+\n    ' + indent, 1)
+
 
         print(DEFINE_TEMPLATE.format(indent, res, comment))
         return True

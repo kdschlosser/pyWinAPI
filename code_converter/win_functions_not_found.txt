@@ -472,3 +472,9 @@ VariantGetElem
 V_UNION
 IsVarTypeSignedInteger
 IsVarTypeUnINTInteger
+HidP_GetCollectionDescription
+HidP_FreeCollectionDescription
+HidP_SysPowerEvent
+HidP_SysPowerCaps
+HidRegisterMinidriver
+HidNotifyPresence

@@ -1,9 +1,7 @@
 import ctypes
 from pyWinAPI import *
 from pyWinAPI.shared.wtypes_h import *
-from pyWinAPI.shared.winapifamily_h import *
 from pyWinAPI.shared.sdkddkver_h import *
-from pyWinAPI.shared.guiddef_h import *
 
 
 class _BTHDDI_SDP_NODE_INTERFACE(ctypes.Structure):
@@ -17,19 +15,21 @@ PBTHDDI_SDP_NODE_INTERFACE = POINTER(_BTHDDI_SDP_NODE_INTERFACE)
 class _BTHDDI_SDP_PARSE_INTERFACE(ctypes.Structure):
     pass
 
+
 BTHDDI_SDP_PARSE_INTERFACE = _BTHDDI_SDP_PARSE_INTERFACE
 PBTHDDI_SDP_PARSE_INTERFACE = POINTER(_BTHDDI_SDP_PARSE_INTERFACE)
 
-
+__BTHSDPDDI_H__ = None
 # Copyright (C) Microsoft. All rights reserved.
 if not defined(__BTHSDPDDI_H__):
-    #~#~#~    #define  __BTHSDPDDI_H__
+    __BTHSDPDDI_H__ = 1
+
+    if NTDDI_VERSION >= NTDDI_VISTA:
+        from pyWinAPI.km.sdpnode_h import *  # NOQA
+
         if defined(__cplusplus):
             pass
         # END IF
-    if NTDDI_VERSION >= NTDDI_VISTA:
-
-        from pyWinAPI.km.sdpnode_h import * # NOQA
 
         BTHDDI_SDP_PARSE_INTERFACE_VERSION_FOR_QI = 0x0100
         BTHDDI_SDP_NODE_INTERFACE_VERSION_FOR_QI = 0x0100
@@ -39,14 +39,14 @@ if not defined(__BTHSDPDDI_H__):
         # _When_(return!=0, __drv_allocatesMem(Mem))
         # typedef PSDP_TREE_ROOT_NODE (*PCREATENODETREEROOT)(_In_ ULONG tag);
 
-        class _PCREATENODETREEROOT(PSDP_TREE_ROOT_NODE):
+        class _CREATENODETREEROOT(PSDP_TREE_ROOT_NODE):
 
             def __init__(self, tag):
                 PSDP_TREE_ROOT_NODE.__init__(self)
                 self.tag = ctypes.cast(tag, ULONG)
 
 
-        PCREATENODETREEROOT = POINTER(_PCREATENODETREEROOT)
+        PCREATENODETREEROOT = POINTER(_CREATENODETREEROOT)
 
         # _IRQL_requires_same_
         # typedef NTSTATUS (*PFREETREE)(
@@ -82,16 +82,17 @@ if not defined(__BTHSDPDDI_H__):
 
         # Must_inspect_result_
         # _IRQL_requires_same_
-        # typedef NTSTATUS (*PADDATTRIBUTETOTREEE)(_In_ PSDP_TREE_ROOT_NODE Root,
+        # typedef NTSTATUS (*PADDATTRIBUTETOTREEE)(
+        # _In_ PSDP_TREE_ROOT_NODE Root,
         # _In_ USHORT AttribId,
         # _In_ __drv_aliasesMem PSDP_NODE AttribValueNode,
         # _In_ ULONG tag
         # );
-
         class _ADDATTRIBUTETOTREEE(NTSTATUS):
 
-            def __init__(self, AttribId, AttribValueNode, tag):
+            def __init__(self, Root, AttribId, AttribValueNode, tag):
                 super(_ADDATTRIBUTETOTREEE).__init__()
+                self.Root = ctypes.cast(Root, PSDP_TREE_ROOT_NODE)
                 self.AttribId = ctypes.cast(AttribId, USHORT)
                 self.AttribValueNode = ctypes.cast(AttribValueNode, PSDP_NODE)
                 self.tag = ctypes.cast(tag, ULONG)
@@ -102,9 +103,9 @@ if not defined(__BTHSDPDDI_H__):
         # _Must_inspect_result_
         # _IRQL_requires_same_
         # _When_(return!=0, __drv_allocatesMem(Mem))
-        # typedef PSDP_NODE (*PCREATENODENIL)(_In_ ULONG tag
+        # typedef PSDP_NODE (*PCREATENODENIL)(
+        # _In_ ULONG tag
         # );
-
         class _CREATENODENIL(PSDP_NODE):
 
             def __init__(self, tag):
@@ -114,7 +115,6 @@ if not defined(__BTHSDPDDI_H__):
 
         PCREATENODENIL = POINTER(_CREATENODENIL)
 
-
         # _Must_inspect_result_
         # _IRQL_requires_same_
         # _When_(return!=0, __drv_allocatesMem(Mem))
@@ -122,7 +122,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ UCHAR bVal,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEBOOLEAN(PSDP_NODE):
 
             def __init__(self, bVal, tag):
@@ -140,7 +139,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ UCHAR ucVal,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEUINT8(PSDP_NODE):
 
             def __init__(self, ucVal, tag):
@@ -151,7 +149,6 @@ if not defined(__BTHSDPDDI_H__):
 
         PCREATENODEUINT8 = POINTER(_CREATENODEUINT8)
 
-
         # _Must_inspect_result_
         # _IRQL_requires_same_
         # _When_(return!=0, __drv_allocatesMem(Mem))
@@ -159,7 +156,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ USHORT usVal,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEUINT16(PSDP_NODE):
 
             def __init__(self, usVal, tag):
@@ -177,7 +173,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ ULONG ulVal,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEUINT32(PSDP_NODE):
 
             def __init__(self, ulVal, tag):
@@ -195,7 +190,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ ULONGLONG ullVal,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEUINT64(PSDP_NODE):
 
             def __init__(self, ullVal, tag):
@@ -213,7 +207,6 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ PSDP_ULARGE_INTEGER_16 puli16Val,
         # _In_ ULONG tag
         # );
-
         class _CREATENODEUINT128(PSDP_NODE):
 
             def __init__(self, puli16Val, tag):
@@ -404,7 +397,6 @@ if not defined(__BTHSDPDDI_H__):
         # typedef PSDP_NODE (*PCREATENODEALTERNATIVE)(
         # _In_ ULONG tag
         # );
-
         class _CREATENODEALTERNATIVE(PSDP_NODE):
 
             def __init__(self, tag):
@@ -420,7 +412,6 @@ if not defined(__BTHSDPDDI_H__):
         # typedef PSDP_NODE (*PCREATENODESEQUENCE)(
         # _In_ ULONG tag
         # );
-
         class _CREATENODESEQUENCE(PSDP_NODE):
 
             def __init__(self, tag):
@@ -457,40 +448,94 @@ if not defined(__BTHSDPDDI_H__):
             ('SdpAddAttributeToTree', PADDATTRIBUTETOTREEE),
             ('SdpAppendNodeToContainerNode', PAPPENDNODETOCONTAINERNODE),
         ]
+
         # _IRQL_requires_same_
         # typedef void (*PBYTESWAPUUID128)(
         # _In_ GUID *pUuidFrom,
         # _Out_ GUID *pUuiidTo
         # );
+        class _BYTESWAPUUID128(VOID):
+
+            def __init__(self, pUuidFrom, pUuiidTo):
+                super(_BYTESWAPUUID128).__init__(self)
+                self.pUuidFrom = ctypes.cast(pUuidFrom, GUID)
+                self.pUuiidTo = ctypes.cast(pUuiidTo, GUID)
+
+
+        PBYTESWAPUUID128 = POINTER(_BYTESWAPUUID128)
 
         # _IRQL_requires_same_
         # typedef void (*PBYTESWAPUINT128)(
         # _In_ PSDP_ULARGE_INTEGER_16 pInUint128,
         # _Out_ PSDP_ULARGE_INTEGER_16 pOutUint128
         # );
+        class _BYTESWAPUINT128(VOID):
+
+            def __init__(self, pInUint128, pOutUint128):
+                super(_BYTESWAPUINT128).__init__(self)
+                self.pInUint128 = ctypes.cast(pInUint128, PSDP_ULARGE_INTEGER_16)
+                self.pOutUint128 = ctypes.cast(pOutUint128, PSDP_ULARGE_INTEGER_16)
+
+
+        PBYTESWAPUINT128 = POINTER(_BYTESWAPUINT128)
 
         # _IRQL_requires_same_
         # typedef ULONGLONG (*PBYTESWAPUINT64)(
         # _In_ ULONGLONG uint64
         # );
+        class _BYTESWAPUINT64(ULONGLONG):
+
+            def __init__(self, uint64):
+                super(_BYTESWAPUINT64).__init__(self)
+                self.uint64 = ctypes.cast(uint64, ULONGLONG)
+
+
+        PBYTESWAPUINT64 = POINTER(_BYTESWAPUINT64)
 
         # _IRQL_requires_same_
         # typedef void (*PRETRIEVEUUID128)(
         # _In_ PUCHAR Stream,
         # _Out_ GUID *uuid128
         # );
+        class _RETRIEVEUUID128(VOID):
+
+            def __init__(self, Stream, uuid128):
+                super(_RETRIEVEUUID128).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.uuid128 = ctypes.cast(uuid128, GUID)
+
+
+        PRETRIEVEUUID128 = POINTER(_RETRIEVEUUID128)
 
         # _IRQL_requires_same_
         # typedef void (*PRETRIEVEUINT128)(
         # _In_ PUCHAR Stream,
         # _Out_ PSDP_ULARGE_INTEGER_16 pUint128
         # );
+        class _RETRIEVEUINT128(VOID):
+
+            def __init__(self, Stream, pUint128):
+                super(_RETRIEVEUINT128).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.pUint128 = ctypes.cast(pUint128, PSDP_ULARGE_INTEGER_16)
+
+
+        PRETRIEVEUINT128 = POINTER(_RETRIEVEUINT128)
 
         # _IRQL_requires_same_
         # typedef void (*PRETRIEVEUINT64)(
         # _In_ PUCHAR Stream,
         # _Out_ PULONGLONG pUint16
         # );
+        class _RETRIEVEUINT64(VOID):
+
+            def __init__(self, Stream, pUint16):
+                super(_RETRIEVEUINT64).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.pUint16 = ctypes.cast(pUint16, PULONGLONG)
+
+
+        PRETRIEVEUINT64 = POINTER(_RETRIEVEUINT64)
 
         # _Must_inspect_result_
         # _IRQL_requires_same_
@@ -499,6 +544,16 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ ULONG Size,
         # _Out_ PULONG_PTR ErrorByte
         # );
+        class _VALIDATESTREAM(NTSTATUS):
+
+            def __init__(self, Stream, Size, ErrorByte):
+                super(_VALIDATESTREAM).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.Size = ctypes.cast(Size, ULONG)
+                self.ErrorByte = ctypes.cast(ErrorByte, PULONG_PTR)
+
+
+        PVALIDATESTREAM = POINTER(_VALIDATESTREAM)
 
         # _Must_inspect_result_
         # _IRQL_requires_same_
@@ -507,6 +562,16 @@ if not defined(__BTHSDPDDI_H__):
         # _In_ USHORT AttribId,
         # _Outptr_ PSDP_NODE *AttribValue
         # );
+        class _FINDATTRIBUTEINTREE(NTSTATUS):
+
+            def __init__(self, Tree, AttribId, AttribValue):
+                super(_FINDATTRIBUTEINTREE).__init__(self)
+                self.Tree = ctypes.cast(Tree, PSDP_TREE_ROOT_NODE)
+                self.AttribId = ctypes.cast(AttribId, USHORT)
+                self.AttribValue = ctypes.cast(AttribValue, PSDP_NODE)
+
+
+        PFINDATTRIBUTEINTREE = POINTER(_FINDATTRIBUTEINTREE)
 
         # _Must_inspect_result_
         # _IRQL_requires_same_
@@ -516,6 +581,17 @@ if not defined(__BTHSDPDDI_H__):
         # _Out_ PULONG Size,
         # _In_ ULONG tag
         # );
+        class _CONVERTTREETOSTREAM(NTSTATUS):
+
+            def __init__(self, Root, Stream, Size, tag):
+                super(_CONVERTTREETOSTREAM).__init__(self)
+                self.Root = ctypes.cast(Root, PSDP_TREE_ROOT_NODE)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.Size = ctypes.cast(Size, PULONG)
+                self.tag = ctypes.cast(tag, ULONG)
+
+
+        PCONVERTTREETOSTREAM = POINTER(_CONVERTTREETOSTREAM)
 
         # _Must_inspect_result_
         # _IRQL_requires_same_
@@ -525,6 +601,17 @@ if not defined(__BTHSDPDDI_H__):
         # _Out_ PSDP_TREE_ROOT_NODE *Node,
         # _In_ ULONG tag
         # );
+        class _CONVERTSTREAMTOTREE(NTSTATUS):
+
+            def __init__(self, Stream, Size, Node, tag):
+                super(_CONVERTSTREAMTOTREE).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.Size = ctypes.cast(Size, ULONG)
+                self.Node = ctypes.cast(Node, PSDP_TREE_ROOT_NODE)
+                self.tag = ctypes.cast(tag, ULONG)
+
+
+        PCONVERTSTREAMTOTREE = POINTER(_CONVERTSTREAMTOTREE)
 
         # _IRQL_requires_same_
         # typedef VOID (*PGETNEXTELEMENT)(
@@ -534,10 +621,35 @@ if not defined(__BTHSDPDDI_H__):
         # _Outptr_result_bytebuffer_(*NextElementSize) PUCHAR* NextElement,
         # _Out_ PULONG NextElementSize
         # );
+        class _GETNEXTELEMENT(VOID):
+
+            def __init__(
+                self,
+                Stream,
+                StreamSize,
+                CurrentElement,
+                NextElement,
+                NextElementSize
+            ):
+                super(_GETNEXTELEMENT).__init__(self)
+                self.Stream = ctypes.cast(Stream, PUCHAR)
+                self.StreamSize = ctypes.cast(StreamSize, ULONG)
+                self.CurrentElement = ctypes.cast(CurrentElement, PUCHAR)
+                self.NextElement = ctypes.cast(NextElement, PUCHAR)
+                self.NextElementSize = ctypes.cast(NextElementSize, PULONG)
+
+
+        PGETNEXTELEMENT = POINTER(_GETNEXTELEMENT)
 
         # typedef VOID (*pReservedFunction)(
         # );
-        
+        class _ReservedFunction(VOID):
+            pass
+
+
+        pReservedFunction = POINTER(_ReservedFunction)
+
+        __BTHSDPDDIP_H__ = None
         if not defined(__BTHSDPDDIP_H__):
             _BTHDDI_SDP_PARSE_INTERFACE._fields_ = [
                 ('Interface', INTERFACE),
@@ -559,8 +671,10 @@ if not defined(__BTHSDPDDI_H__):
                 ('Reserved4', pReservedFunction),
             ]
         # END IF
+
         if defined(__cplusplus):
             pass
         # END IF
+
     # END IF   (NTDDI_VERSION >= NTDDI_VISTA)
 # END IF    __BTHSDPDDI_H__

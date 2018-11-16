@@ -1061,7 +1061,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\sdpnode.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\iscsiprf.h'
 
 import sys
 
@@ -1206,11 +1206,6 @@ if __name__ == '__main__':
                 f.write('from pyWinAPI.shared.winapifamily_h import *\n')
                 f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
                 f.write('from pyWinAPI.shared.guiddef_h import *\n\n\n')
-                for f_dll in found_dlls:
-                    f.write(f_dll.lower() + ' = ctypes.windll.' + f_dll + '\n')
-
-                if found_dlls:
-                    f.write('\n\n')
 
                 f.write('\n'.join(out_buffer) + '\n')
 
