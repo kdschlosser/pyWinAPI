@@ -287,6 +287,8 @@ TEMPLATE_DECLSPEC = '''DECLSPEC_UUID(
 {1}    "{{{{{0}}}}}"
 {1})'''
 
+found_dlls = []
+
 
 def gen_code(file_path=None, output='', string_data=None, dll=None):
 
@@ -514,33 +516,42 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
     string_data = string_data.replace('\t', '    ').split('\n')
 
     namespace = {}
-    steps = [None]
-    new_lines = ''
-    chained_comment = False
-    skip_lines = None
+    steps = [[]]
     anon_struct_count = 0
     anon_union_count = 0
     union_struct_fwd_definitions = []
     tdef = False
-    COBJMACROS = False
-    found_dlls = []
 
     def check_state_step():
-        if steps[-1] is not None:
-            step = steps[-1]
+        step = steps[-1]
+
+        if not isinstance(step, list):
             parse_macro('    ' * (len(steps) - 2), step.strip(), True)
+
             print('    ' * (len(steps) - 1) + 'pass')
-            steps[len(steps) - 1] = None
+            steps[len(steps) - 1] = step[-2]
 
-    def handle_preprocessor():
-
+    def handle_preprocessor(f_dlls=None):
         for j, step in enumerate(steps):
+            if isinstance(step, list):
+                continue
 
-            if step is not None:
-                step_indent = '    ' * step.count('    ')
+            if f_dlls is None:
+                k_dlls = []
+            else:
+                k_dlls = f_dlls[:]
 
-                parse_macro(step_indent, step.strip(), True)
-                steps[j] = None
+            if j:
+                step_indent = '    ' * (j - 1)
+                k_dlls += steps[j - 1][:]
+            else:
+                step_indent = ''
+
+            parse_macro(step_indent, step.strip(), True)
+            steps[j] = k_dlls[:]
+
+        if f_dlls is not None:
+            steps[-1] += list(fd for fd in f_dlls if fd not in steps[-1])
 
     if interfaces:
         print(
@@ -552,117 +563,190 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             '\n'
         )
 
+    def combine_extended_lines(start, indt=None, marker=None, braces=None):
+        end_index = start
+        data = []
+        comments = ''
+
+        brace_count = 0
+        if indt is None:
+            indt = '    ' * (len(steps) - 1)
+
+        cont_line = ''
+        cont_comment = ''
+        cont_indent = ''
+
+        for data_index, data_line in enumerate(string_data[start:]):
+            if not data_line.startswith(indt):
+                data_line = indt + data_line.strip()
+
+            data_line = data_line.replace(indt, '', 1)
+            data_indent = ''
+
+            for char in list(data_line):
+                if char != ' ':
+                    break
+                data_indent += ' '
+
+            end_index = start + data_index
+
+            data_temp, data_comment = parse_comment(data_line)
+            data_comment = data_comment.replace('#', '', 1).strip()
+
+            data_temp = data_indent + data_temp.strip()
+
+            if data_temp.endswith('\\'):
+                if cont_line:
+                    cont_line += ' ' + data_temp[:-1].strip()
+                else:
+                    cont_indent = data_indent
+                    cont_line += data_temp[:-1].strip()
+
+                if data_comment:
+                    cont_comment += ' ' + data_comment.strip()
+
+                continue
+            else:
+                if cont_line:
+                    cont_line += ' ' + data_temp.strip()
+                    new_data = cont_line
+
+                    if data_comment:
+                        cont_comment += ' ' + data_comment.strip()
+
+                    if cont_comment:
+                        data_comment = cont_comment.strip()
+
+                    if marker is not None:
+                        new_data = cont_indent + new_data
+
+                    cont_line = ''
+                    cont_indent = ''
+                    cont_comment = ''
+
+                elif marker is None:
+                    new_data = indt + data_temp
+                else:
+                    new_data = data_indent + data_temp
+
+            if braces is not None:
+                brace_count += data_line.count(braces[0])
+                brace_count -= data_line.count(braces[1])
+
+            if marker is None and data_comment:
+                comments += ' ' + data_comment.strip()
+
+            elif data_comment:
+                new_data += ' // ' + data_comment.strip()
+
+            data += [new_data]
+
+            if brace_count == 0:
+                if marker is None:
+                    break
+                if data_temp.strip().endswith(marker):
+                    break
+
+        if marker is None and braces is None:
+            result = ' '.join(data)
+            if comments:
+                result += ' // ' + comments.strip()
+        else:
+            result = '\n'.join(indt + lne for lne in data)
+
+        return result, end_index
+
+    skip_until = None
+    print_newline = False
+    print_skip = False
+
     for i, line in enumerate(string_data):
+        if skip_until is not None:
+            if i <= skip_until:
+                continue
 
-        if 'COBJMACROS' in line and not COBJMACROS:
-            COBJMACROS = True
-            continue
+            skip_until = None
 
-        if chained_comment and '*/' not in line:
+        if '#ifdef COBJMACROS' in line:
+            skip_until = combine_extended_lines(i, marker='#endif')[1]
             continue
 
         if line.strip() == 'typedef':
             tdef = True
             continue
 
-        for item in ('ifndef', 'ifdef', 'elif', 'if', 'else', 'endif', 'define'):
-            line = line.replace('# ' + item, '#' + item)
-
         indent = '    ' * (len(steps) - 1)
-        indent_count = len(indent)
 
-        for item in ('ifdef', 'ifndef', 'if'):
-            if line.strip().startswith('#' + item):
-                COBJMACROS = False
-                if new_lines:
-                    print()
-                    new_lines = ''
-
-                if line.strip().endswith('\\'):
-                    start = i
-                    stop = i
-                    data = ''
-                    for j, ln in enumerate(string_data[i:]):
-                        stop = i + j
-
-                        if ln.endswith('\\'):
-                            ln = ln[:-1]
-                            data += ' ' + ln.strip()
-                        else:
-                            data += ' ' + ln.strip()
-                            break
-
-                    steps += [data]
-                    skip_lines = [start, stop]
-                    break
-
-                steps += [line]
-                break
-            if skip_lines:
-                continue
-        else:
-            for item in ('elif', 'else'):
-                if line.strip().startswith('#' + item):
-                    COBJMACROS = False
-                    check_state_step()
-                    if item == 'elif' and line.strip().endswith('\\'):
-                        start = i
-                        stop = i
-                        data = ''
-                        for j, ln in enumerate(string_data[i:]):
-                            stop = i + j
-
-                            if ln.endswith('\\'):
-                                ln = ln[:-1]
-                                data += ' ' + ln.strip()
-                            else:
-                                data += ' ' + ln.strip()
-                                break
-
-                        steps[len(steps) - 1] = data
-                        skip_lines = [start, stop]
-                        break
-
-                    steps[len(steps) - 1] = line
-                    break
-
+        if line.strip() == '//':
+            if print_skip:
+                print_skip = False
             else:
-                if line.strip().startswith('#endif'):
-                    if COBJMACROS:
-                        COBJMACROS = False
-                        continue
-                    check_state_step()
-                    if len(steps) > 1:
-                        steps = steps[:-1]
-
-                    parse_macro('    ' * (len(steps) - 1), line.strip(), True)
-                    continue
-            if skip_lines:
-                continue
-
-        if COBJMACROS:
+                print_skip = True
+                print()
             continue
 
-        line, comment = parse_comment(line.strip())
-
-        if line is None and comment is None:
-            start = i
-            stop = i
-            comments = []
-            for j, d in enumerate(string_data[i:]):
-                stop = i + j
-                comments += [d.strip()]
-                if '*/' in d:
-                    break
-
-            skip_lines = [start, stop]
-            comment = parse_comment(' '.join(comments))[1]
+        comment_line, comment = parse_comment(line.strip())
+        if not comment_line and comment:
+            handle_preprocessor()
             comment = equalize_width(indent, comment)
             print('\n' + comment)
             continue
 
-        if line is None:
-            line = string_data[i].split('/*')[0]
+        if comment_line is None and comment is None:
+            skip_until = i
+            comments = []
+            for j, d in enumerate(string_data[i:]):
+                skip_until = i + j
+                d = d.strip()
+                if d.startswith('/**'):
+                    d = d[3:]
+                elif d.startswith('**/'):
+                    d = d[1:]
+                elif d.startswith('*') and not d.startswith('*/'):
+                    d = d[1:]
+
+                if '*/' in d:
+                    d = d.replace('**/', '').replace('*/', '')
+                    comments += [d]
+                    break
+
+                comments += [d]
+            comment = equalize_width(indent, ' '.join(comments))
+            print('\n' + comment)
+            continue
+
+        line = comment_line
+
+        for item in ('ifndef', 'ifdef', 'elif', 'if', 'else', 'endif', 'define'):
+            line = line.replace('# ' + item, '#' + item)
+
+        for item in ('ifdef', 'ifndef', 'if'):
+            if line.strip().startswith('#' + item):
+                if line.strip().endswith('\\'):
+                    line, skip_until = combine_extended_lines(i, indent)
+
+                steps += [line]
+                break
+        else:
+            for item in ('elif', 'else'):
+                if line.strip().startswith('#' + item):
+                    check_state_step()
+                    if line.strip().endswith('\\'):
+                        line, skip_until = combine_extended_lines(i, indent)
+                    steps[len(steps) - 1] = line
+                    break
+            else:
+                if line.strip().startswith('#endif'):
+                    check_state_step()
+                    if len(steps) > 1:
+                        steps = steps[:-1]
+
+                    parse_macro(
+                        '    ' * (len(steps) - 1),
+                        string_data[i].strip(),
+                        True
+                    )
+                    continue
 
         for interface_data in interfaces[:]:
             pattern1 = 'typedef interface {0} {0};'.format(
@@ -736,297 +820,219 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     libraries.remove(interface_data)
                 break
             else:
-                if skip_lines is not None:
-                    start, stop = skip_lines
-                    if start <= i <= stop:
-                        continue
-
-                    skip_lines = None
-
-                if line.startswith('DECLARE_HANDLE'):
+                if line.strip().startswith('DECLARE_HANDLE'):
                     var_name = line.split('(', 1)[1].split(')', 1)[0]
                     print(indent + var_name + ' = DECLARE_HANDLE()')
                     continue
 
-                if line.startswith('#define'):
-                    if '/*' in line:
-                        line = line.split('/*')[0]
-
-                    if line.endswith('\\'):
-                        define = ''
-                        start = i
-                        stop = i
-                        for j, d in enumerate(string_data[i:]):
-                            stop = i + j
-                            if '/*' in d:
-                                d, comment = d.split('/*', 1)
-                                d = d.strip()
-                                if d.endswith('\\'):
-                                    d = d[:-1] + ' /*' + comment
-                                    define += d
-                                else:
-                                    d = d + ' /*' + comment
-                                    define += d
-                                    break
-                            else:
-                                define += d
-
-                                if d.endswith('\\'):
-                                    define = define[:-1]
-                                else:
-                                    break
-                        skip_lines = [start, stop]
-                    else:
-                        define = line
-
+                if line.strip().startswith('#define'):
+                    define_line, skip_until = combine_extended_lines(i, indent)
                     handle_preprocessor()
-                    if parse_define('    ' * (len(steps) - 1), define, Importer):
-                        new_lines = '\n'
-                    else:
-                        skip_lines = None
-
-                if line.strip() and line.strip().endswith(';'):
-                    guid_line = parse_guid(indent, [line])
-                    if guid_line:
-                        handle_preprocessor()
-                        if comment:
-                            print(comment)
-                        print(guid_line)
+                    if parse_define('    ' * (len(steps) - 1), define_line, Importer):
+                        print_newline = True
                         continue
+                    else:
+                        skip_until = None
 
-                if line.strip().startswith('enum') or line.strip().startswith('typedef enum'):
-                    if new_lines:
-                        print(new_lines)
-                        new_lines = ''
+        line = line.strip()
 
-                    brace_count = 0
-                    enum = []
-                    start = i
-                    stop = i
-                    for j, enum_line in enumerate(string_data[i:]):
-                        if j + i == i:
-                            temp_line = enum_line.strip()
+        if line.startswith('enum') or line.startswith('typedef enum'):
+            if print_newline:
+                print()
+                print_newline = False
 
-                            if temp_line.startswith('enum'):
-                                temp_line = string_data[j - 1].strip()
-                                if (
-                                    'typedef' in temp_line
-                                    and ';' not in temp_line
-                                ):
-                                    enum_line = enum_line.replace(
-                                        'enum',
-                                        'typedef enum',
-                                        1
-                                    )
-                        stop = j + i
-                        brace_count += enum_line.count('{')
-                        brace_count -= enum_line.count('}')
+            enum, skip_until = combine_extended_lines(i, indent, ';')
+            enum = list(
+                el.replace(indent, '', 1) for el in enum.split('\n')
+            )
 
-                        if not enum_line.startswith(indent):
-                            enum_line = indent + enum_line.lstrip()
+            if tdef:
+                enum[0] = enum[0].replace('enum', 'typedef enum', 1)
+                tdef = False
 
-                        enum += [enum_line[indent_count:]]
+            handle_preprocessor()
+            parse_enum(indent, enum, namespace)
+            continue
 
-                        if ';' in enum_line and brace_count == 0:
-                            break
+        if (
+            line.startswith('struct') or
+            line.startswith('union') or
+            line.startswith('typedef struct') or
+            line.startswith('typedef union')
+        ):
+            if print_newline:
+                print()
+                print_newline = False
 
-                    if tdef:
-                        enum[0] = enum[0].replace('enum', 'typedef enum', 1)
-                        tdef = False
+            struct, skip_until = combine_extended_lines(i, indent, ';', '{}')
 
-                    skip_lines = [start, stop]
-                    handle_preprocessor()
-                    parse_enum(indent, enum, namespace)
+            if tdef:
+                if struct.strip().startswith('struct'):
+                    struct = struct.replace('struct', 'typedef struct', 1)
+                else:
+                    struct = struct.replace('union', 'typedef union', 1)
 
-                elif (
-                    line.startswith('struct') or
-                    line.startswith('union') or
-                    line.startswith('typedef struct') or
-                    line.startswith('typedef union')
-                ):
-                    brace_count = 0
-                    struct = []
-                    start = i
-                    stop = i
-                    for j, struct_line in enumerate(string_data[i:]):
-                        if j + i == i:
-                            temp_line = struct_line.strip()
+                tdef = False
 
-                            if (
-                                temp_line.startswith('struct') or
-                                temp_line.startswith('union')
-                            ):
-                                temp_line = string_data[j - 1].strip()
-                                if (
-                                    'typedef' in temp_line
-                                    and ';' not in temp_line
-                                ):
-                                    struct_line = struct_line.replace(
-                                        'struct',
-                                        'typedef struct',
-                                        1
-                                    )
-                                    struct_line = struct_line.replace(
-                                        'union',
-                                        'typedef union',
-                                        1
-                                    )
+            handle_preprocessor()
+            anon_struct_count, anon_union_count = parse_struct_union(
+                indent,
+                struct,
+                Importer,
+                anon_struct_count,
+                anon_union_count,
+                union_struct_fwd_definitions,
+                True
+            )
+            continue
 
-                        stop = j + i
-                        struct += [struct_line]
-                        brace_count += struct_line.count('{')
-                        brace_count -= struct_line.count('}')
-                        if ';' in struct_line and brace_count == 0:
-                            break
+        if line.startswith('typedef') or tdef:
+            handle_preprocessor()
 
-                    struct = '\n'.join(struct)
-                    if tdef:
-                        if struct.strip().startswith('struct'):
-                            struct = struct.replace('struct', 'typedef struct', 1)
-                        else:
-                            struct = struct.replace('union', 'typedef union', 1)
+            typedef, skip_until = combine_extended_lines(i, indent, ';')
+            typedef, comment = parse_comment(typedef)
+            if comment:
+                comment = equalize_width(indent, comment)
+                print('\n' + comment)
 
-                        tdef = False
+            typedef = typedef.replace('typedef', '').strip()
+            typedef = typedef.replace(';', '').strip()
 
-                    skip_lines = [start, stop]
-                    handle_preprocessor()
-                    anon_struct_count, anon_union_count = parse_struct_union(
-                        indent,
-                        struct,
-                        Importer,
-                        anon_struct_count,
-                        anon_union_count,
-                        union_struct_fwd_definitions,
-                        True
-                    )
+            if (
+                '(CALLBACK' in typedef or
+                '( CALLBACK' in typedef or
+                '(WINAPI' in typedef or
+                '( WINAPI' in typedef
+            ):
+
+                if '(CALLBACK' in typedef:
+                    restype, callback = typedef.split('(CALLBACK', 1)
+                    call_type = 'CALLBACK'
+                elif '( CALLBACK' in typedef:
+                    restype, callback = typedef.split('( CALLBACK', 1)
+                    call_type = 'CALLBACK'
+
+                elif '(WINAPI' in typedef:
+                    restype, callback = typedef.split('(WINAPI', 1)
+                    call_type = 'WINAPI'
+
+                elif '( WINAPI' in typedef:
+                    restype, callback = typedef.split('( WINAPI', 1)
+                    call_type = 'WINAPI'
+                else:
                     continue
 
-                else:
-                    chained_comment = False
+                restype = restype.strip()
 
-                    if line.strip().startswith('typedef') and ';' in line:
-                        handle_preprocessor()
-                        line = line.replace('typedef', '').strip()
-                        line = line.replace(';', '').strip()
-                        value, var_names = line.split(' ', 1)
+                name, params = callback.split('(', 1)
+                name = name.replace('*', '').replace(')', '').strip()
 
-                        var_names = list(
-                            v_name.strip() for v_name in var_names.split(',')
-                        )
+                params = list(
+                    param.strip() for param in params[:-1].split(',')
+                )
+                param_types = [restype]
 
-                        while value.endswith('*'):
-                            value = value[:-1].strip()
-                            var_names[0] = '*' + var_names[0]
-
-                        if comment:
-                            comment = equalize_width(indent, comment)
-                            print('\n' + comment)
-
-                        for v_name in var_names:
-                            v_name, new_val = process_param(v_name, value)
-                            print(indent + v_name + ' = ' + new_val)
-
+                for param in params:
+                    param = list(p for p in param.split(' ') if p)
+                    if not param:
                         continue
+                    sys.stderr.write('PARAMS: ' + str(param) + '\n')
+                    param_type, param_name = param[-2:]
+                    param = param[:-2]
+                    while param_type in ('*', '**'):
+                        param_name = param_type + param_name
+                        param_type = param[-1]
+                        param = param[:-1]
 
-                    if line.strip().startswith('#include'):
-                        line = line.replace('#include', '').strip()
-                        line = line.replace('<', '').replace('>', '')
-                        line = line.replace('"', '').strip()
-                        line = line.replace('.h', '_h')
-                        line = line.replace('/', '.').replace('\\', '.')
-                        handle_preprocessor()
-                        if comment:
-                            comment = equalize_width(indent, comment)
-                            print('\n' + comment)
+                    param_type = process_param(param_name, param_type)[1]
+                    param_types += [param_type]
 
-                        print(indent + 'from {0} import * # NOQA'.format(line))
-                        continue
+                original_lines = string_data[i: skip_until + 1]
+                original_lines = list(
+                    indent + '# ' + ol.replace(indent, '', 1)
+                    for ol in original_lines
+                )
 
-                    tdef = False
+                print('\n' + '\n'.join(original_lines))
+                print(
+                    '{0}{1} = {2}({3})'.format(
+                        indent,
+                        name,
+                        call_type,
+                        ', '.join(param_types)
+                    ) + '\n'
+                )
+            else:
+                value, var_names = typedef.split(' ', 1)
 
-                    if line and line.strip() and ';' not in line:
-                        if line.strip().startswith('#'):
-                            continue
-                        start = i
-                        stop = i
+                var_names = list(
+                    v_name.strip() for v_name in var_names.split(',')
+                )
 
-                        data = []
-                        found_guid = False
-                        for j, ln in enumerate(string_data[i:]):
-                            stop = i + j
+                while value.endswith('*'):
+                    value = value[:-1].strip()
+                    var_names[0] = '*' + var_names[0]
 
-                            if ln.endswith('\\'):
-                                ln = ln[:-1]
-                            data += [ln.strip()]
+                if comment:
+                    comment = equalize_width(indent, comment)
+                    print('\n' + comment)
 
-                            if ln.endswith(';'):
-                                break
+                for v_name in var_names:
+                    v_name, new_val = process_param(v_name, value)
+                    print(indent + v_name + ' = ' + new_val)
+            continue
 
-                            if 'OUR_GUID_ENTRY' in ln or 'DEFINE_CODECAPI_GUID' in ln:
-                                found_guid = True
+        tdef = False
+        if line.startswith('#include'):
+            tdef = False
+            line = line.replace('#include', '').strip()
+            line = line.replace('<', '').replace('>', '')
+            line = line.replace('"', '').strip()
+            line = line.replace('.h', '_h')
+            line = line.replace('/', '.').replace('\\', '.')
 
-                            if found_guid is True and ')' in ln:
-                                break
+            handle_preprocessor()
+            if comment:
+                comment = equalize_width(indent, comment)
+                print('\n' + comment)
 
-                        if found_guid:
-                            guid_line = parse_guid(indent, data)
-                            if guid_line:
-                                handle_preprocessor()
-                                skip_lines = [start, stop]
-                                if comment:
-                                    comment = equalize_width(indent, comment)
-                                    print('\n' + comment)
-                                print(guid_line)
-                                continue
+            print(indent + 'from {0} import * # NOQA'.format(line))
+            continue
 
-                        line = '\n'.join(data)
+        if line.startswith('#'):
+            continue
 
-                    elif line is None and comment is None:
-                        # /*
-                        # * Aliases for StringPrep
-                        # */
-                        comment = ''
-                        chained_comment = True
+        if line:
+            if 'OUR_GUID_ENTRY' in line or 'DEFINE_CODECAPI_GUID' in line:
+                guid_line, skip_until = combine_extended_lines(i, indent, ')')
+            else:
+                guid_line, skip_until = combine_extended_lines(i, indent, ';')
 
-                        for comnt in string_data[i:]:
-                            comnt = comnt.strip()
+            guid_line = parse_guid(indent, guid_line.split('\n'))
+            if guid_line:
+                handle_preprocessor()
+                print(guid_line)
+                continue
 
-                            if not comnt.startswith('**/') and not comnt.startswith('*/') and comnt.startswith('*'):
-                                comnt = comnt[1:].strip()
+            dll_line, skip_until = combine_extended_lines(i, indent, ';')
+            if isinstance(steps[-1], list):
+                dlls = steps[-1][:]
+            else:
+                dlls = []
 
-                            comment += ' ' + comnt
+            dll_line = parse_dll(indent, dll_line.split('\n'), dlls)
+            if dll_line:
+                handle_preprocessor(dlls)
+                print(dll_line)
+                continue
+            else:
+                skip_until = None
 
-                            if '*/' in comnt:
-                                break
-
-                        line, comment = parse_comment(comment)
-                        line = line.strip()
-
-                    if line:
-                        guid_line = parse_guid(indent, line.split('\n'))
-                        if guid_line:
-                            handle_preprocessor()
-                            if comment:
-                                comment = equalize_width(indent, comment)
-                                print('\n' + comment)
-                            print(guid_line)
-                            continue
-
-                        dll_line = parse_dll(indent, line.split('\n'), found_dlls)
-                        if dll_line:
-                            handle_preprocessor()
-                            if comment:
-                                comment = equalize_width(indent, comment)
-                                print('\n' + comment)
-                            print(dll_line)
-                            continue
-
-                    if comment:
-                        handle_preprocessor()
-                        comment = equalize_width(indent, comment)
-                        print('\n' + comment)
-
-                        continue
+        if comment:
+            handle_preprocessor()
+            comment = equalize_width(indent, comment)
+            print(comment)
+            continue
 
     for interface_data in interfaces:
         indent = ''
@@ -1055,7 +1061,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\bluetoothapis.h' # ks.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\sdpnode.h'
 
 import sys
 
@@ -1115,7 +1121,24 @@ if __name__ == '__main__':
 
             class_dec_indent = ''
 
+            open_brackets = 0
+
             for line in temp_buffer:
+
+                if (
+                    not line.strip().startswith('if ') and
+                    not line.strip().startswith('elif ') and
+                    not line.strip().startswith('else:')
+                ):
+                    for item in ('()', '{}', '[]'):
+                        open_brackets += line.count(item[0])
+                        open_brackets -= line.count(item[1])
+                else:
+                    open_brackets = 0
+
+                if open_brackets and not line.strip():
+                    continue
+
                 if line.strip() and class_dec_indent and not line.startswith(class_dec_indent):
                     class_dec_indent = ''
 
@@ -1131,6 +1154,11 @@ if __name__ == '__main__':
                         continue
                 else:
                     if not line.strip() and not back_1 and not back_2:
+                        continue
+
+                if back_2 == 'pass' and open_brackets == 1 and '_fields_ =' in line:
+                    if line.strip():
+                        out_buffer += ['', line]
                         continue
 
                 if (
@@ -1149,6 +1177,7 @@ if __name__ == '__main__':
                         class_dec_indent = '    ' * line.count('    ') + '    '
 
                 if line.strip().startswith('class '):
+                    open_brackets = 0
                     class_dec_indent = '    ' * line.count('    ') + '    '
 
                     if back_1:
@@ -1176,7 +1205,13 @@ if __name__ == '__main__':
                 f.write('from pyWinAPI.shared.wtypes_h import *\n')
                 f.write('from pyWinAPI.shared.winapifamily_h import *\n')
                 f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
-                f.write('from pyWinAPI.shared.guiddef_h import *\n')
+                f.write('from pyWinAPI.shared.guiddef_h import *\n\n\n')
+                for f_dll in found_dlls:
+                    f.write(f_dll.lower() + ' = ctypes.windll.' + f_dll + '\n')
+
+                if found_dlls:
+                    f.write('\n\n')
+
                 f.write('\n'.join(out_buffer) + '\n')
 
         def __getattr__(self, item):

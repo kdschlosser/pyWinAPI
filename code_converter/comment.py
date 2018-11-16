@@ -28,11 +28,23 @@ def equalize_width(indent, comment):
         if not comment:
             continue
 
+
+
         comment = comment.replace('#', '').strip()
         comment = comment.replace('   ', ' ').replace('  ', ' ')
-        c_len = len(indent + '# ' + comment)
+        o_len = len(comment)
+
+        for line_char in ('*', '=', '-', '_', '#'):
+            if line_char * o_len == comment:
+                break
+        else:
+            line_char = None
+
+        c_len = len(indent + '# ') + o_len
         if c_len <= 79:
             saved_comments += [indent + '# ' + comment]
+        elif line_char is not None:
+            saved_comments += [indent + '# ' + comment[:o_len - c_len]]
         else:
             quote_open = False
             brace_count = 0

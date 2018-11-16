@@ -2,8 +2,8 @@ import ctypes
 from pyWinAPI import *
 from pyWinAPI.shared.wtypes_h import *
 
-__BTHSDPDEF_H__ = None
 
+__BTHSDPDEF_H__ = None
 
 # Copyright (C) Microsoft. All rights reserved.
 if not defined(__BTHSDPDEF_H__):

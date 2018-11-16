@@ -4,6 +4,7 @@ __REQUIRED_RPCSAL_H_VERSION__ = 0x64
 # from rpcndr_h import * # NOQA
 
 import ctypes
+import comtypes
 
 from ctypes.wintypes import (
     VARIANT_BOOL,
@@ -14,6 +15,7 @@ from ctypes.wintypes import (
     WIN32_FIND_DATAW,
 )
 
+INTERFACE = comtypes.IUnknown
 NULL = None
 
 cdecl = ctypes.CFUNCTYPE
@@ -2647,5 +2649,5 @@ __all__ = (
     'wireBSTR', 'wireCLIPFORMAT', 'wireHACCEL', 'wireHBITMAP', 'wireHDC',
     'wireHBRUSH', 'wireHENHMETAFILE', 'wireHFONT', 'wireHGLOBAL',
     'wireHICON', 'wireHMENU', 'wireHMETAFILE', 'wireHMETAFILEPICT',
-    'wireHMONITOR', 'wireHPALETTE', 'wireHRGN', 'wireHWND',
+    'wireHMONITOR', 'wireHPALETTE', 'wireHRGN', 'wireHWND', 'INTERFACE'
 )

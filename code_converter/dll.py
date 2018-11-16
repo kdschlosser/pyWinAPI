@@ -70,10 +70,23 @@ for key, value in win_functions.__dict__.items():
     known_dlls[key] = value[:]
 
 
-TEMPLATE_DLL = '''{indent}{dll_lower} = ctypes.windll.{dll_upper}'''
-TEMPLATE_FUNCTION = '''{original_lines}
-{indent}{func_name} = {dll_lower}.{func_name}
-{indent}{func_name}.restype = {return_value}'''
+TEMPLATE_DLL_1 = '''{indent}{dll_lower} = ctypes.windll.{dll_upper}'''
+TEMPLATE_DLL_2 = '''{indent}{dll_lower} = (
+{indent}    ctypes.windll.{dll_upper}
+{indent})'''
+
+TEMPLATE_ORIGINAL = '''{original_lines}'''
+TEMPLATE_FUNCTION_1 = '''{indent}{func_name} = {dll_lower}.{func_name}'''
+TEMPLATE_FUNCTION_2 = '''{indent}{func_name} = (
+{indent}    {dll_lower}.{func_name}
+{indent})'''
+
+TEMPLATE_RESTYPE_1 = '''{indent}{func_name}.restype = {return_value}
+'''
+TEMPLATE_RESTYPE_2 = '''{indent}{func_name}.restype = (
+{indent}    {return_value}
+{indent})
+'''
 
 NOT_ALLOWED_PUNC = '#/<>()=*+-\\!"\',%^$@&|{}[];:.?` \n'
 
@@ -161,8 +174,6 @@ def parse_dll(indent, data, found_dlls):
         if dll is None:
             return ''
 
-        sys.stderr.write(dll + ' - ' + pos_func + '\n')
-
         if dll not in known_dlls:
             for k_dll in known_dlls.keys():
                 if k_dll.lower() == dll.lower():
@@ -175,14 +186,21 @@ def parse_dll(indent, data, found_dlls):
 
     lines = []
     if dll not in found_dlls:
-        lines += [
-            TEMPLATE_DLL.format(
+        template = TEMPLATE_DLL_1.format(
+            indent=indent,
+            dll_lower=dll.lower(),
+            dll_upper=dll.upper(),
+        )
+
+        if len(template) >79:
+            template = TEMPLATE_DLL_2.format(
                 indent=indent,
                 dll_lower=dll.lower(),
-                dll_upper=dll
-            ),
-            ''
-        ]
+                dll_upper=dll.upper(),
+            )
+
+        print(template + '\n')
+
         found_dlls += [dll]
 
     return_values = new_data.split(pos_func)[0]
@@ -197,15 +215,37 @@ def parse_dll(indent, data, found_dlls):
     if return_value == 'NTKERNELAPI':
         return_value = return_values[-1]
 
-    original_lines = '\n'.join(indent + '# ' + ln for ln in data)
-    lines += [
-        TEMPLATE_FUNCTION.format(
-            return_value=return_value,
-            func_name=pos_func,
+    original_lines = '\n' + '\n'.join(indent + '# ' + ln for ln in data)
+
+    func_template = TEMPLATE_FUNCTION_1.format(
+        indent=indent,
+        func_name=pos_func,
+        dll_lower=dll.lower()
+    )
+    if len(func_template) > 79:
+        func_template = TEMPLATE_FUNCTION_2.format(
             indent=indent,
-            dll_lower=dll.lower(),
-            original_lines=original_lines
+            func_name=pos_func,
+            dll_lower=dll.lower()
         )
+
+    res_template = TEMPLATE_RESTYPE_1.format(
+        indent=indent,
+        func_name=pos_func,
+        return_value=return_value
+    )
+
+    if len(res_template) > 79:
+        res_template = TEMPLATE_RESTYPE_2.format(
+            indent=indent,
+            func_name=pos_func,
+            return_value=return_value
+        )
+
+    lines += [
+        TEMPLATE_ORIGINAL.format(original_lines=original_lines),
+        func_template,
+        res_template
     ]
 
-    return '\n'.join(lines) + '\n\n'
+    return '\n'.join(lines) + '\n'

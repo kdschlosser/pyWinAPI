@@ -427,6 +427,7 @@ MOFCOMP_PASS = None
 _INC_WINAPIFAMILY = None
 _WIN32_WINDOWS = None
 __LPGUID_DEFINED__ = None
+_ARM_ = None
 
 WINAPI_FAMILY = None
 WINAPI_PARTITION_DESKTOP = None
@@ -451,6 +452,12 @@ _HRESULT_DEFINED = None
 _FILETIME_ = None
 _MAC = None
 UNICODE = 1
+
+# TODO: Figure out how to check and see what KB's are installed
+# Windows KB proprocessor macros.
+# there are some sections of the API that will try to load elements that are
+# only available if a KB has been installed
+VISTA_KB942567 = 1
 
 
 def defined(macro):
@@ -492,7 +499,7 @@ __all__ = (
     'UNICODE', 'GUID_DEFS_ONLY', 'NO_GUID_DEFS', 'MAX_PATH', '_WIN32_WINDOWS',
     '__LPGUID_DEFINED__', 'DUMMYUNIONNAME', '_DEBUG', '_HRESULT_DEFINED',
     '_AMD64_', '_X86_', '_WIN32_WINNT_WIN10_RS2', '_WIN32_WINNT_WIN10_RS3',
-    'WIN64'
+    'WIN64', '_ARM_', 'VISTA_KB942567'
 )
 
 from shared.sdkddkver_h import * # NOQA

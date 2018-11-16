@@ -113,9 +113,9 @@ def parse_macro(indent, lne, macro=False):
 
     if line.startswith('#endif'):
         if comment:
-            print(indent + '# END IF ' + comment[2:])
+            print(indent + '# END IF ' + comment[2:] + '\n')
         else:
-            print(indent + '# END IF')
+            print(indent + '# END IF' + '\n\n')
         return '', indent[:-4]
 
     return line, indent

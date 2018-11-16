@@ -1003,53 +1003,6 @@ idndl = [
     'DownlevelVerifyScripts',
 ]
 
-mprddm = [
-    'DDMAdminConnectionClearStats',
-    'DDMAdminConnectionEnum',
-    'DDMAdminConnectionEnumEx',
-    'DDMAdminConnectionGetInfo',
-    'DDMAdminConnectionGetInfoEx',
-    'DDMAdminInterfaceConnect',
-    'DDMAdminInterfaceDisconnect',
-    'DDMAdminPortClearStats',
-    'DDMAdminPortDisconnect',
-    'DDMAdminPortEnum',
-    'DDMAdminPortGetInfo',
-    'DDMAdminPortReset',
-    'DDMAdminRemoveQuarantine',
-    'DDMAdminServerGetInfo',
-    'DDMAdminServerGetInfoEx',
-    'DDMAdminServerSetInfo',
-    'DDMAdminServerSetInfoEx',
-    'DDMAdminUpdateConnection',
-    'DDMConnectInterface',
-    'DDMDisconnectInterface',
-    'DDMGetIdentityAttributes',
-    'DDMPostCleanup',
-    'DDMRegisterConnectionNotification',
-    'DDMSendUserMessage',
-    'DDMServiceInitialize',
-    'DDMServicePostListens',
-    'DDMTransportCreate',
-    'IfObjectFreePhonebookContext',
-    'IfObjectInitiatePersistentConnections',
-    'IfObjectLoadPhonebookInfo',
-    'IfObjectNotifyOfReachabilityChange',
-    'IfObjectSetDialoutHoursRestriction',
-    'RasAcctConfigChangeNotification',
-    'RasAcctProviderFreeAttributes',
-    'RasAcctProviderInitialize',
-    'RasAcctProviderInterimAccounting',
-    'RasAcctProviderStartAccounting',
-    'RasAcctProviderStopAccounting',
-    'RasAcctProviderTerminate',
-    'RasAuthConfigChangeNotification',
-    'RasAuthProviderAuthenticateUser',
-    'RasAuthProviderFreeAttributes',
-    'RasAuthProviderInitialize',
-    'RasAuthProviderTerminate',
-]
-
 cliconfg = [
     'CPlApplet',
     'ClientConfigureAddEdit',
@@ -1213,6 +1166,10 @@ bcryptprimitives = [
     'GetSignatureInterface',
 ]
 
+msclmd = [
+    'CardAcquireContext',
+]
+
 ipsmsnap = [
 ]
 
@@ -1263,18 +1220,10 @@ dsprop = [
     'Smart_PADS_ATTR_INFO__Empty',
 ]
 
-drprov = [
-    'NPAddConnection',
-    'NPAddConnection3',
-    'NPCancelConnection',
-    'NPCloseEnum',
-    'NPEnumResource',
-    'NPGetCaps',
-    'NPGetConnection',
-    'NPGetResourceInformation',
-    'NPGetResourceParent',
-    'NPGetUniversalName',
-    'NPOpenEnum',
+rasctrs = [
+    'CloseRasPerformanceData',
+    'CollectRasPerformanceData',
+    'OpenRasPerformanceData',
 ]
 
 msctfui = [
@@ -1644,6 +1593,11 @@ dot3api = [
     'Dot3SetProfileEapUserData',
     'Dot3SetProfileEapXmlUserData',
     'Dot3UIResponse',
+]
+
+ehstorpwdmgr = [
+    'EnhancedStoragePasswordConfig',
+    'EnhancedStoragePasswordInitDisk',
 ]
 
 mtxex = [
@@ -2078,12 +2032,6 @@ wdc = [
     'WdcRunTaskAsInteractiveUser',
 ]
 
-rasctrs = [
-    'CloseRasPerformanceData',
-    'CollectRasPerformanceData',
-    'OpenRasPerformanceData',
-]
-
 msdmo = [
     'DMOEnum',
     'DMOGetName',
@@ -2368,6 +2316,9 @@ winmm = [
     'waveOutSetVolume',
     'waveOutUnprepareHeader',
     'waveOutWrite',
+]
+
+nlsdata001a = [
 ]
 
 efsadu = [
@@ -5505,6 +5456,37 @@ p2pgraph = [
     'pMemoryHelper',
 ]
 
+d3dcompiler_47 = [
+    'D3DAssemble',
+    'D3DCompile',
+    'D3DCompile2',
+    'D3DCompileFromFile',
+    'D3DCompressShaders',
+    'D3DCreateBlob',
+    'D3DCreateFunctionLinkingGraph',
+    'D3DCreateLinker',
+    'D3DDecompressShaders',
+    'D3DDisassemble',
+    'D3DDisassemble10Effect',
+    'D3DDisassemble11Trace',
+    'D3DDisassembleRegion',
+    'D3DGetBlobPart',
+    'D3DGetDebugInfo',
+    'D3DGetInputAndOutputSignatureBlob',
+    'D3DGetInputSignatureBlob',
+    'D3DGetOutputSignatureBlob',
+    'D3DGetTraceInstructionOffsets',
+    'D3DLoadModule',
+    'D3DPreprocess',
+    'D3DReadFileToBlob',
+    'D3DReflect',
+    'D3DReflectLibrary',
+    'D3DReturnFailure1',
+    'D3DSetBlobPart',
+    'D3DStripShader',
+    'D3DWriteBlobToFile',
+]
+
 dbgeng = [
     'DebugConnect',
     'DebugConnectWide',
@@ -5589,6 +5571,9 @@ dssec = [
 
 wlanmm = [
     'StartDiagnosticsW',
+]
+
+tspkg = [
 ]
 
 alttab = [
@@ -6136,8 +6121,7 @@ sensorscpl = [
 hnetmon = [
 ]
 
-wls0wndh = [
-    'Session0ViewerWindowProcHook',
+mcicda = [
 ]
 
 verifier = [
@@ -6991,6 +6975,9 @@ fdpnp = [
 ]
 
 nlsdata001b = [
+]
+
+devicepairing = [
 ]
 
 tapi32 = [
@@ -8560,6 +8547,9 @@ rpcdiag = [
     'RpcDiagnoseError',
 ]
 
+netiohlp = [
+]
+
 imagehlp = [
     'BindImage',
     'BindImageEx',
@@ -9880,9 +9870,6 @@ davhlpr = [
 pots = [
 ]
 
-wiaaut = [
-]
-
 peerdist = [
     'PeerDistClientAddContentInformation',
     'PeerDistClientAddData',
@@ -9910,9 +9897,6 @@ peerdist = [
 ]
 
 mmcshext = [
-]
-
-ucmhc = [
 ]
 
 netprofm = [
@@ -10300,6 +10284,76 @@ pwrshplugin = [
     'GetCLRVersionForPSVersion',
     'PerformWSManPluginReportCompletion',
     'WSManPluginConnect',
+]
+
+amxread = [
+    'AmxCloseManifest',
+    'AmxGetCharacteristics',
+    'AmxGetModuleGroupName',
+    'AmxGetModuleType',
+    'AmxGetProviderDescription',
+    'AmxGetProviderName',
+    'AmxGetRecordDataSize',
+    'AmxGetRecordID',
+    'AmxGetRecordStatus',
+    'AmxGetRecordType',
+    'AmxGetRecordVolumeID',
+    'AmxGetSignature',
+    'AmxGetStdFnCallingConvention',
+    'AmxGetStdFnFlags',
+    'AmxGetStdFnForwardedAttribute',
+    'AmxGetStdFnForwardedName',
+    'AmxGetStdFnHint',
+    'AmxGetStdFnInformation',
+    'AmxGetStdFnManifestID',
+    'AmxGetStdFnName',
+    'AmxGetStdFnNumberOfParams',
+    'AmxGetStdFnOrdinal',
+    'AmxGetStdFnParamBaseTypeID',
+    'AmxGetStdFnParamFlags',
+    'AmxGetStdFnParamIndirection',
+    'AmxGetStdFnParamInformation',
+    'AmxGetStdFnParamModifier',
+    'AmxGetStdFnParamName',
+    'AmxGetStdFnParamSize',
+    'AmxGetStdFnParamTypeID',
+    'AmxGetStdFnRVA',
+    'AmxGetStdFnReturnValueBaseTypeID',
+    'AmxGetStdFnReturnValueIndirection',
+    'AmxGetStdFnReturnValueSize',
+    'AmxGetStdFnReturnValueTypeID',
+    'AmxGetStdFnTotalParamsSize',
+    'AmxGetTableName',
+    'AmxGetTimeStamp',
+    'AmxGetTotalVolumes',
+    'AmxGetType',
+    'AmxGetTypeInformation',
+    'AmxGetTypeManifestID',
+    'AmxGetTypeMemberBaseTypeID',
+    'AmxGetTypeMemberFlags',
+    'AmxGetTypeMemberIndirection',
+    'AmxGetTypeMemberInformation',
+    'AmxGetTypeMemberManifestID',
+    'AmxGetTypeMemberName',
+    'AmxGetTypeMemberOffset',
+    'AmxGetTypeMemberSize',
+    'AmxGetTypeMemberTag',
+    'AmxGetTypeMemberTypeID',
+    'AmxGetTypeModuleID',
+    'AmxGetTypeName',
+    'AmxGetTypeNumberOfMembers',
+    'AmxGetTypeSize',
+    'AmxGetVersion',
+    'AmxIsBOF',
+    'AmxIsEOF',
+    'AmxOpenManifest',
+    'AmxRead',
+    'AmxResetBuffer',
+    'AmxSetCurrentStdFnParamByIndex',
+    'AmxSetCurrentTypeMemberByIndex',
+    'AmxSetGroupByID',
+    'AmxSetTableByOID',
+    'AmxUnLoadStringTable',
 ]
 
 sti = [
@@ -11338,9 +11392,6 @@ dxdiagn = [
 scripto = [
 ]
 
-wmpencen = [
-]
-
 wlangpui = [
     'GetAdPolicyAsXML',
     'GetWmiPolicyAsXML',
@@ -11537,6 +11588,15 @@ Audioeng = [
 ]
 
 msrle32 = [
+]
+
+azsqlext = [
+    'AzGenerateAudit',
+    '__GetXpVersion',
+    'xp_AzManAddRole',
+    'xp_AzManAddUserToRole',
+    'xp_AzManDeleteRole',
+    'xp_AzManRemoveUserFromRole',
 ]
 
 uianimation = [
@@ -12089,7 +12149,18 @@ dsquery = [
     'OpenSavedDsQueryW',
 ]
 
-nlsdata000c = [
+drprov = [
+    'NPAddConnection',
+    'NPAddConnection3',
+    'NPCancelConnection',
+    'NPCloseEnum',
+    'NPEnumResource',
+    'NPGetCaps',
+    'NPGetConnection',
+    'NPGetResourceInformation',
+    'NPGetResourceParent',
+    'NPGetUniversalName',
+    'NPOpenEnum',
 ]
 
 nlsdata000a = [
@@ -14684,13 +14755,7 @@ comsnap = [
     'InstallDsExtension',
 ]
 
-azsqlext = [
-    'AzGenerateAudit',
-    '__GetXpVersion',
-    'xp_AzManAddRole',
-    'xp_AzManAddUserToRole',
-    'xp_AzManDeleteRole',
-    'xp_AzManRemoveUserFromRole',
+nlsdata000c = [
 ]
 
 fdwsd = [
@@ -17973,6 +18038,9 @@ packager = [
 l2nacp = [
 ]
 
+txflog = [
+]
+
 ocsetapi = [
     'CopyMspFilesToSystemMsiCache',
     'RemoveMspFilesFromSystemMsiCache',
@@ -19338,338 +19406,7 @@ serialui = [
     'drvSetDefaultCommConfigW',
 ]
 
-Shell32 = [
-    'DragEnter',
-    'DragEnter',
-    'DragLeave',
-    'AppCompat_RunDLLW',
-    'AssocCreateForClasses',
-    'AssocGetDetailsOfPropKey',
-    'CDefFolderMenu_Create2',
-    'CIDLData_CreateFromIDArray',
-    'CheckEscapesW',
-    'CommandLineToArgvW',
-    'Control_RunDLL',
-    'Control_RunDLLA',
-    'Control_RunDLLAsUserW',
-    'Control_RunDLLW',
-    'DAD_AutoScroll',
-    'DAD_DragEnterEx',
-    'DAD_DragEnterEx2',
-    'DAD_DragLeave',
-    'DAD_DragMove',
-    'DAD_SetDragImage',
-    'DAD_ShowDragImage',
-    'DllInstall',
-    'DoEnvironmentSubstA',
-    'DoEnvironmentSubstW',
-    'DragAcceptFiles',
-    'DragFinish',
-    'DragQueryFile',
-    'DragQueryFileA',
-    'DragQueryFileAorW',
-    'DragQueryFileW',
-    'DragQueryPoint',
-    'DriveType',
-    'DuplicateIcon',
-    'ExtractAssociatedIconA',
-    'ExtractAssociatedIconExA',
-    'ExtractAssociatedIconExW',
-    'ExtractAssociatedIconW',
-    'ExtractIconA',
-    'ExtractIconEx',
-    'ExtractIconExA',
-    'ExtractIconExW',
-    'ExtractIconW',
-    'FindExecutableA',
-    'FindExecutableW',
-    'FreeIconList',
-    'GetCurrentProcessExplicitAppUserModelID',
-    'GetFileNameFromBrowse',
-    'ILAppendID',
-    'ILClone',
-    'ILCloneFirst',
-    'ILCombine',
-    'ILCreateFromPath',
-    'ILCreateFromPathA',
-    'ILCreateFromPathW',
-    'ILFindChild',
-    'ILFindLastID',
-    'ILFree',
-    'ILGetNext',
-    'ILGetSize',
-    'ILIsEqual',
-    'ILIsParent',
-    'ILLoadFromStreamEx',
-    'ILRemoveLastID',
-    'ILSaveToStream',
-    'InitNetworkAddressControl',
-    'InternalExtractIconListA',
-    'InternalExtractIconListW',
-    'IsLFNDrive',
-    'IsLFNDriveA',
-    'IsLFNDriveW',
-    'IsNetDrive',
-    'IsUserAnAdmin',
-    'LaunchMSHelp_RunDLLW',
-    'OpenAs_RunDLL',
-    'OpenAs_RunDLLA',
-    'OpenAs_RunDLLW',
-    'OpenRegStream',
-    'Options_RunDLL',
-    'Options_RunDLLA',
-    'Options_RunDLLW',
-    'PathCleanupSpec',
-    'PathGetShortPath',
-    'PathIsExe',
-    'PathIsSlowA',
-    'PathIsSlowW',
-    'PathMakeUniqueName',
-    'PathQualify',
-    'PathResolve',
-    'PathYetAnotherMakeUniqueName',
-    'PickIconDlg',
-    'PifMgr_CloseProperties',
-    'PifMgr_GetProperties',
-    'PifMgr_OpenProperties',
-    'PifMgr_SetProperties',
-    'PrepareDiscForBurnRunDllW',
-    'PrintersGetCommand_RunDLL',
-    'PrintersGetCommand_RunDLLA',
-    'PrintersGetCommand_RunDLLW',
-    'ReadCabinetState',
-    'RealDriveType',
-    'RealShellExecuteA',
-    'RealShellExecuteExA',
-    'RealShellExecuteExW',
-    'RealShellExecuteW',
-    'RegenerateUserEnvironment',
-    'RestartDialog',
-    'RestartDialogEx',
-    'RunAsNewUser_RunDLLW',
-    'SHAddDefaultPropertiesByExt',
-    'SHAddFromPropSheetExtArray',
-    'SHAddToRecentDocs',
-    'SHAlloc',
-    'SHAppBarMessage',
-    'SHAssocEnumHandlers',
-    'SHAssocEnumHandlersForProtocolByApplication',
-    'SHBindToFolderIDListParent',
-    'SHBindToFolderIDListParentEx',
-    'SHBindToObject',
-    'SHBindToParent',
-    'SHBrowseForFolder',
-    'SHBrowseForFolderA',
-    'SHBrowseForFolderW',
-    'SHCLSIDFromString',
-    'SHChangeNotification_Lock',
-    'SHChangeNotification_Unlock',
-    'SHChangeNotify',
-    'SHChangeNotifyDeregister',
-    'SHChangeNotifyRegister',
-    'SHChangeNotifyRegisterThread',
-    'SHChangeNotifySuspendResume',
-    'SHCloneSpecialIDList',
-    'SHCoCreateInstance',
-    'SHCreateAssociationRegistration',
-    'SHCreateDataObject',
-    'SHCreateDefaultContextMenu',
-    'SHCreateDefaultExtractIcon',
-    'SHCreateDefaultPropertiesOp',
-    'SHCreateDirectory',
-    'SHCreateDirectoryExA',
-    'SHCreateDirectoryExW',
-    'SHCreateFileExtractIconW',
-    'SHCreateItemFromIDList',
-    'SHCreateItemFromParsingName',
-    'SHCreateItemFromRelativeName',
-    'SHCreateItemInKnownFolder',
-    'SHCreateItemWithParent',
-    'SHCreateLocalServerRunDll',
-    'SHCreateProcessAsUserW',
-    'SHCreatePropSheetExtArray',
-    'SHCreateQueryCancelAutoPlayMoniker',
-    'SHCreateShellFolderView',
-    'SHCreateShellFolderViewEx',
-    'SHCreateShellItem',
-    'SHCreateShellItemArray',
-    'SHCreateShellItemArrayFromDataObject',
-    'SHCreateShellItemArrayFromIDLists',
-    'SHCreateShellItemArrayFromShellItem',
-    'SHCreateStdEnumFmtEtc',
-    'SHDefExtractIconA',
-    'SHDefExtractIconW',
-    'SHDestroyPropSheetExtArray',
-    'SHDoDragDrop',
-    'SHEmptyRecycleBinA',
-    'SHEmptyRecycleBinW',
-    'SHEnableServiceObject',
-    'SHEnumerateUnreadMailAccountsW',
-    'SHEvaluateSystemCommandTemplate',
-    'SHExtractIconsW',
-    'SHFileOperation',
-    'SHFileOperationA',
-    'SHFileOperationW',
-    'SHFindFiles',
-    'SHFind_InitMenuPopup',
-    'SHFlushSFCache',
-    'SHFormatDrive',
-    'SHFree',
-    'SHFreeNameMappings',
-    'SHGetAttributesFromDataObject',
-    'SHGetDataFromIDListA',
-    'SHGetDataFromIDListW',
-    'SHGetDesktopFolder',
-    'SHGetDiskFreeSpaceA',
-    'SHGetDiskFreeSpaceExA',
-    'SHGetDiskFreeSpaceExW',
-    'SHGetDriveMedia',
-    'SHGetFileInfo',
-    'SHGetFileInfoA',
-    'SHGetFileInfoW',
-    'SHGetFolderLocation',
-    'SHGetFolderPathA',
-    'SHGetFolderPathAndSubDirA',
-    'SHGetFolderPathAndSubDirW',
-    'SHGetFolderPathEx',
-    'SHGetFolderPathW',
-    'SHGetIDListFromObject',
-    'SHGetIconOverlayIndexA',
-    'SHGetIconOverlayIndexW',
-    'SHGetImageList',
-    'SHGetInstanceExplorer',
-    'SHGetItemFromDataObject',
-    'SHGetItemFromObject',
-    'SHGetKnownFolderIDList',
-    'SHGetKnownFolderItem',
-    'SHGetKnownFolderPath',
-    'SHGetLocalizedName',
-    'SHGetMalloc',
-    'SHGetNameFromIDList',
-    'SHGetNewLinkInfo',
-    'SHGetNewLinkInfoA',
-    'SHGetNewLinkInfoW',
-    'SHGetPathFromIDList',
-    'SHGetPathFromIDListA',
-    'SHGetPathFromIDListEx',
-    'SHGetPathFromIDListW',
-    'SHGetPropertyStoreForWindow',
-    'SHGetPropertyStoreFromIDList',
-    'SHGetPropertyStoreFromParsingName',
-    'SHGetRealIDL',
-    'SHGetSetFolderCustomSettings',
-    'SHGetSetSettings',
-    'SHGetSettings',
-    'SHGetSpecialFolderLocation',
-    'SHGetSpecialFolderPathA',
-    'SHGetSpecialFolderPathW',
-    'SHGetStockIconInfo',
-    'SHGetTemporaryPropertyForItem',
-    'SHGetUnreadMailCountW',
-    'SHHandleUpdateImage',
-    'SHHelpShortcuts_RunDLL',
-    'SHHelpShortcuts_RunDLLA',
-    'SHHelpShortcuts_RunDLLW',
-    'SHILCreateFromPath',
-    'SHInvokePrinterCommandA',
-    'SHInvokePrinterCommandW',
-    'SHIsFileAvailableOffline',
-    'SHLimitInputEdit',
-    'SHLoadInProc',
-    'SHLoadNonloadedIconOverlayIdentifiers',
-    'SHMapPIDLToSystemImageListIndex',
-    'SHMultiFileProperties',
-    'SHObjectProperties',
-    'SHOpenFolderAndSelectItems',
-    'SHOpenPropSheetW',
-    'SHOpenWithDialog',
-    'SHParseDisplayName',
-    'SHPathPrepareForWriteA',
-    'SHPathPrepareForWriteW',
-    'SHPropStgCreate',
-    'SHPropStgReadMultiple',
-    'SHPropStgWriteMultiple',
-    'SHQueryRecycleBinA',
-    'SHQueryRecycleBinW',
-    'SHQueryUserNotificationState',
-    'SHRemoveLocalizedName',
-    'SHReplaceFromPropSheetExtArray',
-    'SHResolveLibrary',
-    'SHRestricted',
-    'SHSetDefaultProperties',
-    'SHSetFolderPathA',
-    'SHSetFolderPathW',
-    'SHSetInstanceExplorer',
-    'SHSetKnownFolderPath',
-    'SHSetLocalizedName',
-    'SHSetTemporaryPropertyForItem',
-    'SHSetUnreadMailCountW',
-    'SHShellFolderView_Message',
-    'SHShowManageLibraryUI',
-    'SHSimpleIDListFromPath',
-    'SHStartNetConnectionDialogW',
-    'SHTestTokenMembership',
-    'SHUpdateImageA',
-    'SHUpdateImageW',
-    'SHUpdateRecycleBinIcon',
-    'SHValidateUNC',
-    'SetCurrentProcessExplicitAppUserModelID',
-    'SheChangeDirA',
-    'SheChangeDirExW',
-    'SheGetDirA',
-    'SheSetCurDrive',
-    'ShellAboutA',
-    'ShellAboutW',
-    'ShellExec_RunDLL',
-    'ShellExec_RunDLLA',
-    'ShellExec_RunDLLW',
-    'ShellExecuteA',
-    'ShellExecuteEx',
-    'ShellExecuteExA',
-    'ShellExecuteExW',
-    'ShellExecuteW',
-    'ShellHookProc',
-    'ShellMessageBoxA',
-    'ShellMessageBoxW',
-    'Shell_GetCachedImageIndex',
-    'Shell_GetCachedImageIndexA',
-    'Shell_GetCachedImageIndexW',
-    'Shell_GetImageLists',
-    'Shell_MergeMenus',
-    'Shell_NotifyIcon',
-    'Shell_NotifyIconA',
-    'Shell_NotifyIconGetRect',
-    'Shell_NotifyIconW',
-    'SignalFileOpen',
-    'StgMakeUniqueName',
-    'StrChrA',
-    'StrChrIA',
-    'StrChrIW',
-    'StrChrW',
-    'StrCmpNA',
-    'StrCmpNIA',
-    'StrCmpNIW',
-    'StrCmpNW',
-    'StrNCmpA',
-    'StrNCmpIA',
-    'StrNCmpIW',
-    'StrNCmpW',
-    'StrRChrA',
-    'StrRChrIA',
-    'StrRChrIW',
-    'StrRChrW',
-    'StrRStrA',
-    'StrRStrIA',
-    'StrRStrIW',
-    'StrRStrW',
-    'StrStrA',
-    'StrStrIA',
-    'StrStrIW',
-    'StrStrW',
-    'WOWShellExecute',
-    'WaitForExplorerRestartW',
-    'Win32DeleteFile',
-    'WriteCabinetState',
+ws2help = [
 ]
 
 mfreadwrite = [
@@ -20764,7 +20501,338 @@ wudriver = [
     'QueryDetectionFiles',
 ]
 
-tspkg = [
+Shell32 = [
+    'DragEnter',
+    'DragEnter',
+    'DragLeave',
+    'AppCompat_RunDLLW',
+    'AssocCreateForClasses',
+    'AssocGetDetailsOfPropKey',
+    'CDefFolderMenu_Create2',
+    'CIDLData_CreateFromIDArray',
+    'CheckEscapesW',
+    'CommandLineToArgvW',
+    'Control_RunDLL',
+    'Control_RunDLLA',
+    'Control_RunDLLAsUserW',
+    'Control_RunDLLW',
+    'DAD_AutoScroll',
+    'DAD_DragEnterEx',
+    'DAD_DragEnterEx2',
+    'DAD_DragLeave',
+    'DAD_DragMove',
+    'DAD_SetDragImage',
+    'DAD_ShowDragImage',
+    'DllInstall',
+    'DoEnvironmentSubstA',
+    'DoEnvironmentSubstW',
+    'DragAcceptFiles',
+    'DragFinish',
+    'DragQueryFile',
+    'DragQueryFileA',
+    'DragQueryFileAorW',
+    'DragQueryFileW',
+    'DragQueryPoint',
+    'DriveType',
+    'DuplicateIcon',
+    'ExtractAssociatedIconA',
+    'ExtractAssociatedIconExA',
+    'ExtractAssociatedIconExW',
+    'ExtractAssociatedIconW',
+    'ExtractIconA',
+    'ExtractIconEx',
+    'ExtractIconExA',
+    'ExtractIconExW',
+    'ExtractIconW',
+    'FindExecutableA',
+    'FindExecutableW',
+    'FreeIconList',
+    'GetCurrentProcessExplicitAppUserModelID',
+    'GetFileNameFromBrowse',
+    'ILAppendID',
+    'ILClone',
+    'ILCloneFirst',
+    'ILCombine',
+    'ILCreateFromPath',
+    'ILCreateFromPathA',
+    'ILCreateFromPathW',
+    'ILFindChild',
+    'ILFindLastID',
+    'ILFree',
+    'ILGetNext',
+    'ILGetSize',
+    'ILIsEqual',
+    'ILIsParent',
+    'ILLoadFromStreamEx',
+    'ILRemoveLastID',
+    'ILSaveToStream',
+    'InitNetworkAddressControl',
+    'InternalExtractIconListA',
+    'InternalExtractIconListW',
+    'IsLFNDrive',
+    'IsLFNDriveA',
+    'IsLFNDriveW',
+    'IsNetDrive',
+    'IsUserAnAdmin',
+    'LaunchMSHelp_RunDLLW',
+    'OpenAs_RunDLL',
+    'OpenAs_RunDLLA',
+    'OpenAs_RunDLLW',
+    'OpenRegStream',
+    'Options_RunDLL',
+    'Options_RunDLLA',
+    'Options_RunDLLW',
+    'PathCleanupSpec',
+    'PathGetShortPath',
+    'PathIsExe',
+    'PathIsSlowA',
+    'PathIsSlowW',
+    'PathMakeUniqueName',
+    'PathQualify',
+    'PathResolve',
+    'PathYetAnotherMakeUniqueName',
+    'PickIconDlg',
+    'PifMgr_CloseProperties',
+    'PifMgr_GetProperties',
+    'PifMgr_OpenProperties',
+    'PifMgr_SetProperties',
+    'PrepareDiscForBurnRunDllW',
+    'PrintersGetCommand_RunDLL',
+    'PrintersGetCommand_RunDLLA',
+    'PrintersGetCommand_RunDLLW',
+    'ReadCabinetState',
+    'RealDriveType',
+    'RealShellExecuteA',
+    'RealShellExecuteExA',
+    'RealShellExecuteExW',
+    'RealShellExecuteW',
+    'RegenerateUserEnvironment',
+    'RestartDialog',
+    'RestartDialogEx',
+    'RunAsNewUser_RunDLLW',
+    'SHAddDefaultPropertiesByExt',
+    'SHAddFromPropSheetExtArray',
+    'SHAddToRecentDocs',
+    'SHAlloc',
+    'SHAppBarMessage',
+    'SHAssocEnumHandlers',
+    'SHAssocEnumHandlersForProtocolByApplication',
+    'SHBindToFolderIDListParent',
+    'SHBindToFolderIDListParentEx',
+    'SHBindToObject',
+    'SHBindToParent',
+    'SHBrowseForFolder',
+    'SHBrowseForFolderA',
+    'SHBrowseForFolderW',
+    'SHCLSIDFromString',
+    'SHChangeNotification_Lock',
+    'SHChangeNotification_Unlock',
+    'SHChangeNotify',
+    'SHChangeNotifyDeregister',
+    'SHChangeNotifyRegister',
+    'SHChangeNotifyRegisterThread',
+    'SHChangeNotifySuspendResume',
+    'SHCloneSpecialIDList',
+    'SHCoCreateInstance',
+    'SHCreateAssociationRegistration',
+    'SHCreateDataObject',
+    'SHCreateDefaultContextMenu',
+    'SHCreateDefaultExtractIcon',
+    'SHCreateDefaultPropertiesOp',
+    'SHCreateDirectory',
+    'SHCreateDirectoryExA',
+    'SHCreateDirectoryExW',
+    'SHCreateFileExtractIconW',
+    'SHCreateItemFromIDList',
+    'SHCreateItemFromParsingName',
+    'SHCreateItemFromRelativeName',
+    'SHCreateItemInKnownFolder',
+    'SHCreateItemWithParent',
+    'SHCreateLocalServerRunDll',
+    'SHCreateProcessAsUserW',
+    'SHCreatePropSheetExtArray',
+    'SHCreateQueryCancelAutoPlayMoniker',
+    'SHCreateShellFolderView',
+    'SHCreateShellFolderViewEx',
+    'SHCreateShellItem',
+    'SHCreateShellItemArray',
+    'SHCreateShellItemArrayFromDataObject',
+    'SHCreateShellItemArrayFromIDLists',
+    'SHCreateShellItemArrayFromShellItem',
+    'SHCreateStdEnumFmtEtc',
+    'SHDefExtractIconA',
+    'SHDefExtractIconW',
+    'SHDestroyPropSheetExtArray',
+    'SHDoDragDrop',
+    'SHEmptyRecycleBinA',
+    'SHEmptyRecycleBinW',
+    'SHEnableServiceObject',
+    'SHEnumerateUnreadMailAccountsW',
+    'SHEvaluateSystemCommandTemplate',
+    'SHExtractIconsW',
+    'SHFileOperation',
+    'SHFileOperationA',
+    'SHFileOperationW',
+    'SHFindFiles',
+    'SHFind_InitMenuPopup',
+    'SHFlushSFCache',
+    'SHFormatDrive',
+    'SHFree',
+    'SHFreeNameMappings',
+    'SHGetAttributesFromDataObject',
+    'SHGetDataFromIDListA',
+    'SHGetDataFromIDListW',
+    'SHGetDesktopFolder',
+    'SHGetDiskFreeSpaceA',
+    'SHGetDiskFreeSpaceExA',
+    'SHGetDiskFreeSpaceExW',
+    'SHGetDriveMedia',
+    'SHGetFileInfo',
+    'SHGetFileInfoA',
+    'SHGetFileInfoW',
+    'SHGetFolderLocation',
+    'SHGetFolderPathA',
+    'SHGetFolderPathAndSubDirA',
+    'SHGetFolderPathAndSubDirW',
+    'SHGetFolderPathEx',
+    'SHGetFolderPathW',
+    'SHGetIDListFromObject',
+    'SHGetIconOverlayIndexA',
+    'SHGetIconOverlayIndexW',
+    'SHGetImageList',
+    'SHGetInstanceExplorer',
+    'SHGetItemFromDataObject',
+    'SHGetItemFromObject',
+    'SHGetKnownFolderIDList',
+    'SHGetKnownFolderItem',
+    'SHGetKnownFolderPath',
+    'SHGetLocalizedName',
+    'SHGetMalloc',
+    'SHGetNameFromIDList',
+    'SHGetNewLinkInfo',
+    'SHGetNewLinkInfoA',
+    'SHGetNewLinkInfoW',
+    'SHGetPathFromIDList',
+    'SHGetPathFromIDListA',
+    'SHGetPathFromIDListEx',
+    'SHGetPathFromIDListW',
+    'SHGetPropertyStoreForWindow',
+    'SHGetPropertyStoreFromIDList',
+    'SHGetPropertyStoreFromParsingName',
+    'SHGetRealIDL',
+    'SHGetSetFolderCustomSettings',
+    'SHGetSetSettings',
+    'SHGetSettings',
+    'SHGetSpecialFolderLocation',
+    'SHGetSpecialFolderPathA',
+    'SHGetSpecialFolderPathW',
+    'SHGetStockIconInfo',
+    'SHGetTemporaryPropertyForItem',
+    'SHGetUnreadMailCountW',
+    'SHHandleUpdateImage',
+    'SHHelpShortcuts_RunDLL',
+    'SHHelpShortcuts_RunDLLA',
+    'SHHelpShortcuts_RunDLLW',
+    'SHILCreateFromPath',
+    'SHInvokePrinterCommandA',
+    'SHInvokePrinterCommandW',
+    'SHIsFileAvailableOffline',
+    'SHLimitInputEdit',
+    'SHLoadInProc',
+    'SHLoadNonloadedIconOverlayIdentifiers',
+    'SHMapPIDLToSystemImageListIndex',
+    'SHMultiFileProperties',
+    'SHObjectProperties',
+    'SHOpenFolderAndSelectItems',
+    'SHOpenPropSheetW',
+    'SHOpenWithDialog',
+    'SHParseDisplayName',
+    'SHPathPrepareForWriteA',
+    'SHPathPrepareForWriteW',
+    'SHPropStgCreate',
+    'SHPropStgReadMultiple',
+    'SHPropStgWriteMultiple',
+    'SHQueryRecycleBinA',
+    'SHQueryRecycleBinW',
+    'SHQueryUserNotificationState',
+    'SHRemoveLocalizedName',
+    'SHReplaceFromPropSheetExtArray',
+    'SHResolveLibrary',
+    'SHRestricted',
+    'SHSetDefaultProperties',
+    'SHSetFolderPathA',
+    'SHSetFolderPathW',
+    'SHSetInstanceExplorer',
+    'SHSetKnownFolderPath',
+    'SHSetLocalizedName',
+    'SHSetTemporaryPropertyForItem',
+    'SHSetUnreadMailCountW',
+    'SHShellFolderView_Message',
+    'SHShowManageLibraryUI',
+    'SHSimpleIDListFromPath',
+    'SHStartNetConnectionDialogW',
+    'SHTestTokenMembership',
+    'SHUpdateImageA',
+    'SHUpdateImageW',
+    'SHUpdateRecycleBinIcon',
+    'SHValidateUNC',
+    'SetCurrentProcessExplicitAppUserModelID',
+    'SheChangeDirA',
+    'SheChangeDirExW',
+    'SheGetDirA',
+    'SheSetCurDrive',
+    'ShellAboutA',
+    'ShellAboutW',
+    'ShellExec_RunDLL',
+    'ShellExec_RunDLLA',
+    'ShellExec_RunDLLW',
+    'ShellExecuteA',
+    'ShellExecuteEx',
+    'ShellExecuteExA',
+    'ShellExecuteExW',
+    'ShellExecuteW',
+    'ShellHookProc',
+    'ShellMessageBoxA',
+    'ShellMessageBoxW',
+    'Shell_GetCachedImageIndex',
+    'Shell_GetCachedImageIndexA',
+    'Shell_GetCachedImageIndexW',
+    'Shell_GetImageLists',
+    'Shell_MergeMenus',
+    'Shell_NotifyIcon',
+    'Shell_NotifyIconA',
+    'Shell_NotifyIconGetRect',
+    'Shell_NotifyIconW',
+    'SignalFileOpen',
+    'StgMakeUniqueName',
+    'StrChrA',
+    'StrChrIA',
+    'StrChrIW',
+    'StrChrW',
+    'StrCmpNA',
+    'StrCmpNIA',
+    'StrCmpNIW',
+    'StrCmpNW',
+    'StrNCmpA',
+    'StrNCmpIA',
+    'StrNCmpIW',
+    'StrNCmpW',
+    'StrRChrA',
+    'StrRChrIA',
+    'StrRChrIW',
+    'StrRChrW',
+    'StrRStrA',
+    'StrRStrIA',
+    'StrRStrIW',
+    'StrRStrW',
+    'StrStrA',
+    'StrStrIA',
+    'StrStrIW',
+    'StrStrW',
+    'WOWShellExecute',
+    'WaitForExplorerRestartW',
+    'Win32DeleteFile',
+    'WriteCabinetState',
 ]
 
 nlsdata0049 = [
@@ -21531,11 +21599,51 @@ netapi32 = [
     'RxRemoteApi',
 ]
 
-cfgbkend = [
-    'CLSID_CfgComp',
-    'IID_ICfgComp',
-    'IID_ISettingsComp',
-    'IID_ISettingsComp2',
+mprddm = [
+    'DDMAdminConnectionClearStats',
+    'DDMAdminConnectionEnum',
+    'DDMAdminConnectionEnumEx',
+    'DDMAdminConnectionGetInfo',
+    'DDMAdminConnectionGetInfoEx',
+    'DDMAdminInterfaceConnect',
+    'DDMAdminInterfaceDisconnect',
+    'DDMAdminPortClearStats',
+    'DDMAdminPortDisconnect',
+    'DDMAdminPortEnum',
+    'DDMAdminPortGetInfo',
+    'DDMAdminPortReset',
+    'DDMAdminRemoveQuarantine',
+    'DDMAdminServerGetInfo',
+    'DDMAdminServerGetInfoEx',
+    'DDMAdminServerSetInfo',
+    'DDMAdminServerSetInfoEx',
+    'DDMAdminUpdateConnection',
+    'DDMConnectInterface',
+    'DDMDisconnectInterface',
+    'DDMGetIdentityAttributes',
+    'DDMPostCleanup',
+    'DDMRegisterConnectionNotification',
+    'DDMSendUserMessage',
+    'DDMServiceInitialize',
+    'DDMServicePostListens',
+    'DDMTransportCreate',
+    'IfObjectFreePhonebookContext',
+    'IfObjectInitiatePersistentConnections',
+    'IfObjectLoadPhonebookInfo',
+    'IfObjectNotifyOfReachabilityChange',
+    'IfObjectSetDialoutHoursRestriction',
+    'RasAcctConfigChangeNotification',
+    'RasAcctProviderFreeAttributes',
+    'RasAcctProviderInitialize',
+    'RasAcctProviderInterimAccounting',
+    'RasAcctProviderStartAccounting',
+    'RasAcctProviderStopAccounting',
+    'RasAcctProviderTerminate',
+    'RasAuthConfigChangeNotification',
+    'RasAuthProviderAuthenticateUser',
+    'RasAuthProviderFreeAttributes',
+    'RasAuthProviderInitialize',
+    'RasAuthProviderTerminate',
 ]
 
 wincredprovider = [
@@ -21660,9 +21768,6 @@ inetmib1 = [
     'SnmpExtensionTrap',
 ]
 
-cic = [
-]
-
 tsmf = [
 ]
 
@@ -21683,94 +21788,7 @@ networkitemfactory = [
 fdbthproxy = [
 ]
 
-amxread = [
-    'AmxCloseManifest',
-    'AmxGetCharacteristics',
-    'AmxGetModuleGroupName',
-    'AmxGetModuleType',
-    'AmxGetProviderDescription',
-    'AmxGetProviderName',
-    'AmxGetRecordDataSize',
-    'AmxGetRecordID',
-    'AmxGetRecordStatus',
-    'AmxGetRecordType',
-    'AmxGetRecordVolumeID',
-    'AmxGetSignature',
-    'AmxGetStdFnCallingConvention',
-    'AmxGetStdFnFlags',
-    'AmxGetStdFnForwardedAttribute',
-    'AmxGetStdFnForwardedName',
-    'AmxGetStdFnHint',
-    'AmxGetStdFnInformation',
-    'AmxGetStdFnManifestID',
-    'AmxGetStdFnName',
-    'AmxGetStdFnNumberOfParams',
-    'AmxGetStdFnOrdinal',
-    'AmxGetStdFnParamBaseTypeID',
-    'AmxGetStdFnParamFlags',
-    'AmxGetStdFnParamIndirection',
-    'AmxGetStdFnParamInformation',
-    'AmxGetStdFnParamModifier',
-    'AmxGetStdFnParamName',
-    'AmxGetStdFnParamSize',
-    'AmxGetStdFnParamTypeID',
-    'AmxGetStdFnRVA',
-    'AmxGetStdFnReturnValueBaseTypeID',
-    'AmxGetStdFnReturnValueIndirection',
-    'AmxGetStdFnReturnValueSize',
-    'AmxGetStdFnReturnValueTypeID',
-    'AmxGetStdFnTotalParamsSize',
-    'AmxGetTableName',
-    'AmxGetTimeStamp',
-    'AmxGetTotalVolumes',
-    'AmxGetType',
-    'AmxGetTypeInformation',
-    'AmxGetTypeManifestID',
-    'AmxGetTypeMemberBaseTypeID',
-    'AmxGetTypeMemberFlags',
-    'AmxGetTypeMemberIndirection',
-    'AmxGetTypeMemberInformation',
-    'AmxGetTypeMemberManifestID',
-    'AmxGetTypeMemberName',
-    'AmxGetTypeMemberOffset',
-    'AmxGetTypeMemberSize',
-    'AmxGetTypeMemberTag',
-    'AmxGetTypeMemberTypeID',
-    'AmxGetTypeModuleID',
-    'AmxGetTypeName',
-    'AmxGetTypeNumberOfMembers',
-    'AmxGetTypeSize',
-    'AmxGetVersion',
-    'AmxIsBOF',
-    'AmxIsEOF',
-    'AmxOpenManifest',
-    'AmxRead',
-    'AmxResetBuffer',
-    'AmxSetCurrentStdFnParamByIndex',
-    'AmxSetCurrentTypeMemberByIndex',
-    'AmxSetGroupByID',
-    'AmxSetTableByOID',
-    'AmxUnLoadStringTable',
-]
-
-mcicda = [
-]
-
-eappcfg = [
-    'EapHostPeerConfigBlob2Xml',
-    'EapHostPeerConfigXml2Blob',
-    'EapHostPeerCredentialsXml2Blob',
-    'EapHostPeerFreeErrorMemory',
-    'EapHostPeerFreeMemory',
-    'EapHostPeerGetMethodProperties',
-    'EapHostPeerGetMethods',
-    'EapHostPeerInvokeConfigUI',
-    'EapHostPeerInvokeIdentityUI',
-    'EapHostPeerInvokeInteractiveUI',
-    'EapHostPeerQueryCredentialInputFields',
-    'EapHostPeerQueryInteractiveUIInputFields',
-    'EapHostPeerQueryUIBlobFromInteractiveUIInputFields',
-    'EapHostPeerQueryUserBlobFromCredentialInputFields',
+ucmhc = [
 ]
 
 odbcconf = [
@@ -22265,9 +22283,6 @@ wcneapauthproxy = [
 dswave = [
 ]
 
-dimsjob = [
-]
-
 traffic = [
     'TcAddFilter',
     'TcAddFlow',
@@ -22323,7 +22338,7 @@ fxscomex = [
 wmpshell = [
 ]
 
-odbccu32 = [
+wmpencen = [
 ]
 
 cngaudit = [
@@ -22461,7 +22476,7 @@ fundisc = [
 security = [
 ]
 
-devicepairing = [
+dimsjob = [
 ]
 
 sppinst = [
@@ -24518,7 +24533,21 @@ dot3dlg = [
 rasplap = [
 ]
 
-ds32gt = [
+eappcfg = [
+    'EapHostPeerConfigBlob2Xml',
+    'EapHostPeerConfigXml2Blob',
+    'EapHostPeerCredentialsXml2Blob',
+    'EapHostPeerFreeErrorMemory',
+    'EapHostPeerFreeMemory',
+    'EapHostPeerGetMethodProperties',
+    'EapHostPeerGetMethods',
+    'EapHostPeerInvokeConfigUI',
+    'EapHostPeerInvokeIdentityUI',
+    'EapHostPeerInvokeInteractiveUI',
+    'EapHostPeerQueryCredentialInputFields',
+    'EapHostPeerQueryInteractiveUIInputFields',
+    'EapHostPeerQueryUIBlobFromInteractiveUIInputFields',
+    'EapHostPeerQueryUserBlobFromCredentialInputFields',
 ]
 
 mfdvdec = [
@@ -25580,11 +25609,7 @@ vpnikeapi = [
     'UpdateTunnel',
 ]
 
-nlsdata0021 = [
-]
-
-msclmd = [
-    'CardAcquireContext',
+odbccu32 = [
 ]
 
 dxcapturereplay = [
@@ -28426,7 +28451,8 @@ psmodulediscoveryprovider = [
     'MI_Main',
 ]
 
-netiohlp = [
+wls0wndh = [
+    'Session0ViewerWindowProcHook',
 ]
 
 sxproxy = [
@@ -28645,7 +28671,11 @@ catsrvut = [
 mfaacenc = [
 ]
 
-txflog = [
+cfgbkend = [
+    'CLSID_CfgComp',
+    'IID_ICfgComp',
+    'IID_ISettingsComp',
+    'IID_ISettingsComp2',
 ]
 
 drtprov = [
@@ -29487,7 +29517,7 @@ wmnetmgr = [
 shimeng = [
 ]
 
-nlsdata001a = [
+cic = [
 ]
 
 wsmagent = [
@@ -29606,9 +29636,6 @@ catsrv = [
     'GetAppImport',
     'GetCatalogCRMClerk',
     'OpenComponentLibraryTS',
-]
-
-storagecontexthandler = [
 ]
 
 wcspluginservice = [
@@ -30283,6 +30310,11 @@ msimtf = [
     'MsimtfIsWindowFiltered',
 ]
 
+racengn = [
+    'RacSysprepGeneralize',
+    'RacSysprepSpecialize',
+]
+
 win32spl = [
     'InitializePrintMonitor2',
     'InitializePrintProvidor',
@@ -30346,9 +30378,7 @@ admtmpl = [
     'CreateCmtStoreObject',
 ]
 
-racengn = [
-    'RacSysprepGeneralize',
-    'RacSysprepSpecialize',
+ds32gt = [
 ]
 
 scesrv = [
@@ -30376,7 +30406,7 @@ shacct = [
 iasnap = [
 ]
 
-ws2help = [
+nlsdata0021 = [
 ]
 
 nlsdata0022 = [
@@ -30614,9 +30644,7 @@ Comctl32 = [
     'ReplaceFromImageList',
 ]
 
-ehstorpwdmgr = [
-    'EnhancedStoragePasswordConfig',
-    'EnhancedStoragePasswordInitDisk',
+wiaaut = [
 ]
 
 davclnt = [
@@ -30664,35 +30692,7 @@ wscmisetup = [
 iasrad = [
 ]
 
-d3dcompiler_47 = [
-    'D3DAssemble',
-    'D3DCompile',
-    'D3DCompile2',
-    'D3DCompileFromFile',
-    'D3DCompressShaders',
-    'D3DCreateBlob',
-    'D3DCreateFunctionLinkingGraph',
-    'D3DCreateLinker',
-    'D3DDecompressShaders',
-    'D3DDisassemble',
-    'D3DDisassemble10Effect',
-    'D3DDisassemble11Trace',
-    'D3DDisassembleRegion',
-    'D3DGetBlobPart',
-    'D3DGetDebugInfo',
-    'D3DGetInputAndOutputSignatureBlob',
-    'D3DGetInputSignatureBlob',
-    'D3DGetOutputSignatureBlob',
-    'D3DGetTraceInstructionOffsets',
-    'D3DLoadModule',
-    'D3DPreprocess',
-    'D3DReadFileToBlob',
-    'D3DReflect',
-    'D3DReflectLibrary',
-    'D3DReturnFailure1',
-    'D3DSetBlobPart',
-    'D3DStripShader',
-    'D3DWriteBlobToFile',
+storagecontexthandler = [
 ]
 
 ntmarta = [
