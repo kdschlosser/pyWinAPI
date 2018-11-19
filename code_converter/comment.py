@@ -28,8 +28,6 @@ def equalize_width(indent, comment):
         if not comment:
             continue
 
-
-
         comment = comment.replace('#', '').strip()
         comment = comment.replace('   ', ' ').replace('  ', ' ')
         o_len = len(comment)
@@ -90,6 +88,9 @@ def equalize_width(indent, comment):
 
 
 def parse_comment(line):
+
+    if line.strip().startswith('//*'):
+        line = line.replace('//*', '// ', 1)
 
     if '//' in line and '/*' not in line and 'http://' not in line:
         try:

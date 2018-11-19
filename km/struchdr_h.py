@@ -1,0 +1,86 @@
+import ctypes
+from pyWinAPI import *
+from pyWinAPI.shared.wtypes_h import *
+from pyWinAPI.shared.winapifamily_h import *
+from pyWinAPI.shared.sdkddkver_h import *
+from pyWinAPI.shared.guiddef_h import *
+
+
+# /* + + Copyright (c) 1989 Microsoft Corporation Module Name: StrucHdr.h
+# Abstract: This module predefines the structures for important data
+# structures so that we can always talk about them.... even though they're not
+# defined yet. Author: Revision History: - -
+
+_RDBSSSTRUCHDR_ = None
+
+if not defined(_RDBSSSTRUCHDR_):
+    from pyWinAPI.km.nodetype_h import * # NOQA
+    from pyWinAPI.km.prefix_h import * # NOQA
+    from pyWinAPI.km.rxstruc_h import * # NOQA
+
+    _RDBSSSTRUCHDR_ = 1
+
+    def IMPORTANT_STRUCTURE(x):
+        return x
+
+    PNODE_TYPE_CODE_AND_SIZE = POINTER(NODE_TYPE_CODE_AND_SIZE)
+
+    PRX_PREFIX_ENTRY = POINTER(RX_PREFIX_ENTRY)
+
+    PRX_PREFIX_TABLE = POINTER(RX_PREFIX_TABLE)
+
+    PRX_FSD_DISPATCH_VECTOR = POINTER(RX_FSD_DISPATCH_VECTOR)
+
+    PRDBSS_DATA = POINTER(RDBSS_DATA)
+
+    PRDBSS_EXPORTS = POINTER(RDBSS_EXPORTS)
+
+    PVCB = POINTER(VCB)
+
+    PRDBSS_DEVICE_OBJECT = POINTER(RDBSS_DEVICE_OBJECT)
+
+    PFILE_NAME_NODE = POINTER(FILE_NAME_NODE)
+
+    PREPINNED_BCBS = POINTER(REPINNED_BCBS)
+
+    PRDBSS_IO_CONTEXT = POINTER(RDBSS_IO_CONTEXT)
+
+    PIO_RUNS = POINTER(IO_RUNS)
+
+    PDELETE_CONTEXT = POINTER(DELETE_CONTEXT)
+
+    PCLOSE_CONTEXT = POINTER(CLOSE_CONTEXT)
+
+    PCLEAN_AND_DIRTY_VOLUME_PACKET = POINTER(CLEAN_AND_DIRTY_VOLUME_PACKET)
+
+    PSRV_CALL = POINTER(SRV_CALL)
+
+    PNET_ROOT = POINTER(_NET_ROOT)
+
+    PV_NET_ROOT = POINTER(_V_NET_ROOT)
+
+    PNON_PAGED_FCB = POINTER(_NON_PAGED_FCB)
+
+    PFCB = POINTER(_FCB)
+
+    PSRV_OPEN = POINTER(_SRV_OPEN)
+
+    PFOBX = POINTER(_FOBX)
+
+    PRX_CONTEXT = POINTER(_RX_CONTEXT)
+
+    PLOWIO_CONTEXT = POINTER(_LOWIO_CONTEXT)
+
+    PEA_RANGE = POINTER(_EA_RANGE)
+
+    PMINIRDR_DISPATCH = POINTER(_MINIRDR_DISPATCH)
+
+    PRDBSS_EXPORTS = POINTER(_RDBSS_EXPORTS)
+
+    PMRX_SRVCALL_CALLBACK_CONTEXT = POINTER(_MRX_SRVCALL_CALLBACK_CONTEXT)
+
+    PMRX_SRVCALLDOWN_STRUCTURE = POINTER(_MRX_SRVCALLDOWN_STRUCTURE)
+
+    PMRX_CREATENETROOT_CONTEXT = POINTER(_MRX_CREATENETROOT_CONTEXT)
+
+# END IF   _RDBSSSTRUCHDR_

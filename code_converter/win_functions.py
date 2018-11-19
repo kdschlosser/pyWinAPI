@@ -5708,9 +5708,14 @@ wmdrmdev = [
     'WMCreateDeviceRegistrationPriv',
 ]
 
-iprtrmgr = [
-    'MapInterfaceToAdapter',
-    'StartRouter',
+winbrand = [
+    'BrandingFormatString',
+    'BrandingLoadBitmap',
+    'BrandingLoadCursor',
+    'BrandingLoadIcon',
+    'BrandingLoadImage',
+    'BrandingLoadString',
+    'GetHinstanceByNameSpace',
 ]
 
 mmci = [
@@ -6848,13 +6853,6 @@ wsdchngr = [
 defaultlocationcpl = [
     'RequestDLPPermissionsInternalA',
     'RequestDLPPermissionsInternalW',
-]
-
-prvdmofcomp = [
-    'CompileSchemaToWMI',
-    'CreateRegisterParameter',
-    'GetProviderSchema',
-    'GetProviderSchemaFile',
 ]
 
 crypt32 = [
@@ -14411,14 +14409,9 @@ mgmtapi = [
     'SnmpMgrTrapListen',
 ]
 
-winbrand = [
-    'BrandingFormatString',
-    'BrandingLoadBitmap',
-    'BrandingLoadCursor',
-    'BrandingLoadIcon',
-    'BrandingLoadImage',
-    'BrandingLoadString',
-    'GetHinstanceByNameSpace',
+iprtrmgr = [
+    'MapInterfaceToAdapter',
+    'StartRouter',
 ]
 
 tbs = [
@@ -16168,13 +16161,6 @@ Kernel32 = [
     'uaw_wcslen',
     'uaw_wcsrchr',
     'InterlockedCompareExchange64',
-]
-
-aclui = [
-    'CreateSecurityPage',
-    'EditSecurity',
-    'EditSecurityAdvanced',
-    'IID_ISecurityInformation',
 ]
 
 faultrep = [
@@ -20054,6 +20040,53 @@ dmrc = [
     'DMrcQueryModelId',
 ]
 
+winbio = [
+    'WinBioAcquireFocus',
+    'WinBioCancel',
+    'WinBioCaptureSample',
+    'WinBioCaptureSampleWithCallback',
+    'WinBioCloseSession',
+    'WinBioControlUnit',
+    'WinBioControlUnitPrivileged',
+    'WinBioDeleteTemplate',
+    'WinBioEnrollBegin',
+    'WinBioEnrollCapture',
+    'WinBioEnrollCaptureWithCallback',
+    'WinBioEnrollCommit',
+    'WinBioEnrollDiscard',
+    'WinBioEnumBiometricUnits',
+    'WinBioEnumDatabases',
+    'WinBioEnumEnrollments',
+    'WinBioEnumServiceProviders',
+    'WinBioFree',
+    'WinBioGetCredentialState',
+    'WinBioGetDomainLogonSetting',
+    'WinBioGetEnabledSetting',
+    'WinBioGetLogonSetting',
+    'WinBioGetProperty',
+    'WinBioIdentify',
+    'WinBioIdentifyWithCallback',
+    'WinBioLocateSensor',
+    'WinBioLocateSensorWithCallback',
+    'WinBioLockUnit',
+    'WinBioLogonIdentifiedUser',
+    'WinBioOpenSession',
+    'WinBioRegisterEventMonitor',
+    'WinBioRegisterServiceMonitor',
+    'WinBioReleaseFocus',
+    'WinBioRemoveAllCredentials',
+    'WinBioRemoveAllDomainCredentials',
+    'WinBioRemoveCredential',
+    'WinBioSetCredential',
+    'WinBioUnlockUnit',
+    'WinBioUnregisterEventMonitor',
+    'WinBioUnregisterServiceMonitor',
+    'WinBioVerify',
+    'WinBioVerifyWithCallback',
+    'WinBioWait',
+    '_BioLogonIdentifiedUser',
+]
+
 msdtcuiu = [
     'DtcPerfClose',
     'DtcPerfCollect',
@@ -20921,26 +20954,11 @@ wmsgapi = [
     'WmsgSendPSPMessage',
 ]
 
-devmgr = [
-    'DeviceAdvancedPropertiesA',
-    'DeviceAdvancedPropertiesW',
-    'DeviceCreateHardwarePage',
-    'DeviceCreateHardwarePageCustom',
-    'DeviceCreateHardwarePageEx',
-    'DeviceManager_ExecuteA',
-    'DeviceManager_ExecuteW',
-    'DeviceProblemTextA',
-    'DeviceProblemTextW',
-    'DeviceProblemWizardA',
-    'DeviceProblemWizardW',
-    'DeviceProblenWizard_RunDLLA',
-    'DeviceProblenWizard_RunDLLW',
-    'DevicePropertiesA',
-    'DevicePropertiesExA',
-    'DevicePropertiesExW',
-    'DevicePropertiesW',
-    'DeviceProperties_RunDLLA',
-    'DeviceProperties_RunDLLW',
+aclui = [
+    'CreateSecurityPage',
+    'EditSecurity',
+    'EditSecurityAdvanced',
+    'IID_ISecurityInformation',
 ]
 
 serialui = [
@@ -21132,6 +21150,11 @@ dsauth = [
 
 dinput8 = [
     'DirectInput8Create',
+]
+
+spnet = [
+    'Sysprep_Clean_Net',
+    'Sysprep_Generalize_Net',
 ]
 
 kernelbase = [
@@ -31187,9 +31210,26 @@ kerberos = [
     'SpUserModeInitialize',
 ]
 
-spnet = [
-    'Sysprep_Clean_Net',
-    'Sysprep_Generalize_Net',
+devmgr = [
+    'DeviceAdvancedPropertiesA',
+    'DeviceAdvancedPropertiesW',
+    'DeviceCreateHardwarePage',
+    'DeviceCreateHardwarePageCustom',
+    'DeviceCreateHardwarePageEx',
+    'DeviceManager_ExecuteA',
+    'DeviceManager_ExecuteW',
+    'DeviceProblemTextA',
+    'DeviceProblemTextW',
+    'DeviceProblemWizardA',
+    'DeviceProblemWizardW',
+    'DeviceProblenWizard_RunDLLA',
+    'DeviceProblenWizard_RunDLLW',
+    'DevicePropertiesA',
+    'DevicePropertiesExA',
+    'DevicePropertiesExW',
+    'DevicePropertiesW',
+    'DeviceProperties_RunDLLA',
+    'DeviceProperties_RunDLLW',
 ]
 
 ubpm = [
@@ -31218,51 +31258,11 @@ tsgqec = [
     'UninitializeQec',
 ]
 
-winbio = [
-    'WinBioAcquireFocus',
-    'WinBioCancel',
-    'WinBioCaptureSample',
-    'WinBioCaptureSampleWithCallback',
-    'WinBioCloseSession',
-    'WinBioControlUnit',
-    'WinBioControlUnitPrivileged',
-    'WinBioDeleteTemplate',
-    'WinBioEnrollBegin',
-    'WinBioEnrollCapture',
-    'WinBioEnrollCaptureWithCallback',
-    'WinBioEnrollCommit',
-    'WinBioEnrollDiscard',
-    'WinBioEnumBiometricUnits',
-    'WinBioEnumDatabases',
-    'WinBioEnumEnrollments',
-    'WinBioEnumServiceProviders',
-    'WinBioFree',
-    'WinBioGetCredentialState',
-    'WinBioGetDomainLogonSetting',
-    'WinBioGetEnabledSetting',
-    'WinBioGetLogonSetting',
-    'WinBioGetProperty',
-    'WinBioIdentify',
-    'WinBioIdentifyWithCallback',
-    'WinBioLocateSensor',
-    'WinBioLocateSensorWithCallback',
-    'WinBioLockUnit',
-    'WinBioLogonIdentifiedUser',
-    'WinBioOpenSession',
-    'WinBioRegisterEventMonitor',
-    'WinBioRegisterServiceMonitor',
-    'WinBioReleaseFocus',
-    'WinBioRemoveAllCredentials',
-    'WinBioRemoveAllDomainCredentials',
-    'WinBioRemoveCredential',
-    'WinBioSetCredential',
-    'WinBioUnlockUnit',
-    'WinBioUnregisterEventMonitor',
-    'WinBioUnregisterServiceMonitor',
-    'WinBioVerify',
-    'WinBioVerifyWithCallback',
-    'WinBioWait',
-    '_BioLogonIdentifiedUser',
+prvdmofcomp = [
+    'CompileSchemaToWMI',
+    'CreateRegisterParameter',
+    'GetProviderSchema',
+    'GetProviderSchemaFile',
 ]
 
 framedyn = [

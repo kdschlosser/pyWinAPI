@@ -65,9 +65,6 @@ def parse_struct_union(
             line = l1 + l2
             lines[i] = line
 
-    if ':' in lines[0]:
-        return struct_count, union_count
-
     if len(lines) == 1:
         lines = lines[0].split(' ')
         attr_name = lines[-1].replace(';', '').strip()
@@ -99,6 +96,35 @@ def parse_struct_union(
     if extra.strip():
         lines.insert(0, extra)
 
+    if 'public' in start_data:
+        import sys
+        sys.stderr.write(data)
+        brace_count = 0
+        start = None
+        for i, line in enumerate(lines):
+            if line.strip().startswith('typedef '):
+                start = i
+            if start is not None:
+                brace_count += line.count('{')
+                brace_count -= line.count('}')
+
+                if ';' in line and brace_count == 0:
+                    stop = i
+                    break
+        else:
+            return struct_count, union_count
+
+        res = parse_struct_union(
+            indent,
+            '\n'.join(lines[start:stop]),
+            importer,
+            struct_count,
+            union_count,
+            declarations,
+            declare
+        )
+
+        return res + (stop,)
     try:
         parent_cls, cls_name = start_data.rstrip().rsplit(' ', 1)
     except ValueError:
@@ -121,13 +147,13 @@ def parse_struct_union(
 
     cls_name = cls_name.replace('{', '').strip()
     if ';' in cls_name:
-        cls_name = cls_name.replace(';', '')
+        cls_name = cls_name.replace(';', '').strip()
         if parent_cls in ('ctypes.Structure', 'ctypes.Union'):
             if declare:
                 u_s_declarations.append(
                     TEMPLATE_DECLARATION.format(
                         indent='',
-                        cls_name=cls_name.strip(),
+                        cls_name=cls_name,
                         parent_cls=parent_cls
                     )
                 )
@@ -135,7 +161,7 @@ def parse_struct_union(
                 print(
                     TEMPLATE_DECLARATION.format(
                         indent=indent,
-                        cls_name=cls_name.strip(),
+                        cls_name=cls_name,
                         parent_cls=parent_cls
                     )
                 )
@@ -149,13 +175,12 @@ def parse_struct_union(
                 cls_name, parent_cls = process_param(cls_name, parent_cls)
                 print(indent + cls_name + ' = ' + parent_cls)
             else:
-                declarations += [cls_name.strip()]
-
+                declarations += [cls_name]
                 if declare:
                     u_s_declarations.append(
                         TEMPLATE_DECLARATION.format(
                             indent='',
-                            cls_name=cls_name.strip(),
+                            cls_name=cls_name,
                             parent_cls=parent_cls
                         )
                     )
@@ -191,13 +216,17 @@ def parse_struct_union(
         declarations += [cls_name.strip()]
 
         if declare:
-            u_s_declarations.append(
-                TEMPLATE_DECLARATION.format(
-                    indent='',
-                    cls_name=cls_name.strip(),
-                    parent_cls=parent_cls
+            for item in u_s_declarations:
+                if item.startswith('class ' + cls_name):
+                    break
+            else:
+                u_s_declarations.append(
+                    TEMPLATE_DECLARATION.format(
+                        indent='',
+                        cls_name=cls_name.strip(),
+                        parent_cls=parent_cls
+                    )
                 )
-            )
         else:
             print(
                 TEMPLATE_DECLARATION.format(
@@ -252,12 +281,9 @@ def parse_struct_union(
 
             found_defines += [def_template]
             continue
-
-        if 'public' in line and '{' in line:
-            return struct_count, union_count
-
         if ' ' not in line.strip():
             continue
+
         if chained_comment and '*/' not in line:
             continue
 
@@ -565,13 +591,25 @@ def parse_struct_union(
                 field[:-1].replace(';', '').strip().split(' ', 1)
             )
         except ValueError:
-
             if '}' in field:
                 continue
 
             import sys
-            sys.stderr.write('******* ' + str(field) + '\n')
-            raise
+
+            parent_cls = line.replace(';', '').strip()
+            for i, item in enumerate(u_s_declarations):
+                if item.startswith('class ' + cls_name + '('):
+                    u_s_declarations[i] = TEMPLATE_DECLARATION.format(
+                        indent='',
+                        cls_name=cls_name,
+                        parent_cls=parent_cls
+                    )
+                    break
+            else:
+                sys.stderr.write('******* ' + str(field) + '\n')
+                raise
+
+            continue
 
         if ',' in field_name:
             field_names = list(

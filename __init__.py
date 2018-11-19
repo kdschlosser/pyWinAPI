@@ -391,16 +391,12 @@ else:
 
 
 if sys.maxsize > 2**32:
-    _M_AMD64 = 1
-    _M_X64 = 1
     __64BIT__ = 1
     _WIN64 = 1
     _AMD64_ = 1
     WIN64 = 1
     _X86_ = None
 else:
-    _M_AMD64 = None
-    _M_X64 = None
     __64BIT__ = None
     _WIN64 = None
     WIN64 = None
@@ -414,6 +410,11 @@ __AVX__ = True
 __AVX2__ = True
 _MSC_VER = 1915
 MAX_PATH = 255
+_M_ALPHA = None
+_M_AMD64 = None
+_M_X64 = None
+DBG = False
+
 
 _M_IX86_FP = not sys.maxsize > 2**32
 
@@ -448,6 +449,8 @@ __WINDOWS_DONT_DISABLE_PRAGMA_PACK_WARNING__ = None
 DUMMYUNIONNAME = 0
 _DEBUG = None
 _HRESULT_DEFINED = None
+_NTSCSI_USER_MODE_ = None
+__midl = None
 
 _FILETIME_ = None
 _MAC = None
@@ -499,7 +502,8 @@ __all__ = (
     'UNICODE', 'GUID_DEFS_ONLY', 'NO_GUID_DEFS', 'MAX_PATH', '_WIN32_WINDOWS',
     '__LPGUID_DEFINED__', 'DUMMYUNIONNAME', '_DEBUG', '_HRESULT_DEFINED',
     '_AMD64_', '_X86_', '_WIN32_WINNT_WIN10_RS2', '_WIN32_WINNT_WIN10_RS3',
-    'WIN64', '_ARM_', 'VISTA_KB942567'
+    'WIN64', '_ARM_', 'VISTA_KB942567', 'DBG', '_M_ALPHA', '_NTSCSI_USER_MODE_',
+    '__midl'
 )
 
 from shared.sdkddkver_h import * # NOQA

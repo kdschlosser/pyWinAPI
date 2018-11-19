@@ -591,7 +591,11 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             end_index = start + data_index
 
             data_temp, data_comment = parse_comment(data_line)
-            data_comment = data_comment.replace('#', '', 1).strip()
+            try:
+                data_comment = data_comment.replace('#', '', 1).strip()
+            except AttributeError:
+                sys.stderr.write('COMBINE: ' + repr([data_line, data_temp, data_comment]) + '\n')
+                continue
 
             data_temp = data_indent + data_temp.strip()
 
@@ -875,7 +879,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 tdef = False
 
             handle_preprocessor()
-            anon_struct_count, anon_union_count = parse_struct_union(
+            res = parse_struct_union(
                 indent,
                 struct,
                 Importer,
@@ -884,102 +888,215 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 union_struct_fwd_definitions,
                 True
             )
+            anon_struct_count, anon_union_count = res[:2]
+
+            if len(res) == 3:
+                skip_until = i + res[2]
+
             continue
 
-        if line.startswith('typedef') or tdef:
+        if line.startswith('typedef') or (tdef and line):
             handle_preprocessor()
 
             typedef, skip_until = combine_extended_lines(i, indent, ';')
-            typedef, comment = parse_comment(typedef)
-            if comment:
-                comment = equalize_width(indent, comment)
-                print('\n' + comment)
+            sys.stderr.write('TYPEDEF: ' + typedef)
 
-            typedef = typedef.replace('typedef', '').strip()
-            typedef = typedef.replace(';', '').strip()
+            cls_name = None
+            callback = 'CALLBACK'
+            ret_val = None
+            params = []
 
-            if (
-                '(CALLBACK' in typedef or
-                '( CALLBACK' in typedef or
-                '(WINAPI' in typedef or
-                '( WINAPI' in typedef
-            ):
+            for typed in typedef.split('\n'):
+                typed = parse_comment(typed)[0]
 
-                if '(CALLBACK' in typedef:
-                    restype, callback = typedef.split('(CALLBACK', 1)
-                    call_type = 'CALLBACK'
-                elif '( CALLBACK' in typedef:
-                    restype, callback = typedef.split('( CALLBACK', 1)
-                    call_type = 'CALLBACK'
-
-                elif '(WINAPI' in typedef:
-                    restype, callback = typedef.split('(WINAPI', 1)
-                    call_type = 'WINAPI'
-
-                elif '( WINAPI' in typedef:
-                    restype, callback = typedef.split('( WINAPI', 1)
-                    call_type = 'WINAPI'
-                else:
-                    continue
-
-                restype = restype.strip()
-
-                name, params = callback.split('(', 1)
-                name = name.replace('*', '').replace(')', '').strip()
-
-                params = list(
-                    param.strip() for param in params[:-1].split(',')
+                typed = typed.replace('typedef', '').strip()
+                typed = list(
+                    t.strip().replace('** ', '**').replace('* ', '*')
+                    for t in typed.split(',') if t.strip()
                 )
-                param_types = [restype]
+                for lne in typed:
+                    if lne.endswith('('):
+                        ret_val, cls_name = lne.split('(', 1)
+                        ret_val = ret_val.split(' ')[-1].strip()
+
+                        cls_name = list(
+                            itm for itm in
+                            cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
+                            if itm
+                        )
+                        if len(cls_name) == 1:
+                            cls_name = cls_name[0]
+                        else:
+                            cls_name = cls_name[-1]
+                            callback = cls_name[-2]
+                    else:
+                        if cls_name is None:
+                            lne = list(
+                                itm.strip() for itm in lne.split('(', 1)
+                                if itm.strip()
+                            )
+
+                            if len(lne) == 1:
+                                lne = lne[0]
+                                if lne.endswith(')'):
+                                    cls_name = list(
+                                        itm for itm in lne[:-1].split(' ') if itm
+                                    )
+                                    if len(cls_name) == 1:
+                                        cls_name = cls_name[0]
+                                    else:
+                                        cls_name = cls_name[-1]
+                                        callback = cls_name[-2]
+                                else:
+                                    ret_val = list(itm for itm in lne.split(' ') if itm)[-1]
+                                continue
+                            else:
+                                ret_val, cls_name = lne[-2:]
+                                ret_val = list(itm for itm in ret_val.split(' ') if itm)[-1]
+
+                                cls_name = list(
+                                    itm for itm in
+                                    cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
+                                    if itm
+                                )
+                                if len(cls_name) == 1:
+                                    cls_name = cls_name[0]
+                                else:
+                                    cls_name = cls_name[-1]
+                                    callback = cls_name[-2]
+
+                                lne = lne[:-2]
+                                if not lne:
+                                    continue
+                                lne = ')'.join(lne)
+                        try:
+                            param_type, param_name = lne.replace(')', '').split(' ')[-2:]
+                            param_type = process_param(param_name, param_type)[1]
+                            params += [param_type]
+                        except ValueError:
+                            if lne.strip() == ');':
+                                break
+                            else:
+                                if lne.count('(') != lne.count(')'):
+                                    continue
+
+                                sys.stderr.write('LNE: ' + repr(lne) + '\n')
+                                raise
+
+            if cls_name is not None:
+                tmpl = '{indent}{cls_name} = {callback}(\n'
+                tmpl = tmpl.format(
+                    indent=indent,
+                    cls_name=cls_name,
+                    callback=callback
+                )
+
+                tmpl += '{indent}    {ret_val},'.format(
+                    indent=indent,
+                    ret_val=ret_val
+                )
 
                 for param in params:
-                    param = list(p for p in param.split(' ') if p)
-                    if not param:
-                        continue
-                    sys.stderr.write('PARAMS: ' + str(param) + '\n')
-                    param_type, param_name = param[-2:]
-                    param = param[:-2]
-                    while param_type in ('*', '**'):
-                        param_name = param_type + param_name
-                        param_type = param[-1]
-                        param = param[:-1]
-
-                    param_type = process_param(param_name, param_type)[1]
-                    param_types += [param_type]
-
-                original_lines = string_data[i: skip_until + 1]
-                original_lines = list(
-                    indent + '# ' + ol.replace(indent, '', 1)
-                    for ol in original_lines
-                )
-
-                print('\n' + '\n'.join(original_lines))
-                print(
-                    '{0}{1} = {2}({3})'.format(
-                        indent,
-                        name,
-                        call_type,
-                        ', '.join(param_types)
-                    ) + '\n'
-                )
+                    tmpl += '{indent}    {param},'.format(
+                        indent=indent,
+                        param=param
+                    )
+                tmpl += '{indent})'.format(indent=indent)
+                comment = '\n'.join('# ' + lne.strip() for lne in typedef.split('\n'))
+                print('\n' + comment + '\n')
+                print(tmpl + '\n\n')
             else:
-                value, var_names = typedef.split(' ', 1)
+                sys.stderr.write('TYPEDEF ERROR: ' + repr(typedef))
 
-                var_names = list(
-                    v_name.strip() for v_name in var_names.split(',')
-                )
-
-                while value.endswith('*'):
-                    value = value[:-1].strip()
-                    var_names[0] = '*' + var_names[0]
-
-                if comment:
-                    comment = equalize_width(indent, comment)
-                    print('\n' + comment)
-
-                for v_name in var_names:
-                    v_name, new_val = process_param(v_name, value)
-                    print(indent + v_name + ' = ' + new_val)
+            #     if '(CALLBACK' in typedef:
+            #         restype, callback = typedef.split('(CALLBACK', 1)
+            #         call_type = 'CALLBACK'
+            #     elif '( CALLBACK' in typedef:
+            #         restype, callback = typedef.split('( CALLBACK', 1)
+            #         call_type = 'CALLBACK'
+            #
+            #     elif '(WINAPI' in typedef:
+            #         restype, callback = typedef.split('(WINAPI', 1)
+            #         call_type = 'WINAPI'
+            #
+            #     elif '( WINAPI' in typedef:
+            #         restype, callback = typedef.split('( WINAPI', 1)
+            #         call_type = 'WINAPI'
+            #
+            #     elif '(NTAPI' in typedef:
+            #         restype, callback = typedef.split('(NTAPI', 1)
+            #         call_type = 'NTAPI'
+            #
+            #     elif '( NTAPI' in typedef:
+            #         restype, callback = typedef.split('( NTAPI', 1)
+            #         call_type = 'NTAPI'
+            #     else:
+            #         continue
+            #
+            #     restype = restype.strip()
+            #
+            #     name, params = callback.split('(', 1)
+            #     name = name.replace('*', '').replace(')', '').strip()
+            #
+            #     params = list(
+            #         param.strip() for param in params[:-1].split(',')
+            #     )
+            #     param_types = [restype]
+            #
+            #     for param in params:
+            #         param = list(p for p in param.split(' ') if p)
+            #         if not param:
+            #             continue
+            #         param_type, param_name = param[-2:]
+            #         param = param[:-2]
+            #         while param_type in ('*', '**'):
+            #             param_name = param_type + param_name
+            #             param_type = param[-1]
+            #             param = param[:-1]
+            #
+            #         param_type = process_param(param_name, param_type)[1]
+            #         param_types += [param_type]
+            #
+            #     original_lines = string_data[i: skip_until + 1]
+            #     original_lines = list(
+            #         indent + '# ' + ol.replace(indent, '', 1)
+            #         for ol in original_lines
+            #     )
+            #
+            #     print('\n' + '\n'.join(original_lines))
+            #     print(
+            #         '{0}{1} = {2}({3})'.format(
+            #             indent,
+            #             name,
+            #             call_type,
+            #             ', '.join(param_types)
+            #         ) + '\n'
+            #     )
+            # else:
+            #     try:
+            #         value, var_names = typedef.split(' ', 1)
+            #     except:
+            #
+            #         raise
+            #
+            #     var_names = list(
+            #         v_name.strip() for v_name in var_names.split(',')
+            #     )
+            #
+            #     while value.endswith('*'):
+            #         value = value[:-1].strip()
+            #         var_names[0] = '*' + var_names[0]
+            #
+            #     if comment:
+            #         comment = equalize_width(indent, comment)
+            #         print('\n' + comment)
+            #
+            #     for v_name in var_names:
+            #         if v_name == value:
+            #             continue
+            #
+            #         v_name, new_val = process_param(v_name, value)
+            #         print(indent + v_name + ' = ' + new_val)
             continue
 
         tdef = False
@@ -1061,7 +1178,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\km\iscsiprf.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\scsi.h'
 
 import sys
 
