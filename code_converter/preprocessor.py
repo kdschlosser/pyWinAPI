@@ -24,7 +24,7 @@ new_defines = []
 module_name = ''
 
 
-def parse_macro(indent, lne, macro=False):
+def parse_macro(indent, lne, macro=False, struct=False):
     global line
     line, comment = parse_comment(lne)
     comment = comment.strip()
@@ -65,6 +65,9 @@ def parse_macro(indent, lne, macro=False):
 
         if macro:
             print(indent + new_line)
+        elif struct:
+            print(indent[:-4] + new_line)
+            return '', indent + '    '
         else:
             print(indent + '    ' + new_line)
             return '', indent + '    '
@@ -76,6 +79,9 @@ def parse_macro(indent, lne, macro=False):
         line = 'if ' + line + ':' + comment
         if macro:
             print(indent + line)
+        elif struct:
+            print(indent[:-4] + line)
+            return '', indent + '    '
         else:
             print(indent + '    ' + line)
             return '', indent + '    '
@@ -101,17 +107,33 @@ def parse_macro(indent, lne, macro=False):
         if line.startswith('if'):
             if macro:
                 print(indent + line)
+            elif struct:
+                print(indent[:-4] + line)
+                return '', indent + '    '
             else:
                 print(indent + '    ' + line)
                 return '', indent + '    '
+
         else:
             if macro:
                 print(indent + line)
+            elif struct:
+                print(indent[:-4] + line)
+                return '', indent
             else:
                 print(indent + line)
                 return '', indent
 
     if line.startswith('#endif'):
+        if struct:
+            indent = indent[:-4]
+            if comment:
+                print(indent[:-4] + '# END IF ' + comment[2:] + '\n')
+            else:
+                print(indent[:-4] + '# END IF' + '\n\n')
+
+            return '', indent
+
         if comment:
             print(indent + '# END IF ' + comment[2:] + '\n')
         else:

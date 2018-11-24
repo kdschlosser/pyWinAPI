@@ -20954,11 +20954,26 @@ wmsgapi = [
     'WmsgSendPSPMessage',
 ]
 
-aclui = [
-    'CreateSecurityPage',
-    'EditSecurity',
-    'EditSecurityAdvanced',
-    'IID_ISecurityInformation',
+devmgr = [
+    'DeviceAdvancedPropertiesA',
+    'DeviceAdvancedPropertiesW',
+    'DeviceCreateHardwarePage',
+    'DeviceCreateHardwarePageCustom',
+    'DeviceCreateHardwarePageEx',
+    'DeviceManager_ExecuteA',
+    'DeviceManager_ExecuteW',
+    'DeviceProblemTextA',
+    'DeviceProblemTextW',
+    'DeviceProblemWizardA',
+    'DeviceProblemWizardW',
+    'DeviceProblenWizard_RunDLLA',
+    'DeviceProblenWizard_RunDLLW',
+    'DevicePropertiesA',
+    'DevicePropertiesExA',
+    'DevicePropertiesExW',
+    'DevicePropertiesW',
+    'DeviceProperties_RunDLLA',
+    'DeviceProperties_RunDLLW',
 ]
 
 serialui = [
@@ -31210,26 +31225,11 @@ kerberos = [
     'SpUserModeInitialize',
 ]
 
-devmgr = [
-    'DeviceAdvancedPropertiesA',
-    'DeviceAdvancedPropertiesW',
-    'DeviceCreateHardwarePage',
-    'DeviceCreateHardwarePageCustom',
-    'DeviceCreateHardwarePageEx',
-    'DeviceManager_ExecuteA',
-    'DeviceManager_ExecuteW',
-    'DeviceProblemTextA',
-    'DeviceProblemTextW',
-    'DeviceProblemWizardA',
-    'DeviceProblemWizardW',
-    'DeviceProblenWizard_RunDLLA',
-    'DeviceProblenWizard_RunDLLW',
-    'DevicePropertiesA',
-    'DevicePropertiesExA',
-    'DevicePropertiesExW',
-    'DevicePropertiesW',
-    'DeviceProperties_RunDLLA',
-    'DeviceProperties_RunDLLW',
+aclui = [
+    'CreateSecurityPage',
+    'EditSecurity',
+    'EditSecurityAdvanced',
+    'IID_ISecurityInformation',
 ]
 
 ubpm = [

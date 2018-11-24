@@ -1178,7 +1178,9 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\scsi.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\basetyps.h'
+#r'C:\Users\Administrator\Desktop\New folder (6)\temp.h'
+#r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\apiset.h'
 
 import sys
 

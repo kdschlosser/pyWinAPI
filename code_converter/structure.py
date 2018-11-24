@@ -29,6 +29,11 @@ TEMPLATE_DECLARATION = '''{indent}class {cls_name}({parent_cls}):
 {indent}    pass
 '''
 
+TEMPLATE_DECLARATION_FIELDS_MACRO_START = '''{indent}_TEMP_{cls_name} = ['''
+TEMPLATE_DECLARATION_FIELDS_MACRO_CONTINUE = '''{indent}_TEMP_{cls_name} += ['''
+TEMPLATE_DECLARATION_FIELDS_MACRO_END = '''{indent}]'''
+TEMPLATE_DECLARATION_FIELDS_MACRO_ASSIGN = '''{indent}{cls_name}._fields_ = _TEMP_{cls_name}'''
+
 TEMPLATE_DECLARATION_FIELDS_START = '''{indent}{cls_name}._fields_ = ['''
 TEMPLATE_DECLARATION_FIELDS_END = '''{indent}]'''
 TEMPLATE_DECLARATION_FIELD = '''{indent}    ('{field_name}', {field_data_type}),{comment}'''
@@ -39,7 +44,6 @@ TEMPLATE_DECLARATION_ANONYMOUS = '''{indent}    '{anonymous}','''
 TEMPLATE_DECLARATION_SUBSTRUCTURE = '''{indent}{cls_name}.{child_cls} = {child_cls}
 '''
 
-
 def parse_struct_union(
     indent,
     data,
@@ -49,8 +53,10 @@ def parse_struct_union(
     declarations,
     declare=False
 ):
+    import sys
 
     lines = data.split('\n')
+    sys.stderr.write(str(lines) + '\n')
 
     for i, line in enumerate(lines):
         if '_Struct_size_bytes_' in line:
@@ -128,7 +134,31 @@ def parse_struct_union(
     try:
         parent_cls, cls_name = start_data.rstrip().rsplit(' ', 1)
     except ValueError:
-        return struct_count, union_count
+        brace_count = 1
+        cls_names = ''
+        end_index = 0
+
+        for i, line in enumerate(lines):
+            brace_count += line.count('{')
+            brace_count -= line.count('}')
+            if brace_count == 0:
+                cls_names += line
+                end_index = i
+
+            if ';' in line and brace_count == 0:
+                break
+        else:
+            return struct_count, union_count
+
+        cls_names = cls_names.replace(';', '').replace('}', '').strip()
+        if not cls_names:
+            return struct_count, union_count
+
+        cls_names = cls_names.split(' ')
+        cls_name = cls_names[0]
+        parent_cls = start_data.strip()
+        lines = lines[:end_index]
+        lines[end_index] = '} ' + ' '.join(cls_names[1:]) + ';'
 
     parent_cls = parent_cls.replace('typedef', '')
     cls_name = cls_name.replace('typedef', '')
@@ -241,19 +271,25 @@ def parse_struct_union(
 
     anonymous = []
     fields = []
-    sub_structure = []
     sub_structure_type = None
-    brace_count = 0
     field = ''
     chained_comment = False
     field_comment = ''
     field_macro = ''
+    macro_output = None
+    skip_until = None
 
     data_fields = '~~~~'.join(lines)
     data_fields = data_fields[:data_fields.rfind('}')].split('~~~~')
 
     found_defines = []
     for line_num, line in enumerate(data_fields):
+
+        if skip_until is not None:
+            if line_num <= skip_until:
+                continue
+
+            skip_until = None
 
         if (
             line.strip().startswith('# define') or
@@ -278,9 +314,51 @@ def parse_struct_union(
                     var_name,
                     var_value
                 )
-
-            found_defines += [def_template]
+            print(def_template)
             continue
+
+        if (
+            line.strip().startswith('#endif') or
+            line.strip().startswith('# endif')
+        ):
+            field_macro = ''
+            fields += [[line, '']]
+            indent = indent[:-4]
+            macro_output = None
+            continue
+
+        for item in ('ifdef', 'idndef', 'if', 'elif', 'else'):
+            if (
+                line.strip().startswith('#' + item) or
+                line.strip().startswith('# ' + item)
+            ):
+                define = True
+                break
+        else:
+            define = False
+
+        if define:
+            macro_output = []
+            import sys
+
+            stdout = sys.stdout
+
+            class STDOut(object):
+                def write(self, data):
+                    sys.stderr.write(data + '\n')
+                    macro_output.append(data)
+
+                def __getattr__(self, item):
+                    if item in self.__dict__:
+                        return self.__dict__[item]
+                    return getattr(STDOut.stdout, item)
+
+            sys.stdout = STDOut()
+            _, indent = parse_macro(indent, line.strip(), struct=True)
+            sys.stdout = stdout
+            field_macro = line
+            continue
+
         if ' ' not in line.strip():
             continue
 
@@ -320,32 +398,6 @@ def parse_struct_union(
         elif comment:
             field_comment = equalize_width(indent + '    ', comment)
 
-        if sub_structure_type is None:
-            import sys
-
-            class STDOut(object):
-                saved_data = ''
-                stdout = sys.stdout
-
-                def write(self, data):
-                    STDOut.saved_data = data.rstrip()
-
-                def __getattr__(self, item):
-                    if item in self.__dict__:
-                        return self.__dict__[item]
-                    return getattr(STDOut.stdout, item)
-
-            sys.stdout = STDOut()
-            new_line, new_indent = parse_macro(indent, line.strip())
-            sys.stdout = STDOut.stdout
-
-            if new_line != line or new_indent != indent:
-                field_macro = STDOut.saved_data
-                line = new_line
-                indent = new_indent
-            else:
-                field_macro = ''
-
         if not line:
             continue
 
@@ -356,12 +408,12 @@ def parse_struct_union(
             chunk_1, chunk_2 = line.split('_Field_', 1)
             chunk_2 = chunk_2.split('(', 1)[1]
             bad_chunk = ''
-            brace_count = 1
+            b_count = 1
             for char in list(chunk_2):
-                brace_count += char.count('(')
-                brace_count -= char.count(')')
+                b_count += char.count('(')
+                b_count -= char.count(')')
                 bad_chunk += char
-                if not brace_count:
+                if not b_count:
                     break
             else:
                 continue
@@ -375,22 +427,23 @@ def parse_struct_union(
         if 'OPTIONAL' in line:
             line = line[:line.find('OPTIONAL') - 1].rstrip()
 
-        if (
-            (
-                line.strip().startswith('union') or
-                line.strip().startswith('struct')
-            ) and
-            line.strip().endswith(';')
-        ):
-            line = line.replace('struct', '').replace('union', '')
-        if line.strip().startswith('union'):
-            sub_structure_type = 'union'
+        if sub_structure_type is None:
+            if (
+                (
+                    line.strip().startswith('union') or
+                    line.strip().startswith('struct')
+                ) and
+                line.strip().endswith(';')
+            ):
+                line = line.replace('struct', '').replace('union', '')
+            if line.strip().startswith('union'):
+                sub_structure_type = 'union'
 
-        elif line.strip().startswith('struct'):
-            sub_structure_type = 'struct'
+            elif line.strip().startswith('struct'):
+                sub_structure_type = 'struct'
 
         if sub_structure_type is not None:
-            if not sub_structure and line.strip().endswith(';'):
+            if line.strip().endswith(';'):
                 mult = None
                 line = line.replace(sub_structure_type, '').strip()[:-1]
                 try:
@@ -411,6 +464,10 @@ def parse_struct_union(
                 else:
                     f_name = c_name
                     f_data_type = cls_name + '.' + f_name
+                    if macro_output is not None:
+                        print(''.join(macro_output))
+                        macro_output = None
+
                     print(
                         TEMPLATE_DECLARATION.format(
                             indent=indent,
@@ -426,85 +483,95 @@ def parse_struct_union(
                             child_cls=f_name
                         )
                     )
-
+                sub_structure_type = None
             else:
-                sub_structure += [line]
-                brace_count += line.count('{')
-                brace_count -= line.count('}')
-                if brace_count == 0 and line.rstrip().endswith(';'):
-                    f_name = (
-                        line.replace(';', '').replace('}', '').strip()
+                sub_structure = []
+                brace_count = 0
+                skip_until = line_num
+                for j, sub_line in enumerate(lines[line_num:]):
+                    skip_until = line_num + j
+                    sub_structure += [sub_line]
+                    brace_count += sub_line.count('{')
+                    brace_count -= sub_line.count('}')
+                    if ';' in sub_line and brace_count == 0:
+                        break
+
+                sys.stderr.write(str(sub_structure) + '\n')
+
+                f_name = sub_structure[-1]
+
+                f_name = (
+                    f_name.replace(';', '').replace('}', '').strip()
+                )
+                if not f_name:
+                    if sub_structure_type == 'union':
+                        sub_count = union_count = union_count + 1
+                    else:
+                        sub_count = struct_count = struct_count + 1
+
+                    f_name = '_{0}_{1}'.format(
+                        sub_structure_type.title(),
+                        sub_count
                     )
-                    if not f_name:
-
-                        if sub_structure_type == 'union':
-                            sub_count = union_count = union_count + 1
-                        else:
-                            sub_count = struct_count = struct_count + 1
-
-                        f_name = '_{0}_{1}'.format(
-                            sub_structure_type.title(),
-                            sub_count
-                        )
-
-                        line = line.replace(
+                    sub_structure[len(sub_structure) - 1] = (
+                        sub_structure[len(sub_structure) - 1].replace(
                             ';',
                             f_name + ';'
                         )
-                        sub_structure[len(sub_structure) - 1] = line
-                        anonymous += [f_name]
-
-                    if '[' in f_name:
-                        tmp_field_name, mult = f_name.split('[', 1)
-                        mult = mult.replace(']', '').strip()
-
-                        for i, ln in enumerate(sub_structure):
-                            sub_structure[i] = ln.replace(
-                                f_name,
-                                tmp_field_name
-                            )
-                        f_name = tmp_field_name
-
-                    else:
-                        mult = None
-
-                        sub_structure[0] = (
-                            '{0}typedef {1} '.format(
-                                indent,
-                                sub_structure_type
-                            )
-                        )
-
-                    if not sub_structure[1].strip().startswith('{'):
-                        sub_structure[0] += '{'
-
-                    parse_struct_union(
-                        indent,
-                        '\n'.join(sub_structure),
-                        importer,
-                        struct_count,
-                        union_count,
-                        []
                     )
 
-                    f_data_type = cls_name + '.' + f_name
+                    anonymous += [f_name]
+
+                if '[' in f_name:
+                    tmp_field_name, mult = f_name.split('[', 1)
+                    mult = mult.replace(']', '').strip()
+
+                    for i, ln in enumerate(sub_structure):
+                        sub_structure[i] = ln.replace(
+                            f_name,
+                            tmp_field_name
+                        )
+                    f_name = tmp_field_name
 
                 else:
-                    continue
+                    mult = None
 
-            sub_structure = []
-            sub_structure_type = None
-
-            print(
-                TEMPLATE_DECLARATION_SUBSTRUCTURE.format(
-                    indent=indent,
-                    cls_name=cls_name,
-                    child_cls=f_name
+                sub_structure[0] = (
+                    sub_structure[0].replace(
+                        sub_structure_type,
+                        '{0}typedef {1} '.format(
+                            indent,
+                            sub_structure_type
+                        )
+                    )
                 )
-            )
+
+                if macro_output is not None:
+                    print(''.join(macro_output))
+                    macro_output = None
+
+                parse_struct_union(
+                    indent,
+                    '\n'.join(sub_structure),
+                    importer,
+                    struct_count,
+                    union_count,
+                    []
+                )
+
+                f_data_type = cls_name + '.' + f_name
+                sub_structure_type = None
+
+                print(
+                    TEMPLATE_DECLARATION_SUBSTRUCTURE.format(
+                        indent=indent,
+                        cls_name=cls_name,
+                        child_cls=f_name
+                    )
+                )
 
             if '\n' in field_comment:
-                fields += [[None, '\n' + field_comment]]
+                fields += [[field_macro, '\n' + field_comment]]
                 field_comment = ''
 
             elif field_comment:
@@ -564,7 +631,6 @@ def parse_struct_union(
 
                 fields += [[field_macro, template]]
 
-            field_macro = ''
             field_comment = ''
             continue
 
@@ -671,7 +737,7 @@ def parse_struct_union(
         for i, field_name in enumerate(field_names):
 
             if '\n' in field_comment:
-                fields += [[None, '\n' + field_comment]]
+                fields += [[field_macro, '\n' + field_comment]]
                 field_comment = ''
 
             elif field_comment:
@@ -713,7 +779,6 @@ def parse_struct_union(
 
             fields += [[field_macro, template]]
 
-        field_macro = ''
         field_comment = ''
         field = ''
 
@@ -746,15 +811,66 @@ def parse_struct_union(
         print()
 
     if fields:
-        macro_indexes = []
-
-        for j, items in enumerate(fields[:]):
+        for items in fields:
             if items[0]:
-                macro_indexes += [[j, items]]
-                fields.remove(items)
+                has_macro = True
+                break
+        else:
+            has_macro = False
 
-        if macro_indexes:
-            print(indent + '_temp_fields_ = (')
+        last_field = ''
+        if has_macro:
+            print(
+                TEMPLATE_DECLARATION_FIELDS_MACRO_START.format(
+                    indent=indent,
+                    cls_name=cls_name
+                )
+            )
+
+            last_macro = ''
+            closed_macro = False
+            for macro, field in fields:
+                if macro and macro != last_macro:
+                    last_macro = macro
+                    closed_macro = True
+                    print(
+                        TEMPLATE_DECLARATION_FIELDS_MACRO_END.format(
+                            indent=indent)
+                    )
+                    _, indent = parse_macro(indent + '    ', macro.strip(), struct=True)
+
+                    if 'endif' in macro:
+                        print()
+
+                if not field:
+                    continue
+
+                if closed_macro:
+                    closed_macro = False
+                    print(
+                        TEMPLATE_DECLARATION_FIELDS_MACRO_CONTINUE.format(
+                            indent=indent,
+                            cls_name=cls_name
+                        )
+                    )
+                if field.startswith('\n\n') and last_field.endswith('\n'):
+                    field = field[2:]
+
+                last_field = field
+                print(field)
+
+            if not closed_macro:
+                print(
+                    TEMPLATE_DECLARATION_FIELDS_MACRO_END.format(
+                        indent=indent)
+                )
+
+            print(
+                TEMPLATE_DECLARATION_FIELDS_MACRO_ASSIGN.format(
+                    indent=indent,
+                    cls_name=cls_name
+                )
+            )
 
         else:
             print(
@@ -763,35 +879,18 @@ def parse_struct_union(
                     cls_name=cls_name
                 )
             )
-        last_field = ''
-        for _, field in fields:
-            if field.startswith('\n\n') and last_field.endswith('\n'):
-                field = field[2:]
 
-            last_field = field
-            print(field)
+            for _, field in fields:
+                if field.startswith('\n\n') and last_field.endswith('\n'):
+                    field = field[2:]
 
-        print(
-            TEMPLATE_DECLARATION_FIELDS_END.format(
-                indent=indent,
-            )
-        )
+                last_field = field
+                print(field)
 
-        if macro_indexes:
-            for index, items in macro_indexes:
-                macro, field = items
-                macro = macro[4:]
-
-                print(macro)
-                print(
-                    '{0}    _temp_fields_.insert({1}, {2})'.format(
-                        indent,
-                        index,
-                        field.strip()[:-1]
-                    )
-                )
             print(
-                '{0}{1}._fields_ = _temp_fields_'.format(indent, cls_name)
+                TEMPLATE_DECLARATION_FIELDS_END.format(
+                    indent=indent,
+                )
             )
 
     variables = []

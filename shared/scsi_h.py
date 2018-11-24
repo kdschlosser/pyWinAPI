@@ -366,7 +366,6 @@ LOG_PARAMETER_HEADER = _LOG_PARAMETER_HEADER
 PLOG_PARAMETER_HEADER = POINTER(_LOG_PARAMETER_HEADER)
 
 
-
 class _LOG_PARAMETER(ctypes.Structure):
     pass
 
@@ -478,7 +477,6 @@ PRECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER = POINTER(RECEIVE_TOKEN_INFORMATION_R
 
 class BLOCK_DEVICE_TOKEN_DESCRIPTOR(ctypes.Structure):
     pass
-
 
 PBLOCK_DEVICE_TOKEN_DESCRIPTOR = POINTER(BLOCK_DEVICE_TOKEN_DESCRIPTOR)
 
@@ -681,6 +679,10 @@ class _MODE_CDROM_WRITE_PARAMETERS_PAGE2(ctypes.Structure):
 
 MODE_CDROM_WRITE_PARAMETERS_PAGE2 = _MODE_CDROM_WRITE_PARAMETERS_PAGE2
 PMODE_CDROM_WRITE_PARAMETERS_PAGE2 = POINTER(_MODE_CDROM_WRITE_PARAMETERS_PAGE2)
+
+
+class _MODE_CDROM_WRITE_PARAMETERS_PAGE(ctypes.Structure):
+    pass
 
 
 MODE_CDROM_WRITE_PARAMETERS_PAGE = _MODE_CDROM_WRITE_PARAMETERS_PAGE
@@ -894,6 +896,8 @@ class _TWO_BYTE(ctypes.Union):
 TWO_BYTE = _TWO_BYTE
 PTWO_BYTE = POINTER(_TWO_BYTE)
 
+STOR_ADDRESS_ALIGN = ctypes.Structure
+
 
 class _STOR_ADDRESS(STOR_ADDRESS_ALIGN):
     pass
@@ -1100,8 +1104,10 @@ if not defined(_NTSCSI_):
     if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_PKG_STORAGE):
         if not defined(_NTSCSI_USER_MODE_):
             _NTSRB_ = None
+
             if not defined(_NTSRB_):
                 _MINIPORT_ = None
+
                 if not defined(_MINIPORT_):
                     if not defined(_NTDDK_):
                         # For user - mode application development, make sure
@@ -1114,7 +1120,6 @@ if not defined(_NTSCSI_):
                         # Also see the SPTI sample
                         # (located in src\storage\tools\spti directory under the Windows Kits root directory)
                         #
-
                         raise RuntimeError(
                             "For user-mode application development, "
                             "make sure to set pyWinAPI._NTSCSI_USER_MODE_ = 1 "
@@ -1159,14 +1164,13 @@ if not defined(_NTSCSI_):
             def RtlZeroMemory(Destination, Length):
                 return 1
         # END IF
-
         # Command Descriptor Block. Passed by SCSI controller chip over the
         # SCSI bus
-        class CDB6GENERIC(ctypes.Structure):
+        class _CDB6GENERIC(ctypes.Structure):
             pass
 
 
-        CDB6GENERIC._fields_ = [
+        _CDB6GENERIC._fields_ = [
             ('OperationCode', UCHAR),
             ('Immediate', UCHAR, 1),
             ('CommandUniqueBits', UCHAR, 4),
@@ -1177,14 +1181,15 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR, 4),
             ('VendorUnique', UCHAR, 2),
         ]
+        CDB6GENERIC = _CDB6GENERIC
         _CDB.CDB6GENERIC = CDB6GENERIC
 
 
-        class CDB6READWRITE(ctypes.Structure):
+        class _CDB6READWRITE(ctypes.Structure):
             pass
 
 
-        CDB6READWRITE._fields_ = [
+        _CDB6READWRITE._fields_ = [
             # 0x08, 0x0A - SCSIOP_READ, SCSIOP_WRITE
             ('OperationCode', UCHAR),
             ('LogicalBlockMsb1', UCHAR, 5),
@@ -1194,14 +1199,15 @@ if not defined(_NTSCSI_):
             ('TransferBlocks', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB6READWRITE = _CDB6READWRITE
         _CDB.CDB6READWRITE = CDB6READWRITE
 
 
-        class CDB6INQUIRY(ctypes.Structure):
+        class _CDB6INQUIRY(ctypes.Structure):
             pass
 
 
-        CDB6INQUIRY._fields_ = [
+        _CDB6INQUIRY._fields_ = [
             # 0x12 - SCSIOP_INQUIRY
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 5),
@@ -1211,14 +1217,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB6INQUIRY = _CDB6INQUIRY
         _CDB.CDB6INQUIRY = CDB6INQUIRY
 
 
-        class CDB6INQUIRY3(ctypes.Structure):
+        class _CDB6INQUIRY3(ctypes.Structure):
             pass
 
 
-        CDB6INQUIRY3._fields_ = [
+        _CDB6INQUIRY3._fields_ = [
             # 0x12 - SCSIOP_INQUIRY
             ('OperationCode', UCHAR),
             ('EnableVitalProductData', UCHAR, 1),
@@ -1229,14 +1236,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB6INQUIRY3 = _CDB6INQUIRY3
         _CDB.CDB6INQUIRY3 = CDB6INQUIRY3
 
 
-        class CDB6VERIFY(ctypes.Structure):
+        class _CDB6VERIFY(ctypes.Structure):
             pass
 
 
-        CDB6VERIFY._fields_ = [
+        _CDB6VERIFY._fields_ = [
             # 0x13 - SCSIOP_VERIFY
             ('OperationCode', UCHAR),
             ('Fixed', UCHAR, 1),
@@ -1247,14 +1255,15 @@ if not defined(_NTSCSI_):
             ('VerificationLength', UCHAR * 3),
             ('Control', UCHAR),
         ]
+        CDB6VERIFY = _CDB6VERIFY
         _CDB.CDB6VERIFY = CDB6VERIFY
 
 
-        class RECEIVE_DIAGNOSTIC(ctypes.Structure):
+        class _RECEIVE_DIAGNOSTIC(ctypes.Structure):
             pass
 
 
-        RECEIVE_DIAGNOSTIC._fields_ = [
+        _RECEIVE_DIAGNOSTIC._fields_ = [
             # 0x1C - SCSIOP_RECEIVE_DIAGNOSTIC
             ('OperationCode', UCHAR),
             ('PageCodeValid', UCHAR, 1),
@@ -1263,14 +1272,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        RECEIVE_DIAGNOSTIC = _RECEIVE_DIAGNOSTIC
         _CDB.RECEIVE_DIAGNOSTIC = RECEIVE_DIAGNOSTIC
 
 
-        class SEND_DIAGNOSTIC(ctypes.Structure):
+        class _SEND_DIAGNOSTIC(ctypes.Structure):
             pass
 
 
-        SEND_DIAGNOSTIC._fields_ = [
+        _SEND_DIAGNOSTIC._fields_ = [
             # 0x1D - SCSIOP_SEND_DIAGNOSTIC
             ('OperationCode', UCHAR),
             ('UnitOffline', UCHAR, 1),
@@ -1283,14 +1293,15 @@ if not defined(_NTSCSI_):
             ('ParameterListLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        SEND_DIAGNOSTIC = _SEND_DIAGNOSTIC
         _CDB.SEND_DIAGNOSTIC = SEND_DIAGNOSTIC
 
 
-        class CDB6FORMAT(ctypes.Structure):
+        class _CDB6FORMAT(ctypes.Structure):
             pass
 
 
-        CDB6FORMAT._fields_ = [
+        _CDB6FORMAT._fields_ = [
             # 0x04 - SCSIOP_FORMAT_UNIT
             ('OperationCode', UCHAR),
             ('FormatControl', UCHAR, 5),
@@ -1300,14 +1311,15 @@ if not defined(_NTSCSI_):
             ('InterleaveLsb', UCHAR),
             ('FReserved2', UCHAR),
         ]
+        CDB6FORMAT = _CDB6FORMAT
         _CDB.CDB6FORMAT = CDB6FORMAT
 
 
-        class CDB10(ctypes.Structure):
+        class _CDB10(ctypes.Structure):
             pass
 
 
-        CDB10._fields_ = [
+        _CDB10._fields_ = [
             ('OperationCode', UCHAR),
             ('RelativeAddress', UCHAR, 1),
             ('Reserved1', UCHAR, 2),
@@ -1323,14 +1335,15 @@ if not defined(_NTSCSI_):
             ('TransferBlocksLsb', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB10 = _CDB10
         _CDB.CDB10 = CDB10
 
 
-        class CDB12(ctypes.Structure):
+        class _CDB12(ctypes.Structure):
             pass
 
 
-        CDB12._fields_ = [
+        _CDB12._fields_ = [
             ('OperationCode', UCHAR),
             ('RelativeAddress', UCHAR, 1),
             ('Reserved1', UCHAR, 2),
@@ -1342,14 +1355,15 @@ if not defined(_NTSCSI_):
             ('Reserved2', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB12 = _CDB12
         _CDB.CDB12 = CDB12
 
 
-        class CDB16(ctypes.Structure):
+        class _CDB16(ctypes.Structure):
             pass
 
 
-        CDB16._fields_ = [
+        _CDB16._fields_ = [
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 3),
             ('ForceUnitAccess', UCHAR, 1),
@@ -1360,14 +1374,15 @@ if not defined(_NTSCSI_):
             ('Reserved2', UCHAR),
             ('Control', UCHAR),
         ]
+        CDB16 = _CDB16
         _CDB.CDB16 = CDB16
 
 
-        class READ_BUFFER_10(ctypes.Structure):
+        class _READ_BUFFER_10(ctypes.Structure):
             pass
 
 
-        READ_BUFFER_10._fields_ = [
+        _READ_BUFFER_10._fields_ = [
             # 0x3c - SCSIOP_READ_DATA_BUFF
             ('OperationCode', UCHAR),
             ('Mode', UCHAR, 5),
@@ -1377,14 +1392,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 3),
             ('Control', UCHAR),
         ]
+        READ_BUFFER_10 = _READ_BUFFER_10
         _CDB.READ_BUFFER_10 = READ_BUFFER_10
 
 
-        class SECURITY_PROTOCOL_IN(ctypes.Structure):
+        class _SECURITY_PROTOCOL_IN(ctypes.Structure):
             pass
 
 
-        SECURITY_PROTOCOL_IN._fields_ = [
+        _SECURITY_PROTOCOL_IN._fields_ = [
             ('OperationCode', UCHAR),
             ('SecurityProtocol', UCHAR),
             ('SecurityProtocolSpecific', UCHAR * 2),
@@ -1395,14 +1411,15 @@ if not defined(_NTSCSI_):
             ('Reserved3', UCHAR),
             ('Control', UCHAR),
         ]
+        SECURITY_PROTOCOL_IN = _SECURITY_PROTOCOL_IN
         _CDB.SECURITY_PROTOCOL_IN = SECURITY_PROTOCOL_IN
 
 
-        class SECURITY_PROTOCOL_OUT(ctypes.Structure):
+        class _SECURITY_PROTOCOL_OUT(ctypes.Structure):
             pass
 
 
-        SECURITY_PROTOCOL_OUT._fields_ = [
+        _SECURITY_PROTOCOL_OUT._fields_ = [
             ('OperationCode', UCHAR),
             ('SecurityProtocol', UCHAR),
             ('SecurityProtocolSpecific', UCHAR * 2),
@@ -1413,14 +1430,15 @@ if not defined(_NTSCSI_):
             ('Reserved3', UCHAR),
             ('Control', UCHAR),
         ]
+        SECURITY_PROTOCOL_OUT = _SECURITY_PROTOCOL_OUT
         _CDB.SECURITY_PROTOCOL_OUT = SECURITY_PROTOCOL_OUT
 
 
-        class UNMAP(ctypes.Structure):
+        class _UNMAP(ctypes.Structure):
             pass
 
 
-        UNMAP._fields_ = [
+        _UNMAP._fields_ = [
             # 0x42 - SCSIOP_UNMAP
             ('OperationCode', UCHAR),
             ('Anchor', UCHAR, 1),
@@ -1431,14 +1449,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        UNMAP = _UNMAP
         _CDB.UNMAP = UNMAP
 
 
-        class SANITIZE(ctypes.Structure):
+        class _SANITIZE(ctypes.Structure):
             pass
 
 
-        SANITIZE._fields_ = [
+        _SANITIZE._fields_ = [
             # 0x48 - SCSIOP_SANITIZE
             ('OperationCode', UCHAR),
             ('ServiceAction', UCHAR, 5),
@@ -1449,14 +1468,15 @@ if not defined(_NTSCSI_):
             ('ParameterListLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        SANITIZE = _SANITIZE
         _CDB.SANITIZE = SANITIZE
 
 
-        class PAUSE_RESUME(ctypes.Structure):
+        class _PAUSE_RESUME(ctypes.Structure):
             pass
 
 
-        PAUSE_RESUME._fields_ = [
+        _PAUSE_RESUME._fields_ = [
             # 0x4B - SCSIOP_PAUSE_RESUME
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 5),
@@ -1465,14 +1485,15 @@ if not defined(_NTSCSI_):
             ('Action', UCHAR),
             ('Control', UCHAR),
         ]
+        PAUSE_RESUME = _PAUSE_RESUME
         _CDB.PAUSE_RESUME = PAUSE_RESUME
 
 
-        class READ_TOC(ctypes.Structure):
+        class _READ_TOC(ctypes.Structure):
             pass
 
 
-        READ_TOC._fields_ = [
+        _READ_TOC._fields_ = [
             # 0x43 - SCSIOP_READ_TOC
             ('OperationCode', UCHAR),
             ('Reserved0', UCHAR, 1),
@@ -1487,13 +1508,15 @@ if not defined(_NTSCSI_):
             ('Control', UCHAR, 6),
             ('Format', UCHAR, 2),
         ]
+        READ_TOC = _READ_TOC
         _CDB.READ_TOC = READ_TOC
 
 
-        class READ_DISK_INFORMATION(ctypes.Structure):
+        class _READ_DISK_INFORMATION(ctypes.Structure):
             pass
 
-        READ_DISK_INFORMATION._fields_ = [
+
+        _READ_DISK_INFORMATION._fields_ = [
             # 0x51 - SCSIOP_READ_DISC_INFORMATION
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 5),
@@ -1502,14 +1525,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
-        _CDB.READ_DISK_INFORMATION= READ_DISK_INFORMATION
-        _CDB.READ_DISC_INFORMATION = READ_DISK_INFORMATION
+        READ_DISK_INFORMATION = _READ_DISK_INFORMATION
+        _CDB.READ_DISK_INFORMATION = READ_DISK_INFORMATION
 
-        class READ_TRACK_INFORMATION(ctypes.Structure):
+
+        class _READ_TRACK_INFORMATION(ctypes.Structure):
             pass
 
 
-        READ_TRACK_INFORMATION._fields_ = [
+        _READ_TRACK_INFORMATION._fields_ = [
             # 0x52 - SCSIOP_READ_TRACK_INFORMATION
             ('OperationCode', UCHAR),
             ('Track', UCHAR, 2),
@@ -1521,28 +1545,30 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        READ_TRACK_INFORMATION = _READ_TRACK_INFORMATION
         _CDB.READ_TRACK_INFORMATION = READ_TRACK_INFORMATION
 
 
-        class RESERVE_TRACK_RZONE(ctypes.Structure):
+        class _RESERVE_TRACK_RZONE(ctypes.Structure):
             pass
 
 
-        RESERVE_TRACK_RZONE._fields_ = [
+        _RESERVE_TRACK_RZONE._fields_ = [
             # 0x53 - SCSIOP_RESERVE_TRACK_RZONE
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR * 4),
             ('ReservationSize', UCHAR * 4),
             ('Control', UCHAR),
         ]
+        RESERVE_TRACK_RZONE = _RESERVE_TRACK_RZONE
         _CDB.RESERVE_TRACK_RZONE = RESERVE_TRACK_RZONE
 
 
-        class SEND_OPC_INFORMATION(ctypes.Structure):
+        class _SEND_OPC_INFORMATION(ctypes.Structure):
             pass
 
 
-        SEND_OPC_INFORMATION._fields_ = [
+        _SEND_OPC_INFORMATION._fields_ = [
             # 0x54 - SCSIOP_SEND_OPC_INFORMATION
             ('OperationCode', UCHAR),
             # perform OPC
@@ -1557,14 +1583,15 @@ if not defined(_NTSCSI_):
             ('ParameterListLength', UCHAR * 2),
             ('Reserved4', UCHAR),
         ]
+        SEND_OPC_INFORMATION = _SEND_OPC_INFORMATION
         _CDB.SEND_OPC_INFORMATION = SEND_OPC_INFORMATION
 
 
-        class REPAIR_TRACK(ctypes.Structure):
+        class _REPAIR_TRACK(ctypes.Structure):
             pass
 
 
-        REPAIR_TRACK._fields_ = [
+        _REPAIR_TRACK._fields_ = [
             # 0x58 - SCSIOP_REPAIR_TRACK
             ('OperationCode', UCHAR),
             ('Immediate', UCHAR, 1),
@@ -1574,14 +1601,15 @@ if not defined(_NTSCSI_):
             ('Reserved3', UCHAR * 3),
             ('Control', UCHAR),
         ]
+        REPAIR_TRACK = _REPAIR_TRACK
         _CDB.REPAIR_TRACK = REPAIR_TRACK
 
 
-        class CLOSE_TRACK(ctypes.Structure):
+        class _CLOSE_TRACK(ctypes.Structure):
             pass
 
 
-        CLOSE_TRACK._fields_ = [
+        _CLOSE_TRACK._fields_ = [
             # 0x5B - SCSIOP_CLOSE_TRACK_SESSION
             ('OperationCode', UCHAR),
             ('Immediate', UCHAR, 1),
@@ -1594,14 +1622,15 @@ if not defined(_NTSCSI_):
             ('Reserved4', UCHAR * 3),
             ('Control', UCHAR),
         ]
+        CLOSE_TRACK = _CLOSE_TRACK
         _CDB.CLOSE_TRACK = CLOSE_TRACK
 
 
-        class READ_BUFFER_CAPACITY(ctypes.Structure):
+        class _READ_BUFFER_CAPACITY(ctypes.Structure):
             pass
 
 
-        READ_BUFFER_CAPACITY._fields_ = [
+        _READ_BUFFER_CAPACITY._fields_ = [
             # 0x5C - SCSIOP_READ_BUFFER_CAPACITY
             ('OperationCode', UCHAR),
             ('BlockInfo', UCHAR, 1),
@@ -1610,28 +1639,30 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        READ_BUFFER_CAPACITY = _READ_BUFFER_CAPACITY
         _CDB.READ_BUFFER_CAPACITY = READ_BUFFER_CAPACITY
 
 
-        class SEND_CUE_SHEET(ctypes.Structure):
+        class _SEND_CUE_SHEET(ctypes.Structure):
             pass
 
 
-        SEND_CUE_SHEET._fields_ = [
+        _SEND_CUE_SHEET._fields_ = [
             # 0x5D - SCSIOP_SEND_CUE_SHEET
             ('OperationCode', UCHAR),
             ('Reserved', UCHAR * 5),
             ('CueSheetSize', UCHAR * 3),
             ('Control', UCHAR),
         ]
+        SEND_CUE_SHEET = _SEND_CUE_SHEET
         _CDB.SEND_CUE_SHEET = SEND_CUE_SHEET
 
 
-        class READ_HEADER(ctypes.Structure):
+        class _READ_HEADER(ctypes.Structure):
             pass
 
 
-        READ_HEADER._fields_ = [
+        _READ_HEADER._fields_ = [
             # 0x44 - SCSIOP_READ_HEADER
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 1),
@@ -1643,14 +1674,15 @@ if not defined(_NTSCSI_):
             ('AllocationLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        READ_HEADER = _READ_HEADER
         _CDB.READ_HEADER = READ_HEADER
 
 
-        class PLAY_AUDIO(ctypes.Structure):
+        class _PLAY_AUDIO(ctypes.Structure):
             pass
 
 
-        PLAY_AUDIO._fields_ = [
+        _PLAY_AUDIO._fields_ = [
             # 0x45 - SCSIOP_PLAY_AUDIO
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 5),
@@ -1660,14 +1692,15 @@ if not defined(_NTSCSI_):
             ('PlayLength', UCHAR * 2),
             ('Control', UCHAR),
         ]
+        PLAY_AUDIO = _PLAY_AUDIO
         _CDB.PLAY_AUDIO = PLAY_AUDIO
 
 
-        class PLAY_AUDIO_MSF(ctypes.Structure):
+        class _PLAY_AUDIO_MSF(ctypes.Structure):
             pass
 
 
-        PLAY_AUDIO_MSF._fields_ = [
+        _PLAY_AUDIO_MSF._fields_ = [
             # 0x47 - SCSIOP_PLAY_AUDIO_MSF
             ('OperationCode', UCHAR),
             ('Reserved1', UCHAR, 5),
@@ -1681,14 +1714,15 @@ if not defined(_NTSCSI_):
             ('EndingF', UCHAR),
             ('Control', UCHAR),
         ]
+        PLAY_AUDIO_MSF = _PLAY_AUDIO_MSF
         _CDB.PLAY_AUDIO_MSF = PLAY_AUDIO_MSF
 
 
-        class BLANK_MEDIA(ctypes.Structure):
+        class _BLANK_MEDIA(ctypes.Structure):
             pass
 
 
-        BLANK_MEDIA._fields_ = [
+        _BLANK_MEDIA._fields_ = [
             # 0xA1 - SCSIOP_BLANK
             ('OperationCode', UCHAR),
             ('BlankType', UCHAR, 3),
@@ -1699,10 +1733,1688 @@ if not defined(_NTSCSI_):
             ('Reserved3', UCHAR * 5),
             ('Control', UCHAR),
         ]
+        BLANK_MEDIA = _BLANK_MEDIA
         _CDB.BLANK_MEDIA = BLANK_MEDIA
 
 
-        _CDB._fields_ = [
+        class _PLAY_CD(ctypes.Structure):
+            pass
+
+
+        class _Union_1(ctypes.Union):
+            pass
+
+
+        class _LBA(ctypes.Structure):
+            pass
+
+
+        _LBA._fields_ = [
+            ('StartingBlockAddress', UCHAR * 4),
+            ('PlayLength', UCHAR * 4),
+        ]
+        LBA = _LBA
+        _Union_1.LBA = LBA
+
+
+        class _MSF(ctypes.Structure):
+            pass
+
+
+        _MSF._fields_ = [
+            ('Reserved1', UCHAR),
+            ('StartingM', UCHAR),
+            ('StartingS', UCHAR),
+            ('StartingF', UCHAR),
+            ('EndingM', UCHAR),
+            ('EndingS', UCHAR),
+            ('EndingF', UCHAR),
+            ('Reserved2', UCHAR),
+        ]
+        MSF = _MSF
+        _Union_1.MSF = MSF
+
+
+        _Union_1._fields_ = [
+            ('LBA', _Union_1.LBA),
+            ('MSF', _Union_1.MSF),
+        ]
+        _PLAY_CD._Union_1 = _Union_1
+
+        _PLAY_CD._anonymous_ = (
+            '_Union_1',
+        )
+
+        _PLAY_CD._fields_ = [
+            # 0xBC - SCSIOP_PLAY_CD
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 1),
+            # LBA = 0, MSF = 1
+            ('CMSF', UCHAR, 1),
+            ('ExpectedSectorType', UCHAR, 3),
+            ('Lun', UCHAR, 3),
+            ('_Union_1', _PLAY_CD._Union_1),
+            ('Audio', UCHAR, 1),
+            ('Composite', UCHAR, 1),
+            ('Port1', UCHAR, 1),
+            ('Port2', UCHAR, 1),
+            ('Reserved2', UCHAR, 3),
+            ('Speed', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        PLAY_CD = _PLAY_CD
+        _CDB.PLAY_CD = PLAY_CD
+
+
+        class _SCAN_CD(ctypes.Structure):
+            pass
+
+
+        _SCAN_CD._fields_ = [
+            # 0xBA - SCSIOP_SCAN_CD
+            ('OperationCode', UCHAR),
+            ('RelativeAddress', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('Direct', UCHAR, 1),
+            ('Lun', UCHAR, 3),
+            ('StartingAddress', UCHAR * 4),
+            ('Reserved2', UCHAR * 3),
+            ('Reserved3', UCHAR, 6),
+            ('Type', UCHAR, 2),
+            ('Reserved4', UCHAR),
+            ('Control', UCHAR),
+        ]
+        SCAN_CD = _SCAN_CD
+        _CDB.SCAN_CD = SCAN_CD
+
+
+        class _STOP_PLAY_SCAN(ctypes.Structure):
+            pass
+
+
+        _STOP_PLAY_SCAN._fields_ = [
+            # 0x4E - SCSIOP_STOP_PLAY_SCAN
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 7),
+            ('Control', UCHAR),
+        ]
+        STOP_PLAY_SCAN = _STOP_PLAY_SCAN
+        _CDB.STOP_PLAY_SCAN = STOP_PLAY_SCAN
+
+
+        class _SUBCHANNEL(ctypes.Structure):
+            pass
+
+
+        _SUBCHANNEL._fields_ = [
+            # 0x42 - SCSIOP_READ_SUB_CHANNEL
+            ('OperationCode', UCHAR),
+            ('Reserved0', UCHAR, 1),
+            ('Msf', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR, 6),
+            ('SubQ', UCHAR, 1),
+            ('Reserved3', UCHAR, 1),
+            ('Format', UCHAR),
+            ('Reserved4', UCHAR * 2),
+            ('TrackNumber', UCHAR),
+            ('AllocationLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        SUBCHANNEL = _SUBCHANNEL
+        _CDB.SUBCHANNEL = SUBCHANNEL
+
+
+        class _READ_CD(ctypes.Structure):
+            pass
+
+
+        _READ_CD._fields_ = [
+            # 0xBE - SCSIOP_READ_CD
+            ('OperationCode', UCHAR),
+            ('RelativeAddress', UCHAR, 1),
+            ('Reserved0', UCHAR, 1),
+            ('ExpectedSectorType', UCHAR, 3),
+            ('Lun', UCHAR, 3),
+            ('StartingLBA', UCHAR * 4),
+            ('TransferBlocks', UCHAR * 3),
+            ('Reserved2', UCHAR, 1),
+            ('ErrorFlags', UCHAR, 2),
+            ('IncludeEDC', UCHAR, 1),
+            ('IncludeUserData', UCHAR, 1),
+            ('HeaderCode', UCHAR, 2),
+            ('IncludeSyncData', UCHAR, 1),
+            ('SubChannelSelection', UCHAR, 3),
+            ('Reserved3', UCHAR, 5),
+            ('Control', UCHAR),
+        ]
+        READ_CD = _READ_CD
+        _CDB.READ_CD = READ_CD
+
+
+        class _READ_CD_MSF(ctypes.Structure):
+            pass
+
+
+        _READ_CD_MSF._fields_ = [
+            # 0xB9 - SCSIOP_READ_CD_MSF
+            ('OperationCode', UCHAR),
+            ('RelativeAddress', UCHAR, 1),
+            ('Reserved1', UCHAR, 1),
+            ('ExpectedSectorType', UCHAR, 3),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR),
+            ('StartingM', UCHAR),
+            ('StartingS', UCHAR),
+            ('StartingF', UCHAR),
+            ('EndingM', UCHAR),
+            ('EndingS', UCHAR),
+            ('EndingF', UCHAR),
+            ('Reserved4', UCHAR, 1),
+            ('ErrorFlags', UCHAR, 2),
+            ('IncludeEDC', UCHAR, 1),
+            ('IncludeUserData', UCHAR, 1),
+            ('HeaderCode', UCHAR, 2),
+            ('IncludeSyncData', UCHAR, 1),
+            ('SubChannelSelection', UCHAR, 3),
+            ('Reserved5', UCHAR, 5),
+            ('Control', UCHAR),
+        ]
+        READ_CD_MSF = _READ_CD_MSF
+        _CDB.READ_CD_MSF = READ_CD_MSF
+
+
+        class _PLXTR_READ_CDDA(ctypes.Structure):
+            pass
+
+
+        _PLXTR_READ_CDDA._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('Reserved0', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('LogicalBlockByte0', UCHAR),
+            ('LogicalBlockByte1', UCHAR),
+            ('LogicalBlockByte2', UCHAR),
+            ('LogicalBlockByte3', UCHAR),
+            ('TransferBlockByte0', UCHAR),
+            ('TransferBlockByte1', UCHAR),
+            ('TransferBlockByte2', UCHAR),
+            ('TransferBlockByte3', UCHAR),
+            ('SubCode', UCHAR),
+            ('Control', UCHAR),
+        ]
+        PLXTR_READ_CDDA = _PLXTR_READ_CDDA
+        _CDB.PLXTR_READ_CDDA = PLXTR_READ_CDDA
+
+
+        class _NEC_READ_CDDA(ctypes.Structure):
+            pass
+
+
+        _NEC_READ_CDDA._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('Reserved0', UCHAR),
+            ('LogicalBlockByte0', UCHAR),
+            ('LogicalBlockByte1', UCHAR),
+            ('LogicalBlockByte2', UCHAR),
+            ('LogicalBlockByte3', UCHAR),
+            ('Reserved1', UCHAR),
+            ('TransferBlockByte0', UCHAR),
+            ('TransferBlockByte1', UCHAR),
+            ('Control', UCHAR),
+        ]
+        NEC_READ_CDDA = _NEC_READ_CDDA
+        _CDB.NEC_READ_CDDA = NEC_READ_CDDA
+
+        if NTDDI_VERSION >= NTDDI_WIN8:
+            class _MODE_SENSE(ctypes.Structure):
+                pass
+
+
+            _MODE_SENSE._fields_ = [
+                # 0x1A - SCSIOP_MODE_SENSE
+                ('OperationCode', UCHAR),
+                ('Reserved1', UCHAR, 3),
+                ('Dbd', UCHAR, 1),
+                ('Reserved2', UCHAR, 4),
+                ('PageCode', UCHAR, 6),
+                ('Pc', UCHAR, 2),
+                ('SubPageCode', UCHAR),
+                ('AllocationLength', UCHAR),
+                ('Control', UCHAR),
+            ]
+            MODE_SENSE = _MODE_SENSE
+            _CDB.MODE_SENSE = MODE_SENSE
+
+
+            class _MODE_SENSE10(ctypes.Structure):
+                pass
+
+
+            _MODE_SENSE10._fields_ = [
+                # 0x5A - SCSIOP_MODE_SENSE10
+                ('OperationCode', UCHAR),
+                ('Reserved1', UCHAR, 3),
+                ('Dbd', UCHAR, 1),
+                ('LongLBAAccepted', UCHAR, 1),
+                ('Reserved2', UCHAR, 3),
+                ('PageCode', UCHAR, 6),
+                ('Pc', UCHAR, 2),
+                ('SubPageCode', UCHAR),
+                ('Reserved3', UCHAR * 3),
+                ('AllocationLength', UCHAR * 2),
+                ('Control', UCHAR),
+            ]
+            MODE_SENSE10 = _MODE_SENSE10
+            _CDB.MODE_SENSE10 = MODE_SENSE10
+
+        else:
+            class _MODE_SENSE(ctypes.Structure):
+                pass
+
+
+            _MODE_SENSE._fields_ = [
+                # 0x1A - SCSIOP_MODE_SENSE
+                ('OperationCode', UCHAR),
+                ('Reserved1', UCHAR, 3),
+                ('Dbd', UCHAR, 1),
+                ('Reserved2', UCHAR, 1),
+                ('LogicalUnitNumber', UCHAR, 3),
+                ('PageCode', UCHAR, 6),
+                ('Pc', UCHAR, 2),
+                ('Reserved3', UCHAR),
+                ('AllocationLength', UCHAR),
+                ('Control', UCHAR),
+            ]
+            MODE_SENSE = _MODE_SENSE
+            _CDB.MODE_SENSE = MODE_SENSE
+
+
+            class _MODE_SENSE10(ctypes.Structure):
+                pass
+
+
+            _MODE_SENSE10._fields_ = [
+                # 0x5A - SCSIOP_MODE_SENSE10
+                ('OperationCode', UCHAR),
+                ('Reserved1', UCHAR, 3),
+                ('Dbd', UCHAR, 1),
+                ('Reserved2', UCHAR, 1),
+                ('LogicalUnitNumber', UCHAR, 3),
+                ('PageCode', UCHAR, 6),
+                ('Pc', UCHAR, 2),
+                ('Reserved3', UCHAR * 4),
+                ('AllocationLength', UCHAR * 2),
+                ('Control', UCHAR),
+            ]
+            MODE_SENSE10 = _MODE_SENSE10
+            _CDB.MODE_SENSE10 = MODE_SENSE10
+
+        # END IF
+
+        class _MODE_SELECT(ctypes.Structure):
+            pass
+
+
+        _MODE_SELECT._fields_ = [
+            # 0x15 - SCSIOP_MODE_SELECT
+            ('OperationCode', UCHAR),
+            ('SPBit', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('PFBit', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR * 2),
+            ('ParameterListLength', UCHAR),
+            ('Control', UCHAR),
+        ]
+        MODE_SELECT = _MODE_SELECT
+        _CDB.MODE_SELECT = MODE_SELECT
+
+
+        class _MODE_SELECT10(ctypes.Structure):
+            pass
+
+
+        _MODE_SELECT10._fields_ = [
+            # 0x55 - SCSIOP_MODE_SELECT10
+            ('OperationCode', UCHAR),
+            ('SPBit', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('PFBit', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR * 5),
+            ('ParameterListLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        MODE_SELECT10 = _MODE_SELECT10
+        _CDB.MODE_SELECT10 = MODE_SELECT10
+
+
+        class _LOCATE(ctypes.Structure):
+            pass
+
+
+        _LOCATE._fields_ = [
+            # 0x2B - SCSIOP_LOCATE
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('CPBit', UCHAR, 1),
+            ('BTBit', UCHAR, 1),
+            ('Reserved1', UCHAR, 2),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved3', UCHAR),
+            ('LogicalBlockAddress', UCHAR * 4),
+            ('Reserved4', UCHAR),
+            ('Partition', UCHAR),
+            ('Control', UCHAR),
+        ]
+        LOCATE = _LOCATE
+        _CDB.LOCATE = LOCATE
+
+
+        class _LOGSENSE(ctypes.Structure):
+            pass
+
+
+        class _Union_1(ctypes.Union):
+            pass
+
+
+        _Union_1._fields_ = [
+            ('SubPageCode', UCHAR),
+            ('Reserved2', UCHAR),
+        ]
+        _LOGSENSE._Union_1 = _Union_1
+
+        _LOGSENSE._anonymous_ = (
+            '_Union_1',
+        )
+
+        _LOGSENSE._fields_ = [
+            # 0x4D - SCSIOP_LOG_SENSE
+            ('OperationCode', UCHAR),
+            ('SPBit', UCHAR, 1),
+            ('PPCBit', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('PageCode', UCHAR, 6),
+            ('PCBit', UCHAR, 2),
+            ('_Union_1', _LOGSENSE._Union_1),
+            ('Reserved3', UCHAR),
+            ('ParameterPointer', UCHAR * 2),
+            ('AllocationLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        LOGSENSE = _LOGSENSE
+        _CDB.LOGSENSE = LOGSENSE
+
+
+        class _LOGSELECT(ctypes.Structure):
+            pass
+
+
+        _LOGSELECT._fields_ = [
+            # 0x4C - SCSIOP_LOG_SELECT
+            ('OperationCode', UCHAR),
+            ('SPBit', UCHAR, 1),
+            ('PCRBit', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved', UCHAR, 6),
+            ('PCBit', UCHAR, 2),
+            ('Reserved2', UCHAR * 4),
+            ('ParameterListLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        LOGSELECT = _LOGSELECT
+        _CDB.LOGSELECT = LOGSELECT
+
+
+        class _PRINT(ctypes.Structure):
+            pass
+
+
+        _PRINT._fields_ = [
+            # 0x0A - SCSIOP_PRINT
+            ('OperationCode', UCHAR),
+            ('Reserved', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('TransferLength', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        PRINT = _PRINT
+        _CDB.PRINT = PRINT
+
+
+        class _SEEK(ctypes.Structure):
+            pass
+
+
+        _SEEK._fields_ = [
+            # 0x2B - SCSIOP_SEEK
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('LogicalBlockAddress', UCHAR * 4),
+            ('Reserved2', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        SEEK = _SEEK
+        _CDB.SEEK = SEEK
+
+
+        class _ERASE(ctypes.Structure):
+            pass
+
+
+        _ERASE._fields_ = [
+            # 0x19 - SCSIOP_ERASE
+            ('OperationCode', UCHAR),
+            ('Long', UCHAR, 1),
+            ('Immediate', UCHAR, 1),
+            ('Reserved1', UCHAR, 3),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        ERASE = _ERASE
+        _CDB.ERASE = ERASE
+
+
+        class _START_STOP(ctypes.Structure):
+            pass
+
+
+        _START_STOP._fields_ = [
+            # 0x1B - SCSIOP_START_STOP_UNIT
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('Reserved1', UCHAR, 4),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR * 2),
+            ('Start', UCHAR, 1),
+            ('LoadEject', UCHAR, 1),
+            ('Reserved3', UCHAR, 6),
+            ('Control', UCHAR),
+        ]
+        START_STOP = _START_STOP
+        _CDB.START_STOP = START_STOP
+
+
+        class _MEDIA_REMOVAL(ctypes.Structure):
+            pass
+
+
+        _MEDIA_REMOVAL._fields_ = [
+            # 0x1E - SCSIOP_MEDIUM_REMOVAL
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('Reserved2', UCHAR * 2),
+            ('Prevent', UCHAR, 1),
+            ('Persistant', UCHAR, 1),
+            ('Reserved3', UCHAR, 6),
+            ('Control', UCHAR),
+        ]
+        MEDIA_REMOVAL = _MEDIA_REMOVAL
+        _CDB.MEDIA_REMOVAL = MEDIA_REMOVAL
+
+
+        class _SEEK_BLOCK(ctypes.Structure):
+            pass
+
+
+        _SEEK_BLOCK._fields_ = [
+            # 0x0C - SCSIOP_SEEK_BLOCK
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('Reserved1', UCHAR, 7),
+            ('BlockAddress', UCHAR * 3),
+            ('Link', UCHAR, 1),
+            ('Flag', UCHAR, 1),
+            ('Reserved2', UCHAR, 4),
+            ('VendorUnique', UCHAR, 2),
+        ]
+        SEEK_BLOCK = _SEEK_BLOCK
+        _CDB.SEEK_BLOCK = SEEK_BLOCK
+
+
+        class _REQUEST_BLOCK_ADDRESS(ctypes.Structure):
+            pass
+
+
+        _REQUEST_BLOCK_ADDRESS._fields_ = [
+            # 0x02 - SCSIOP_REQUEST_BLOCK_ADDR
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR * 3),
+            ('AllocationLength', UCHAR),
+            ('Link', UCHAR, 1),
+            ('Flag', UCHAR, 1),
+            ('Reserved2', UCHAR, 4),
+            ('VendorUnique', UCHAR, 2),
+        ]
+        REQUEST_BLOCK_ADDRESS = _REQUEST_BLOCK_ADDRESS
+        _CDB.REQUEST_BLOCK_ADDRESS = REQUEST_BLOCK_ADDRESS
+
+
+        class _PARTITION(ctypes.Structure):
+            pass
+
+
+        _PARTITION._fields_ = [
+            # 0x0D - SCSIOP_PARTITION
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('Sel', UCHAR, 1),
+            ('PartitionSelect', UCHAR, 6),
+            ('Reserved1', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        PARTITION = _PARTITION
+        _CDB.PARTITION = PARTITION
+
+
+        class _WRITE_TAPE_MARKS(ctypes.Structure):
+            pass
+
+
+        _WRITE_TAPE_MARKS._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('WriteSetMarks', UCHAR, 1),
+            ('Reserved', UCHAR, 3),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('TransferLength', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        WRITE_TAPE_MARKS = _WRITE_TAPE_MARKS
+        _CDB.WRITE_TAPE_MARKS = WRITE_TAPE_MARKS
+
+
+        class _SPACE_TAPE_MARKS(ctypes.Structure):
+            pass
+
+
+        class Byte6(ctypes.Union):
+            pass
+
+
+        class Fields(ctypes.Structure):
+            pass
+
+
+        Fields._fields_ = [
+            ('Link', UCHAR, 1),
+            ('Flag', UCHAR, 1),
+            ('Reserved', UCHAR, 4),
+            ('VendorUnique', UCHAR, 2),
+        ]
+        Byte6.Fields = Fields
+
+
+        Byte6._fields_ = [
+            ('value', UCHAR),
+            ('Fields', Byte6.Fields),
+        ]
+        _SPACE_TAPE_MARKS.Byte6 = Byte6
+
+
+        _SPACE_TAPE_MARKS._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('Code', UCHAR, 3),
+            ('Reserved', UCHAR, 2),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('NumMarksMSB', UCHAR),
+            ('NumMarks', UCHAR),
+            ('NumMarksLSB', UCHAR),
+            ('Byte6', _SPACE_TAPE_MARKS.Byte6),
+        ]
+        SPACE_TAPE_MARKS = _SPACE_TAPE_MARKS
+        _CDB.SPACE_TAPE_MARKS = SPACE_TAPE_MARKS
+
+
+        class _READ_POSITION(ctypes.Structure):
+            pass
+
+
+        _READ_POSITION._fields_ = [
+            # 0x43 - SCSIOP_READ_POSITION
+            ('Operation', UCHAR),
+            ('BlockType', UCHAR, 1),
+            ('Reserved1', UCHAR, 4),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 7),
+            ('Control', UCHAR),
+        ]
+        READ_POSITION = _READ_POSITION
+        _CDB.READ_POSITION = READ_POSITION
+
+
+        class _CDB6READWRITETAPE(ctypes.Structure):
+            pass
+
+
+        _CDB6READWRITETAPE._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('VendorSpecific', UCHAR, 5),
+            ('Reserved', UCHAR, 3),
+            ('TransferLenMSB', UCHAR),
+            ('TransferLen', UCHAR),
+            ('TransferLenLSB', UCHAR),
+            ('Link', UCHAR, 1),
+            ('Flag', UCHAR, 1),
+            ('Reserved1', UCHAR, 4),
+            ('VendorUnique', UCHAR, 2),
+        ]
+        CDB6READWRITETAPE = _CDB6READWRITETAPE
+        _CDB.CDB6READWRITETAPE = CDB6READWRITETAPE
+
+
+        class _INIT_ELEMENT_STATUS(ctypes.Structure):
+            pass
+
+
+        _INIT_ELEMENT_STATUS._fields_ = [
+            # 0x07 - SCSIOP_INIT_ELEMENT_STATUS
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNubmer', UCHAR, 3),
+            ('Reserved2', UCHAR * 3),
+            ('Reserved3', UCHAR, 7),
+            ('NoBarCode', UCHAR, 1),
+        ]
+        INIT_ELEMENT_STATUS = _INIT_ELEMENT_STATUS
+        _CDB.INIT_ELEMENT_STATUS = INIT_ELEMENT_STATUS
+
+
+        class _INITIALIZE_ELEMENT_RANGE(ctypes.Structure):
+            pass
+
+
+        _INITIALIZE_ELEMENT_RANGE._fields_ = [
+            # 0xE7 - SCSIOP_INIT_ELEMENT_RANGE
+            ('OperationCode', UCHAR),
+            ('Range', UCHAR, 1),
+            ('Reserved1', UCHAR, 4),
+            ('LogicalUnitNubmer', UCHAR, 3),
+            ('FirstElementAddress', UCHAR * 2),
+            ('Reserved2', UCHAR * 2),
+            ('NumberOfElements', UCHAR * 2),
+            ('Reserved3', UCHAR),
+            ('Reserved4', UCHAR, 7),
+            ('NoBarCode', UCHAR, 1),
+        ]
+        INITIALIZE_ELEMENT_RANGE = _INITIALIZE_ELEMENT_RANGE
+        _CDB.INITIALIZE_ELEMENT_RANGE = INITIALIZE_ELEMENT_RANGE
+
+
+        class _POSITION_TO_ELEMENT(ctypes.Structure):
+            pass
+
+
+        _POSITION_TO_ELEMENT._fields_ = [
+            # 0x2B - SCSIOP_POSITION_TO_ELEMENT
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('TransportElementAddress', UCHAR * 2),
+            ('DestinationElementAddress', UCHAR * 2),
+            ('Reserved2', UCHAR * 2),
+            ('Flip', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        POSITION_TO_ELEMENT = _POSITION_TO_ELEMENT
+        _CDB.POSITION_TO_ELEMENT = POSITION_TO_ELEMENT
+
+
+        class _MOVE_MEDIUM(ctypes.Structure):
+            pass
+
+
+        _MOVE_MEDIUM._fields_ = [
+            # 0xA5 - SCSIOP_MOVE_MEDIUM
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('TransportElementAddress', UCHAR * 2),
+            ('SourceElementAddress', UCHAR * 2),
+            ('DestinationElementAddress', UCHAR * 2),
+            ('Reserved2', UCHAR * 2),
+            ('Flip', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        MOVE_MEDIUM = _MOVE_MEDIUM
+        _CDB.MOVE_MEDIUM = MOVE_MEDIUM
+
+
+        class _EXCHANGE_MEDIUM(ctypes.Structure):
+            pass
+
+
+        _EXCHANGE_MEDIUM._fields_ = [
+            # 0xA6 - SCSIOP_EXCHANGE_MEDIUM
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('TransportElementAddress', UCHAR * 2),
+            ('SourceElementAddress', UCHAR * 2),
+            ('Destination1ElementAddress', UCHAR * 2),
+            ('Destination2ElementAddress', UCHAR * 2),
+            ('Flip1', UCHAR, 1),
+            ('Flip2', UCHAR, 1),
+            ('Reserved3', UCHAR, 6),
+            ('Control', UCHAR),
+        ]
+        EXCHANGE_MEDIUM = _EXCHANGE_MEDIUM
+        _CDB.EXCHANGE_MEDIUM = EXCHANGE_MEDIUM
+
+
+        class _READ_ELEMENT_STATUS(ctypes.Structure):
+            pass
+
+
+        _READ_ELEMENT_STATUS._fields_ = [
+            # 0xB8 - SCSIOP_READ_ELEMENT_STATUS
+            ('OperationCode', UCHAR),
+            ('ElementType', UCHAR, 4),
+            ('VolTag', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('StartingElementAddress', UCHAR * 2),
+            ('NumberOfElements', UCHAR * 2),
+            ('Reserved1', UCHAR),
+            ('AllocationLength', UCHAR * 3),
+            ('Reserved2', UCHAR),
+            ('Control', UCHAR),
+        ]
+        READ_ELEMENT_STATUS = _READ_ELEMENT_STATUS
+        _CDB.READ_ELEMENT_STATUS = READ_ELEMENT_STATUS
+
+
+        class _SEND_VOLUME_TAG(ctypes.Structure):
+            pass
+
+
+        _SEND_VOLUME_TAG._fields_ = [
+            # 0xB6 - SCSIOP_SEND_VOLUME_TAG
+            ('OperationCode', UCHAR),
+            ('ElementType', UCHAR, 4),
+            ('Reserved1', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('StartingElementAddress', UCHAR * 2),
+            ('Reserved2', UCHAR),
+            ('ActionCode', UCHAR, 5),
+            ('Reserved3', UCHAR, 3),
+            ('Reserved4', UCHAR * 2),
+            ('ParameterListLength', UCHAR * 2),
+            ('Reserved5', UCHAR),
+            ('Control', UCHAR),
+        ]
+        SEND_VOLUME_TAG = _SEND_VOLUME_TAG
+        _CDB.SEND_VOLUME_TAG = SEND_VOLUME_TAG
+
+
+        class _REQUEST_VOLUME_ELEMENT_ADDRESS(ctypes.Structure):
+            pass
+
+
+        _REQUEST_VOLUME_ELEMENT_ADDRESS._fields_ = [
+            # Unknown - - vendor - unique?
+            ('OperationCode', UCHAR),
+            ('ElementType', UCHAR, 4),
+            ('VolTag', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('StartingElementAddress', UCHAR * 2),
+            ('NumberElements', UCHAR * 2),
+            ('Reserved1', UCHAR),
+            ('AllocationLength', UCHAR * 3),
+            ('Reserved2', UCHAR),
+            ('Control', UCHAR),
+        ]
+        REQUEST_VOLUME_ELEMENT_ADDRESS = _REQUEST_VOLUME_ELEMENT_ADDRESS
+        _CDB.REQUEST_VOLUME_ELEMENT_ADDRESS = REQUEST_VOLUME_ELEMENT_ADDRESS
+
+
+        class _LOAD_UNLOAD(ctypes.Structure):
+            pass
+
+
+        _LOAD_UNLOAD._fields_ = [
+            # 0xA6 - SCSIOP_LOAD_UNLOAD_SLOT
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('Reserved1', UCHAR, 4),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 2),
+            ('Start', UCHAR, 1),
+            ('LoadEject', UCHAR, 1),
+            ('Reserved3', UCHAR, 6),
+            ('Reserved4', UCHAR * 3),
+            ('Slot', UCHAR),
+            ('Reserved5', UCHAR * 3),
+        ]
+        LOAD_UNLOAD = _LOAD_UNLOAD
+        _CDB.LOAD_UNLOAD = LOAD_UNLOAD
+
+
+        class _MECH_STATUS(ctypes.Structure):
+            pass
+
+
+        _MECH_STATUS._fields_ = [
+            # 0xBD - SCSIOP_MECHANISM_STATUS
+            ('OperationCode', UCHAR),
+            ('Reserved', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('Reserved1', UCHAR * 6),
+            ('AllocationLength', UCHAR * 2),
+            ('Reserved2', UCHAR * 1),
+            ('Control', UCHAR),
+        ]
+        MECH_STATUS = _MECH_STATUS
+        _CDB.MECH_STATUS = MECH_STATUS
+
+
+        class _SYNCHRONIZE_CACHE10(ctypes.Structure):
+            pass
+
+
+        _SYNCHRONIZE_CACHE10._fields_ = [
+            # 0x35 - SCSIOP_SYNCHRONIZE_CACHE
+            ('OperationCode', UCHAR),
+            ('RelAddr', UCHAR, 1),
+            ('Immediate', UCHAR, 1),
+            ('Reserved', UCHAR, 3),
+            ('Lun', UCHAR, 3),
+            # Unused - set to zero
+            ('LogicalBlockAddress', UCHAR * 4),
+            ('Reserved2', UCHAR),
+            # Unused - set to zero
+            ('BlockCount', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        SYNCHRONIZE_CACHE10 = _SYNCHRONIZE_CACHE10
+        _CDB.SYNCHRONIZE_CACHE10 = SYNCHRONIZE_CACHE10
+
+
+        class _GET_EVENT_STATUS_NOTIFICATION(ctypes.Structure):
+            pass
+
+
+        _GET_EVENT_STATUS_NOTIFICATION._fields_ = [
+            # 0x4A - SCSIOP_GET_EVENT_STATUS_NOTIFICATION
+            ('OperationCode', UCHAR),
+            ('Immediate', UCHAR, 1),
+            ('Reserved', UCHAR, 4),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 2),
+            ('NotificationClassRequest', UCHAR),
+            ('Reserved3', UCHAR * 2),
+            ('EventListLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        GET_EVENT_STATUS_NOTIFICATION = _GET_EVENT_STATUS_NOTIFICATION
+        _CDB.GET_EVENT_STATUS_NOTIFICATION = GET_EVENT_STATUS_NOTIFICATION
+
+
+        class _GET_PERFORMANCE(ctypes.Structure):
+            pass
+
+
+        _GET_PERFORMANCE._fields_ = [
+            # 0xAC - SCSIOP_GET_PERFORMANCE
+            ('OperationCode', UCHAR),
+            ('Except', UCHAR, 2),
+            ('Write', UCHAR, 1),
+            ('Tolerance', UCHAR, 2),
+            ('Reserved0', UCHAR, 3),
+            ('StartingLBA', UCHAR * 4),
+            ('Reserved1', UCHAR * 2),
+            ('MaximumNumberOfDescriptors', UCHAR * 2),
+            ('Type', UCHAR),
+            ('Control', UCHAR),
+        ]
+        GET_PERFORMANCE = _GET_PERFORMANCE
+        _CDB.GET_PERFORMANCE = GET_PERFORMANCE
+
+
+        class _READ_DVD_STRUCTURE(ctypes.Structure):
+            pass
+
+
+        _READ_DVD_STRUCTURE._fields_ = [
+            # 0xAD - SCSIOP_READ_DVD_STRUCTURE
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('RMDBlockNumber', UCHAR * 4),
+            ('LayerNumber', UCHAR),
+            ('Format', UCHAR),
+            ('AllocationLength', UCHAR * 2),
+            ('Reserved3', UCHAR, 6),
+            ('AGID', UCHAR, 2),
+            ('Control', UCHAR),
+        ]
+        READ_DVD_STRUCTURE = _READ_DVD_STRUCTURE
+        _CDB.READ_DVD_STRUCTURE = READ_DVD_STRUCTURE
+
+
+        class _SET_STREAMING(ctypes.Structure):
+            pass
+
+
+        _SET_STREAMING._fields_ = [
+            # 0xB6 - SCSIOP_SET_STREAMING
+            ('OperationCode', UCHAR),
+            ('Reserved', UCHAR * 8),
+            ('ParameterListLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        SET_STREAMING = _SET_STREAMING
+        _CDB.SET_STREAMING = SET_STREAMING
+
+
+        class _SEND_DVD_STRUCTURE(ctypes.Structure):
+            pass
+
+
+        _SEND_DVD_STRUCTURE._fields_ = [
+            # 0xBF - SCSIOP_SEND_DVD_STRUCTURE
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 5),
+            ('Format', UCHAR),
+            ('ParameterListLength', UCHAR * 2),
+            ('Reserved3', UCHAR),
+            ('Control', UCHAR),
+        ]
+        SEND_DVD_STRUCTURE = _SEND_DVD_STRUCTURE
+        _CDB.SEND_DVD_STRUCTURE = SEND_DVD_STRUCTURE
+
+
+        class _SEND_KEY(ctypes.Structure):
+            pass
+
+
+        _SEND_KEY._fields_ = [
+            # 0xA3 - SCSIOP_SEND_KEY
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 6),
+            ('ParameterListLength', UCHAR * 2),
+            ('KeyFormat', UCHAR, 6),
+            ('AGID', UCHAR, 2),
+            ('Control', UCHAR),
+        ]
+        SEND_KEY = _SEND_KEY
+        _CDB.SEND_KEY = SEND_KEY
+
+
+        class _REPORT_KEY(ctypes.Structure):
+            pass
+
+
+        _REPORT_KEY._fields_ = [
+            # 0xA4 - SCSIOP_REPORT_KEY
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            # for title key
+            ('LogicalBlockAddress', UCHAR * 4),
+            ('Reserved2', UCHAR * 2),
+            ('AllocationLength', UCHAR * 2),
+            ('KeyFormat', UCHAR, 6),
+            ('AGID', UCHAR, 2),
+            ('Control', UCHAR),
+        ]
+        REPORT_KEY = _REPORT_KEY
+        _CDB.REPORT_KEY = REPORT_KEY
+
+
+        class _SET_READ_AHEAD(ctypes.Structure):
+            pass
+
+
+        _SET_READ_AHEAD._fields_ = [
+            # 0xA7 - SCSIOP_SET_READ_AHEAD
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('TriggerLBA', UCHAR * 4),
+            ('ReadAheadLBA', UCHAR * 4),
+            ('Reserved2', UCHAR),
+            ('Control', UCHAR),
+        ]
+        SET_READ_AHEAD = _SET_READ_AHEAD
+        _CDB.SET_READ_AHEAD = SET_READ_AHEAD
+
+
+        class _READ_FORMATTED_CAPACITIES(ctypes.Structure):
+            pass
+
+
+        _READ_FORMATTED_CAPACITIES._fields_ = [
+            # 0x23 - SCSIOP_READ_FORMATTED_CAPACITY
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 5),
+            ('Lun', UCHAR, 3),
+            ('Reserved2', UCHAR * 5),
+            ('AllocationLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        READ_FORMATTED_CAPACITIES = _READ_FORMATTED_CAPACITIES
+        _CDB.READ_FORMATTED_CAPACITIES = READ_FORMATTED_CAPACITIES
+
+
+        class _REPORT_LUNS(ctypes.Structure):
+            pass
+
+
+        _REPORT_LUNS._fields_ = [
+            # 0xA0 - SCSIOP_REPORT_LUNS
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR * 5),
+            ('AllocationLength', UCHAR * 4),
+            ('Reserved2', UCHAR * 1),
+            ('Control', UCHAR),
+        ]
+        REPORT_LUNS = _REPORT_LUNS
+        _CDB.REPORT_LUNS = REPORT_LUNS
+
+
+        class _PERSISTENT_RESERVE_IN(ctypes.Structure):
+            pass
+
+
+        _PERSISTENT_RESERVE_IN._fields_ = [
+            # 0x5E - SCSIOP_PERSISTENT_RESERVE_IN
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('Reserved2', UCHAR * 5),
+            ('AllocationLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        PERSISTENT_RESERVE_IN = _PERSISTENT_RESERVE_IN
+        _CDB.PERSISTENT_RESERVE_IN = PERSISTENT_RESERVE_IN
+
+
+        class _PERSISTENT_RESERVE_OUT(ctypes.Structure):
+            pass
+
+
+        _PERSISTENT_RESERVE_OUT._fields_ = [
+            # 0x5F - SCSIOP_PERSISTENT_RESERVE_OUT
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('Type', UCHAR, 4),
+            ('Scope', UCHAR, 4),
+            ('Reserved2', UCHAR * 4),
+            # 0x18
+            ('ParameterListLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        PERSISTENT_RESERVE_OUT = _PERSISTENT_RESERVE_OUT
+        _CDB.PERSISTENT_RESERVE_OUT = PERSISTENT_RESERVE_OUT
+
+
+        class _REPORT_TIMESTAMP(ctypes.Structure):
+            pass
+
+
+        _REPORT_TIMESTAMP._fields_ = [
+            # Byte 0 : SCSIOP_MAINTENANCE_IN
+            ('OperationCode', UCHAR),
+            # Byte 1, bit 0 - 4 : SERVICE_ACTION_REPORT_TIMESTAMP
+            ('ServiceAction', UCHAR, 5),
+            # Byte 1, bit 5 - 7
+            ('Reserved1', UCHAR, 3),
+            # Byte 2 - 5
+            ('Reserved2', UCHAR * 4),
+            # Byte 6 - 9
+            ('AllocationLength', UCHAR * 4),
+            # Byte 10
+            ('Reserved3', UCHAR),
+            # Byte 11
+            ('Control', UCHAR),
+        ]
+        REPORT_TIMESTAMP = _REPORT_TIMESTAMP
+        _CDB.REPORT_TIMESTAMP = REPORT_TIMESTAMP
+
+
+        class _SET_TIMESTAMP(ctypes.Structure):
+            pass
+
+
+        _SET_TIMESTAMP._fields_ = [
+            # Byte 0 : SCSIOP_MAINTENANCE_OUT
+            ('OperationCode', UCHAR),
+            # Byte 1, bit 0 - 4 : SERVICE_ACTION_SET_TIMESTAMP
+            ('ServiceAction', UCHAR, 5),
+            # Byte 1, bit 5 - 7
+            ('Reserved1', UCHAR, 3),
+            # Byte 2 - 5
+            ('Reserved2', UCHAR * 4),
+            # Byte 6 - 9
+            ('ParameterListLength', UCHAR * 4),
+            # Byte 10
+            ('Reserved3', UCHAR),
+            # Byte 11
+            ('Control', UCHAR),
+        ]
+        SET_TIMESTAMP = _SET_TIMESTAMP
+        _CDB.SET_TIMESTAMP = SET_TIMESTAMP
+
+
+        class _GET_CONFIGURATION(ctypes.Structure):
+            pass
+
+
+        _GET_CONFIGURATION._fields_ = [
+            # 0x46 - SCSIOP_GET_CONFIGURATION
+            ('OperationCode', UCHAR),
+            # SCSI_GET_CONFIGURATION_REQUEST_TYPE_*
+            ('RequestType', UCHAR, 2),
+            # includes obsolete LUN field
+            ('Reserved1', UCHAR, 6),
+            ('StartingFeature', UCHAR * 2),
+            ('Reserved2', UCHAR * 3),
+            ('AllocationLength', UCHAR * 2),
+            ('Control', UCHAR),
+        ]
+        GET_CONFIGURATION = _GET_CONFIGURATION
+        _CDB.GET_CONFIGURATION = GET_CONFIGURATION
+
+
+        class _SET_CD_SPEED(ctypes.Structure):
+            pass
+
+
+        class _Union_1(ctypes.Union):
+            pass
+
+
+        class _Struct_1(ctypes.Structure):
+            pass
+
+
+        _Struct_1._fields_ = [
+            ('RotationControl', UCHAR, 2),
+            ('Reserved3', UCHAR, 6),
+        ]
+        _Union_1._Struct_1 = _Struct_1
+
+        _Union_1._anonymous_ = (
+            '_Struct_1',
+        )
+
+        _Union_1._fields_ = [
+            ('Reserved1', UCHAR),
+            ('_Struct_1', _Union_1._Struct_1),
+        ]
+        _SET_CD_SPEED._Union_1 = _Union_1
+
+        _SET_CD_SPEED._anonymous_ = (
+            '_Union_1',
+        )
+
+        _SET_CD_SPEED._fields_ = [
+            # 0xB8 - SCSIOP_SET_CD_SPEED
+            ('OperationCode', UCHAR),
+            ('_Union_1', _SET_CD_SPEED._Union_1),
+            # 1x == (75 * 2352)
+            ('ReadSpeed', UCHAR * 2),
+            # 1x == (75 * 2352)
+            ('WriteSpeed', UCHAR * 2),
+            ('Reserved2', UCHAR * 5),
+            ('Control', UCHAR),
+        ]
+        SET_CD_SPEED = _SET_CD_SPEED
+        _CDB.SET_CD_SPEED = SET_CD_SPEED
+
+
+        class _READ12(ctypes.Structure):
+            pass
+
+
+        _READ12._fields_ = [
+            # 0xA8 - SCSIOP_READ12
+            ('OperationCode', UCHAR),
+            ('RelativeAddress', UCHAR, 1),
+            ('Reserved1', UCHAR, 2),
+            ('ForceUnitAccess', UCHAR, 1),
+            ('DisablePageOut', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 4),
+            ('TransferLength', UCHAR * 4),
+            ('Reserved2', UCHAR, 7),
+            ('Streaming', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        READ12 = _READ12
+        _CDB.READ12 = READ12
+
+
+        class _WRITE12(ctypes.Structure):
+            pass
+
+
+        _WRITE12._fields_ = [
+            # 0xAA - SCSIOP_WRITE12
+            ('OperationCode', UCHAR),
+            ('RelativeAddress', UCHAR, 1),
+            ('Reserved1', UCHAR, 1),
+            ('EBP', UCHAR, 1),
+            ('ForceUnitAccess', UCHAR, 1),
+            ('DisablePageOut', UCHAR, 1),
+            ('LogicalUnitNumber', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 4),
+            ('TransferLength', UCHAR * 4),
+            ('Reserved2', UCHAR, 7),
+            ('Streaming', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        WRITE12 = _WRITE12
+        _CDB.WRITE12 = WRITE12
+
+
+        class _ATA_PASSTHROUGH12(ctypes.Structure):
+            pass
+
+
+        _ATA_PASSTHROUGH12._fields_ = [
+            # 0xA1 - SCSIOP_ATA_PASSTHROUGH12
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 1),
+            ('Protocol', UCHAR, 4),
+            ('MultipleCount', UCHAR, 3),
+            ('TLength', UCHAR, 2),
+            ('ByteBlock', UCHAR, 1),
+            ('TDir', UCHAR, 1),
+            ('Reserved2', UCHAR, 1),
+            ('CkCond', UCHAR, 1),
+            ('Offline', UCHAR, 2),
+            ('Features', UCHAR),
+            ('SectorCount', UCHAR),
+            ('LbaLow', UCHAR),
+            ('LbaMid', UCHAR),
+            ('LbaHigh', UCHAR),
+            ('Device', UCHAR),
+            ('Command', UCHAR),
+            ('Reserved3', UCHAR),
+            ('Control', UCHAR),
+        ]
+        ATA_PASSTHROUGH12 = _ATA_PASSTHROUGH12
+        _CDB.ATA_PASSTHROUGH12 = ATA_PASSTHROUGH12
+
+
+        class _READ16(ctypes.Structure):
+            pass
+
+
+        _READ16._fields_ = [
+            # 0x88 - SCSIOP_READ16
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 3),
+            ('ForceUnitAccess', UCHAR, 1),
+            ('DisablePageOut', UCHAR, 1),
+            ('ReadProtect', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 8),
+            ('TransferLength', UCHAR * 4),
+            ('Reserved2', UCHAR, 7),
+            ('Streaming', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        READ16 = _READ16
+        _CDB.READ16 = READ16
+
+
+        class _WRITE16(ctypes.Structure):
+            pass
+
+
+        _WRITE16._fields_ = [
+            # 0x8A - SCSIOP_WRITE16
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 3),
+            ('ForceUnitAccess', UCHAR, 1),
+            ('DisablePageOut', UCHAR, 1),
+            ('WriteProtect', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 8),
+            ('TransferLength', UCHAR * 4),
+            ('Reserved2', UCHAR, 7),
+            ('Streaming', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        WRITE16 = _WRITE16
+        _CDB.WRITE16 = WRITE16
+
+
+        class _VERIFY16(ctypes.Structure):
+            pass
+
+
+        _VERIFY16._fields_ = [
+            # 0x8F - SCSIOP_VERIFY16
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 1),
+            ('ByteCheck', UCHAR, 1),
+            ('BlockVerify', UCHAR, 1),
+            ('Reserved2', UCHAR, 1),
+            ('DisablePageOut', UCHAR, 1),
+            ('VerifyProtect', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 8),
+            ('VerificationLength', UCHAR * 4),
+            ('Reserved3', UCHAR, 7),
+            ('Streaming', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        VERIFY16 = _VERIFY16
+        _CDB.VERIFY16 = VERIFY16
+
+
+        class _SYNCHRONIZE_CACHE16(ctypes.Structure):
+            pass
+
+
+        _SYNCHRONIZE_CACHE16._fields_ = [
+            # 0x91 - SCSIOP_SYNCHRONIZE_CACHE16
+            ('OperationCode', UCHAR),
+            ('Reserved1', UCHAR, 1),
+            ('Immediate', UCHAR, 1),
+            ('Reserved2', UCHAR, 6),
+            ('LogicalBlock', UCHAR * 8),
+            ('BlockCount', UCHAR * 4),
+            ('Reserved3', UCHAR),
+            ('Control', UCHAR),
+        ]
+        SYNCHRONIZE_CACHE16 = _SYNCHRONIZE_CACHE16
+        _CDB.SYNCHRONIZE_CACHE16 = SYNCHRONIZE_CACHE16
+
+
+        class _READ_CAPACITY16(ctypes.Structure):
+            pass
+
+
+        _READ_CAPACITY16._fields_ = [
+            # 0x9E - SCSIOP_READ_CAPACITY16
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('LogicalBlock', UCHAR * 8),
+            ('AllocationLength', UCHAR * 4),
+            ('PMI', UCHAR, 1),
+            ('Reserved2', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        READ_CAPACITY16 = _READ_CAPACITY16
+        _CDB.READ_CAPACITY16 = READ_CAPACITY16
+
+
+        class _ATA_PASSTHROUGH16(ctypes.Structure):
+            pass
+
+
+        _ATA_PASSTHROUGH16._fields_ = [
+            # 0x85 - SCSIOP_ATA_PASSTHROUGH16
+            ('OperationCode', UCHAR),
+            ('Extend', UCHAR, 1),
+            ('Protocol', UCHAR, 4),
+            ('MultipleCount', UCHAR, 3),
+            ('TLength', UCHAR, 2),
+            ('ByteBlock', UCHAR, 1),
+            ('TDir', UCHAR, 1),
+            ('Reserved1', UCHAR, 1),
+            ('CkCond', UCHAR, 1),
+            ('Offline', UCHAR, 2),
+            ('Features15_8', UCHAR),
+            ('Features7_0', UCHAR),
+            ('SectorCount15_8', UCHAR),
+            ('SectorCount7_0', UCHAR),
+            ('LbaLow15_8', UCHAR),
+            ('LbaLow7_0', UCHAR),
+            ('LbaMid15_8', UCHAR),
+            ('LbaMid7_0', UCHAR),
+            ('LbaHigh15_8', UCHAR),
+            ('LbaHigh7_0', UCHAR),
+            ('Device', UCHAR),
+            ('Command', UCHAR),
+            ('Control', UCHAR),
+        ]
+        ATA_PASSTHROUGH16 = _ATA_PASSTHROUGH16
+        _CDB.ATA_PASSTHROUGH16 = ATA_PASSTHROUGH16
+
+
+        class _GET_LBA_STATUS(ctypes.Structure):
+            pass
+
+
+        _GET_LBA_STATUS._fields_ = [
+            # 0x9E SCSIOP_GET_LBA_STATUS
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('StartingLBA', UCHAR * 8),
+            ('AllocationLength', UCHAR * 4),
+            ('Reserved2', UCHAR),
+            ('Control', UCHAR),
+        ]
+        GET_LBA_STATUS = _GET_LBA_STATUS
+        _CDB.GET_LBA_STATUS = GET_LBA_STATUS
+
+
+        class _TOKEN_OPERATION(ctypes.Structure):
+            pass
+
+
+        _TOKEN_OPERATION._fields_ = [
+            # 0x83 SCSIOP_POPULATE_TOKEN, SCSIOP_WRITE_USING_TOKEN
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('Reserved2', UCHAR * 4),
+            ('ListIdentifier', UCHAR * 4),
+            ('ParameterListLength', UCHAR * 4),
+            ('GroupNumber', UCHAR, 5),
+            ('Reserved3', UCHAR, 3),
+            ('Control', UCHAR),
+        ]
+        TOKEN_OPERATION = _TOKEN_OPERATION
+        _CDB.TOKEN_OPERATION = TOKEN_OPERATION
+
+
+        class _RECEIVE_TOKEN_INFORMATION(ctypes.Structure):
+            pass
+
+
+        _RECEIVE_TOKEN_INFORMATION._fields_ = [
+            # 0x84 SCSIOP_RECEIVE_ROD_TOKEN_INFORMATION
+            ('OperationCode', UCHAR),
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ListIdentifier', UCHAR * 4),
+            ('Reserved2', UCHAR * 4),
+            ('AllocationLength', UCHAR * 4),
+            ('Reserved3', UCHAR),
+            ('Control', UCHAR),
+        ]
+        RECEIVE_TOKEN_INFORMATION = _RECEIVE_TOKEN_INFORMATION
+        _CDB.RECEIVE_TOKEN_INFORMATION = RECEIVE_TOKEN_INFORMATION
+
+
+        class _WRITE_BUFFER(ctypes.Structure):
+            pass
+
+
+        _WRITE_BUFFER._fields_ = [
+            # 0x3B SCSIOP_WRITE_DATA_BUFF
+            ('OperationCode', UCHAR),
+            ('Mode', UCHAR, 5),
+            ('ModeSpecific', UCHAR, 3),
+            ('BufferID', UCHAR),
+            ('BufferOffset', UCHAR * 3),
+            ('ParameterListLength', UCHAR * 3),
+            ('Control', UCHAR),
+        ]
+        WRITE_BUFFER = _WRITE_BUFFER
+        _CDB.WRITE_BUFFER = WRITE_BUFFER
+
+
+        class _CLOSE_ZONE(ctypes.Structure):
+            pass
+
+
+        _CLOSE_ZONE._fields_ = [
+            # 0x94 - SCSIOP_ZBC_OUT
+            ('OperationCode', UCHAR),
+            # 0x01 - SERVICE_ACTION_CLOSE_ZONE
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ZoneId', UCHAR * 8),
+            ('Reserved2', UCHAR * 4),
+            ('All', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        CLOSE_ZONE = _CLOSE_ZONE
+        _CDB.CLOSE_ZONE = CLOSE_ZONE
+
+
+        class _FINISH_ZONE(ctypes.Structure):
+            pass
+
+
+        _FINISH_ZONE._fields_ = [
+            # 0x94 - SCSIOP_ZBC_OUT
+            ('OperationCode', UCHAR),
+            # 0x02 - SERVICE_ACTION_FINISH_ZONE
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ZoneId', UCHAR * 8),
+            ('Reserved2', UCHAR * 4),
+            ('All', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        FINISH_ZONE = _FINISH_ZONE
+        _CDB.FINISH_ZONE = FINISH_ZONE
+
+
+        class _OPEN_ZONE(ctypes.Structure):
+            pass
+
+
+        _OPEN_ZONE._fields_ = [
+            # 0x94 - SCSIOP_ZBC_OUT
+            ('OperationCode', UCHAR),
+            # 0x03 - SERVICE_ACTION_OPEN_ZONE
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ZoneId', UCHAR * 8),
+            ('Reserved2', UCHAR * 4),
+            ('All', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        OPEN_ZONE = _OPEN_ZONE
+        _CDB.OPEN_ZONE = OPEN_ZONE
+
+
+        class _RESET_WRITE_POINTER(ctypes.Structure):
+            pass
+
+
+        _RESET_WRITE_POINTER._fields_ = [
+            # 0x94 - SCSIOP_ZBC_OUT
+            ('OperationCode', UCHAR),
+            # 0x04 - SERVICE_ACTION_RESET_WRITE_POINTER
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ZoneId', UCHAR * 8),
+            ('Reserved2', UCHAR * 4),
+            ('All', UCHAR, 1),
+            ('Reserved3', UCHAR, 7),
+            ('Control', UCHAR),
+        ]
+        RESET_WRITE_POINTER = _RESET_WRITE_POINTER
+        _CDB.RESET_WRITE_POINTER = RESET_WRITE_POINTER
+
+
+        class _REPORT_ZONES(ctypes.Structure):
+            pass
+
+
+        _REPORT_ZONES._fields_ = [
+            # 0x95 - SCSIOP_ZBC_IN
+            ('OperationCode', UCHAR),
+            # 0x00 - SERVICE_ACTION_REPORT_ZONES
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('ZoneStartLBA', UCHAR * 8),
+            ('AllocationLength', UCHAR * 4),
+            ('ReportingOptions', UCHAR, 6),
+            ('Reserved3', UCHAR, 1),
+            ('Partial', UCHAR, 1),
+            ('Control', UCHAR),
+        ]
+        REPORT_ZONES = _REPORT_ZONES
+        _CDB.REPORT_ZONES = REPORT_ZONES
+
+
+        class _GET_PHYSICAL_ELEMENT_STATUS(ctypes.Structure):
+            pass
+
+
+        _GET_PHYSICAL_ELEMENT_STATUS._fields_ = [
+            # 0x9E - SCSIOP_GET_PHYSICAL_ELEMENT_STATUS
+            ('OperationCode', UCHAR),
+            # 0x17 - SERVICE_ACTION_GET_PHYSICAL_ELEMENT_STATUS
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('Reserved2', UCHAR * 4),
+            ('StartingElement', UCHAR * 4),
+            ('AllocationLength', UCHAR * 4),
+            ('ReportType', UCHAR, 4),
+            ('Reserved3', UCHAR, 2),
+            ('Filter', UCHAR, 2),
+            ('Control', UCHAR),
+        ]
+        GET_PHYSICAL_ELEMENT_STATUS = _GET_PHYSICAL_ELEMENT_STATUS
+        _CDB.GET_PHYSICAL_ELEMENT_STATUS = GET_PHYSICAL_ELEMENT_STATUS
+
+
+        class _REMOVE_ELEMENT_AND_TRUNCATE(ctypes.Structure):
+            pass
+
+
+        _REMOVE_ELEMENT_AND_TRUNCATE._fields_ = [
+            # 0x9E - SCSIOP_REMOVE_ELEMENT_AND_TRUNCATE
+            ('OperationCode', UCHAR),
+            # 0x18 - SERVICE_ACTION_REMOVE_ELEMENT_AND_TRUNCATE
+            ('ServiceAction', UCHAR, 5),
+            ('Reserved1', UCHAR, 3),
+            ('RequestedCapacity', UCHAR * 8),
+            ('ElementIdentifier', UCHAR * 4),
+            ('Reserved2', UCHAR),
+            ('Control', UCHAR),
+        ]
+        REMOVE_ELEMENT_AND_TRUNCATE = _REMOVE_ELEMENT_AND_TRUNCATE
+        _CDB.REMOVE_ELEMENT_AND_TRUNCATE = REMOVE_ELEMENT_AND_TRUNCATE
+
+
+        _TEMP__CDB = [
             # Generic 6 - Byte CDB
             ('CDB6GENERIC', _CDB.CDB6GENERIC),
             # Standard 6 - byte CDB
@@ -1736,7 +3448,6 @@ if not defined(_NTSCSI_):
             # Read Table of Contents
             ('READ_TOC', _CDB.READ_TOC),
             ('READ_DISK_INFORMATION', _CDB.READ_DISK_INFORMATION),
-            ('READ_DISC_INFORMATION', _CDB.READ_DISC_INFORMATION),
             ('READ_TRACK_INFORMATION', _CDB.READ_TRACK_INFORMATION),
             ('RESERVE_TRACK_RZONE', _CDB.RESERVE_TRACK_RZONE),
             ('SEND_OPC_INFORMATION', _CDB.SEND_OPC_INFORMATION),
@@ -1748,14 +3459,117 @@ if not defined(_NTSCSI_):
             ('PLAY_AUDIO', _CDB.PLAY_AUDIO),
             ('PLAY_AUDIO_MSF', _CDB.PLAY_AUDIO_MSF),
             ('BLANK_MEDIA', _CDB.BLANK_MEDIA),
+            ('PLAY_CD', _CDB.PLAY_CD),
+            ('SCAN_CD', _CDB.SCAN_CD),
+            ('STOP_PLAY_SCAN', _CDB.STOP_PLAY_SCAN),
+            # Read SubChannel Data
+            ('SUBCHANNEL', _CDB.SUBCHANNEL),
+            # Read CD. Used by Atapi for raw sector reads.
+            ('READ_CD', _CDB.READ_CD),
+            ('READ_CD_MSF', _CDB.READ_CD_MSF),
+            # Plextor Read CD - DA
+            ('PLXTR_READ_CDDA', _CDB.PLXTR_READ_CDDA),
+            # NEC Read CD - DA
+            ('NEC_READ_CDDA', _CDB.NEC_READ_CDDA),
         ]
+        if NTDDI_VERSION >= NTDDI_WIN8:
+            _TEMP__CDB += [
+                # Mode sense
+                ('MODE_SENSE', _CDB.MODE_SENSE),
+                ('MODE_SENSE10', _CDB.MODE_SENSE10),
+            ]
+        else:
+            _TEMP__CDB += [
+                ('MODE_SENSE', _CDB.MODE_SENSE),
+                ('MODE_SENSE10', _CDB.MODE_SENSE10),
+            ]
+        # END IF
+        _TEMP__CDB += [
+            # Mode select
+            ('MODE_SELECT', _CDB.MODE_SELECT),
+            ('MODE_SELECT10', _CDB.MODE_SELECT10),
+            ('LOCATE', _CDB.LOCATE),
+            ('LOGSENSE', _CDB.LOGSENSE),
+            ('LOGSELECT', _CDB.LOGSELECT),
+            ('PRINT', _CDB.PRINT),
+            ('SEEK', _CDB.SEEK),
+            ('ERASE', _CDB.ERASE),
+            ('START_STOP', _CDB.START_STOP),
+            ('MEDIA_REMOVAL', _CDB.MEDIA_REMOVAL),
+            # Tape CDBs
+            ('SEEK_BLOCK', _CDB.SEEK_BLOCK),
+            ('REQUEST_BLOCK_ADDRESS', _CDB.REQUEST_BLOCK_ADDRESS),
+            ('PARTITION', _CDB.PARTITION),
+            ('WRITE_TAPE_MARKS', _CDB.WRITE_TAPE_MARKS),
+            ('SPACE_TAPE_MARKS', _CDB.SPACE_TAPE_MARKS),
+            # Read tape position
+            ('READ_POSITION', _CDB.READ_POSITION),
+            # ReadWrite for Tape
+            ('CDB6READWRITETAPE', _CDB.CDB6READWRITETAPE),
+            # Medium changer CDB's
+            ('INIT_ELEMENT_STATUS', _CDB.INIT_ELEMENT_STATUS),
+            ('INITIALIZE_ELEMENT_RANGE', _CDB.INITIALIZE_ELEMENT_RANGE),
+            ('POSITION_TO_ELEMENT', _CDB.POSITION_TO_ELEMENT),
+            ('MOVE_MEDIUM', _CDB.MOVE_MEDIUM),
+            ('EXCHANGE_MEDIUM', _CDB.EXCHANGE_MEDIUM),
+            ('READ_ELEMENT_STATUS', _CDB.READ_ELEMENT_STATUS),
+            ('SEND_VOLUME_TAG', _CDB.SEND_VOLUME_TAG),
+            ('REQUEST_VOLUME_ELEMENT_ADDRESS', _CDB.REQUEST_VOLUME_ELEMENT_ADDRESS),
+            # Atapi 2.5 Changer 12 - byte CDBs
+            ('LOAD_UNLOAD', _CDB.LOAD_UNLOAD),
+            ('MECH_STATUS', _CDB.MECH_STATUS),
+            # C/DVD 0.9 CDBs
+            ('SYNCHRONIZE_CACHE10', _CDB.SYNCHRONIZE_CACHE10),
+            ('GET_EVENT_STATUS_NOTIFICATION', _CDB.GET_EVENT_STATUS_NOTIFICATION),
+            ('GET_PERFORMANCE', _CDB.GET_PERFORMANCE),
+            ('READ_DVD_STRUCTURE', _CDB.READ_DVD_STRUCTURE),
+            ('SET_STREAMING', _CDB.SET_STREAMING),
+            ('SEND_DVD_STRUCTURE', _CDB.SEND_DVD_STRUCTURE),
+            ('SEND_KEY', _CDB.SEND_KEY),
+            ('REPORT_KEY', _CDB.REPORT_KEY),
+            ('SET_READ_AHEAD', _CDB.SET_READ_AHEAD),
+            ('READ_FORMATTED_CAPACITIES', _CDB.READ_FORMATTED_CAPACITIES),
+            # SCSI - 3
+            ('REPORT_LUNS', _CDB.REPORT_LUNS),
+            ('PERSISTENT_RESERVE_IN', _CDB.PERSISTENT_RESERVE_IN),
+            ('PERSISTENT_RESERVE_OUT', _CDB.PERSISTENT_RESERVE_OUT),
+            ('REPORT_TIMESTAMP', _CDB.REPORT_TIMESTAMP),
+            ('SET_TIMESTAMP', _CDB.SET_TIMESTAMP),
+            # MMC / SFF - 8090 commands
+            ('GET_CONFIGURATION', _CDB.GET_CONFIGURATION),
+            ('SET_CD_SPEED', _CDB.SET_CD_SPEED),
+            ('READ12', _CDB.READ12),
+            ('WRITE12', _CDB.WRITE12),
+            ('ATA_PASSTHROUGH12', _CDB.ATA_PASSTHROUGH12),
+            # 16 - byte CDBs
+            ('READ16', _CDB.READ16),
+            ('WRITE16', _CDB.WRITE16),
+            ('VERIFY16', _CDB.VERIFY16),
+            ('SYNCHRONIZE_CACHE16', _CDB.SYNCHRONIZE_CACHE16),
+            ('READ_CAPACITY16', _CDB.READ_CAPACITY16),
+            ('ATA_PASSTHROUGH16', _CDB.ATA_PASSTHROUGH16),
+            ('GET_LBA_STATUS', _CDB.GET_LBA_STATUS),
+            ('TOKEN_OPERATION', _CDB.TOKEN_OPERATION),
+            ('RECEIVE_TOKEN_INFORMATION', _CDB.RECEIVE_TOKEN_INFORMATION),
+            ('WRITE_BUFFER', _CDB.WRITE_BUFFER),
+            ('CLOSE_ZONE', _CDB.CLOSE_ZONE),
+            ('FINISH_ZONE', _CDB.FINISH_ZONE),
+            ('OPEN_ZONE', _CDB.OPEN_ZONE),
+            ('RESET_WRITE_POINTER', _CDB.RESET_WRITE_POINTER),
+            ('REPORT_ZONES', _CDB.REPORT_ZONES),
+            ('GET_PHYSICAL_ELEMENT_STATUS', _CDB.GET_PHYSICAL_ELEMENT_STATUS),
+            ('REMOVE_ELEMENT_AND_TRUNCATE', _CDB.REMOVE_ELEMENT_AND_TRUNCATE),
+            ('AsUlong', ULONG * 4),
+            ('AsByte', UCHAR * 16),
+        ]
+        _CDB._fields_ = _TEMP__CDB
 
 
-        class CDB32GENERIC(ctypes.Structure):
+        class _CDB32GENERIC(ctypes.Structure):
             pass
 
 
-        CDB32GENERIC._fields_ = [
+        _CDB32GENERIC._fields_ = [
             ('OperationCode', UCHAR),
             ('Control', UCHAR),
             ('Reserved1', UCHAR * 4),
@@ -1768,6 +3582,7 @@ if not defined(_NTSCSI_):
             ('Reserved4', UCHAR * 8),
             ('TransferLength', UCHAR * 4),
         ]
+        CDB32GENERIC = _CDB32GENERIC
         _CDB32.CDB32GENERIC = CDB32GENERIC
 
 
@@ -1795,6 +3610,7 @@ if not defined(_NTSCSI_):
         NOTIFICATION_MULTI_HOST_CLASS_EVENTS = 0x5
         NOTIFICATION_DEVICE_BUSY_CLASS_EVENTS = 0x6
 
+
         _TEMP__NOTIFICATION_EVENT_STATUS_HEADER = [
             ('EventDataLength', UCHAR * 2),
             ('NotificationClass', UCHAR, 3),
@@ -1806,9 +3622,8 @@ if not defined(_NTSCSI_):
             _TEMP__NOTIFICATION_EVENT_STATUS_HEADER += [
                 ('ClassEventData', UCHAR * 0),
             ]
-
+        # END IF
         _NOTIFICATION_EVENT_STATUS_HEADER._fields_ = _TEMP__NOTIFICATION_EVENT_STATUS_HEADER
-
         NOTIFICATION_OPERATIONAL_EVENT_NO_CHANGE = 0x0
         NOTIFICATION_OPERATIONAL_EVENT_CHANGE_REQUESTED = 0x1
         NOTIFICATION_OPERATIONAL_EVENT_CHANGE_OCCURRED = 0x2
@@ -1851,7 +3666,7 @@ if not defined(_NTSCSI_):
         NOTIFICATION_EXTERNAL_EVENT_NO_CHANGE = 0x0
         NOTIFICATION_EXTERNAL_EVENT_BUTTON_DOWN = 0x1
         NOTIFICATION_EXTERNAL_EVENT_BUTTON_UP = 0x2
-        NOTIFICATION_EXTERNAL_EVENT_EXTERNAL = 0x3 # respond with GET_CONFIGURATION?
+        NOTIFICATION_EXTERNAL_EVENT_EXTERNAL = 0x3        # respond with GET_CONFIGURATION?
         NOTIFICATION_EXTERNAL_STATUS_READY = 0x0
         NOTIFICATION_EXTERNAL_STATUS_PREVENT = 0x1
         NOTIFICATION_EXTERNAL_REQUEST_NONE = 0x0000
@@ -1880,11 +3695,47 @@ if not defined(_NTSCSI_):
         NOTIFICATION_MEDIA_EVENT_MEDIA_CHANGE = 0x4
 
 
+        class _Union_1(ctypes.Union):
+            pass
+
+
+        class _Struct_1(ctypes.Structure):
+            pass
+
+
+        _Struct_1._fields_ = [
+            ('DoorTrayOpen', UCHAR, 1),
+            ('MediaPresent', UCHAR, 1),
+            # do not reference this directlynot
+            ('ReservedX', UCHAR, 6),
+        ]
+        _Union_1._Struct_1 = _Struct_1
+
+        _Union_1._anonymous_ = (
+            '_Struct_1',
+        )
+
+        _Union_1._fields_ = [
+            # OBSOLETE - - was improperly named in NT5 headers
+            ('PowerStatus', UCHAR),
+            # Use this for currently reserved fields
+            ('MediaStatus', UCHAR),
+            ('_Struct_1', _Union_1._Struct_1),
+        ]
+        _NOTIFICATION_MEDIA_STATUS._Union_1 = _Union_1
+
+        _NOTIFICATION_MEDIA_STATUS._anonymous_ = (
+            '_Union_1',
+        )
+
         _NOTIFICATION_MEDIA_STATUS._fields_ = [
             # event class == 0x4 UCHAR MediaEvent : 4;
             ('Reserved', UCHAR, 4),
+            ('_Union_1', _NOTIFICATION_MEDIA_STATUS._Union_1),
+            ('StartSlot', UCHAR),
+            ('EndSlot', UCHAR),
         ]
-
+        NOTIFICATION_BUSY_EVENT_NO_EVENT = 0x0
         NOTIFICATION_MULTI_HOST_EVENT_NO_CHANGE = 0x0
         NOTIFICATION_MULTI_HOST_EVENT_CONTROL_REQUEST = 0x1
         NOTIFICATION_MULTI_HOST_EVENT_CONTROL_GRANT = 0x2
@@ -1905,8 +3756,6 @@ if not defined(_NTSCSI_):
             ('PersistentPrevented', UCHAR, 1),
             ('Priority', UCHAR * 2),
         ]
-
-        NOTIFICATION_BUSY_EVENT_NO_EVENT = 0x0
         NOTIFICATION_BUSY_EVENT_NO_CHANGE = 0x0
         NOTIFICATION_BUSY_EVENT_BUSY = 0x1
         NOTIFICATION_BUSY_EVENT_LO_CHANGE = 0x2
@@ -1923,6 +3772,8 @@ if not defined(_NTSCSI_):
             ('Time', UCHAR * 2),
         ]
 
+        # //////////////////////////////////////////////////////////////////////////////
+        #
         # SECURITY PROTOCOL IN/OUT definitions (SPC - 4, 6.29/6.30)
         _SUPPORTED_SECURITY_PROTOCOLS_PARAMETER_DATA._fields_ = [
             ('Reserved1', UCHAR * 6),
@@ -1933,6 +3784,8 @@ if not defined(_NTSCSI_):
         # Security protocols
         SECURITY_PROTOCOL_IEEE1667 = 0xEE
 
+        # //////////////////////////////////////////////////////////////////////////////
+        #
         # Read DVD Structure Definitions and Constants
         DVD_FORMAT_LEAD_IN = 0x00
         DVD_FORMAT_COPYRIGHT = 0x01
@@ -1945,14 +3798,12 @@ if not defined(_NTSCSI_):
             ('Length', UCHAR * 2),
             ('Reserved', UCHAR * 2),
         ]
-
         if not defined(__midl):
             _TEMP__READ_DVD_STRUCTURES_HEADER += [
                 ('Data', UCHAR * 0),
             ]
-
-        _READ_DVD_STRUCTURES_HEADER._fields_ = _TEMP__READ_DVD_STRUCTURES_HEADER
         # END IF
+        _READ_DVD_STRUCTURES_HEADER._fields_ = _TEMP__READ_DVD_STRUCTURES_HEADER
 
 
         # DiskKey, BCA & Manufacturer information will provide byte arrays as
@@ -1972,12 +3823,11 @@ if not defined(_NTSCSI_):
             ('DataLength', UCHAR * 2),
             ('Reserved', UCHAR * 2),
         ]
-
         if not defined(__midl):
             _TEMP__CDVD_KEY_HEADER += [
                 ('Data', UCHAR * 0),
             ]
-
+        # END IF
         _CDVD_KEY_HEADER._fields_ = _TEMP__CDVD_KEY_HEADER
 
         _CDVD_REPORT_AGID_DATA._fields_ = [
@@ -2034,12 +3884,11 @@ if not defined(_NTSCSI_):
             ('FOV', UCHAR, 1),
             ('FormatDescriptorLength', UCHAR * 2),
         ]
-
         if not defined(__midl):
             _TEMP__FORMAT_LIST_HEADER += [
                 ('Descriptors', FORMAT_DESCRIPTOR * 0),
             ]
-
+        # END IF
         _FORMAT_LIST_HEADER._fields_ = _TEMP__FORMAT_LIST_HEADER
 
 
@@ -2056,11 +3905,11 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR * 3),
             ('CapacityListLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__FORMATTED_CAPACITY_LIST += [
                 ('Descriptors', FORMATTED_CAPACITY_DESCRIPTOR * 0),
             ]
+        # END IF
         _FORMATTED_CAPACITY_LIST._fields_ = _TEMP__FORMATTED_CAPACITY_LIST
 
 
@@ -2176,19 +4025,46 @@ if not defined(_NTSCSI_):
             ('Reserved4', UCHAR),
             ('NumberOPCEntries', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__DISK_INFORMATION += [
                 ('OPCTable', OPC_TABLE_ENTRY * 0),
             ]
-
+        # END IF
         _DISK_INFORMATION._fields_ = _TEMP__DISK_INFORMATION
 
 
         # Read Header definitions and structures
+        class _Union_2(ctypes.Union):
+            pass
+
+
+        class MSF(ctypes.Structure):
+            pass
+
+
+        MSF._fields_ = [
+            ('Reserved', UCHAR),
+            ('M', UCHAR),
+            ('S', UCHAR),
+            ('F', UCHAR),
+        ]
+        _Union_2.MSF = MSF
+
+
+        _Union_2._fields_ = [
+            ('LogicalBlockAddress', UCHAR * 4),
+            ('MSF', _Union_2.MSF),
+        ]
+        _DATA_BLOCK_HEADER._Union_2 = _Union_2
+
+        _DATA_BLOCK_HEADER._anonymous_ = (
+            '_Union_2',
+        )
+
         _DATA_BLOCK_HEADER._fields_ = [
             ('DataMode', UCHAR),
             ('Reserved', UCHAR * 4),
+            ('_Union_2', _DATA_BLOCK_HEADER._Union_2),
         ]
         DATA_BLOCK_MODE0 = 0x0
         DATA_BLOCK_MODE1 = 0x1
@@ -2682,7 +4558,7 @@ if not defined(_NTSCSI_):
 
 
         # SCSI extended message structure
-        class Wide(ctypes.Structure):
+        class _EXTENDED_ARGUMENTS(ctypes.Union):
             pass
 
 
@@ -2693,7 +4569,7 @@ if not defined(_NTSCSI_):
         Modify._fields_ = [
             ('Modifier', UCHAR * 4),
         ]
-        Wide.Modify = Modify
+        _EXTENDED_ARGUMENTS.Modify = Modify
 
 
         class Synchronous(ctypes.Structure):
@@ -2704,25 +4580,33 @@ if not defined(_NTSCSI_):
             ('TransferPeriod', UCHAR),
             ('ReqAckOffset', UCHAR),
         ]
-        Wide.Synchronous = Synchronous
+        _EXTENDED_ARGUMENTS.Synchronous = Synchronous
+
+
+        class Wide(ctypes.Structure):
+            pass
 
 
         Wide._fields_ = [
-            ('Modify', Wide.Modify),
-            ('Synchronous', Wide.Synchronous),
             ('Width', UCHAR),
         ]
-        _SCSI_EXTENDED_MESSAGE.Wide = Wide
 
+        _EXTENDED_ARGUMENTS.Wide = Wide
 
+        _EXTENDED_ARGUMENTS._fields_ = [
+            ('Modify', _EXTENDED_ARGUMENTS.Modify),
+            ('Synchronous', _EXTENDED_ARGUMENTS.Synchronous),
+            ('Wide', _EXTENDED_ARGUMENTS.Wide),
+        ]
+        ExtendedArguments = _EXTENDED_ARGUMENTS
+
+        _SCSI_EXTENDED_MESSAGE.ExtendedArguments = ExtendedArguments
         _SCSI_EXTENDED_MESSAGE._fields_ = [
             ('InitialMessageCode', UCHAR),
             ('MessageLength', UCHAR),
             ('MessageType', UCHAR),
-            ('Wide', _SCSI_EXTENDED_MESSAGE.Wide),
+            ('ExtendedArguments', _SCSI_EXTENDED_MESSAGE.ExtendedArguments),
         ]
-
-
         # SCSI bus status codes.
         SCSISTAT_GOOD = 0x00
         SCSISTAT_CHECK_CONDITION = 0x02
@@ -2733,20 +4617,15 @@ if not defined(_NTSCSI_):
         SCSISTAT_RESERVATION_CONFLICT = 0x18
         SCSISTAT_COMMAND_TERMINATED = 0x22
         SCSISTAT_QUEUE_FULL = 0x28
-
-
         # Enable Vital Product Data Flag (EVPD)
         # used with INQUIRY command.
         CDB_INQUIRY_EVPD = 0x01
-
-
         # Defines for format CDB
         LUN0_FORMAT_SAVING_DEFECT_LIST = 0
         USE_DEFAULTMSB = 0
         USE_DEFAULTLSB = 0
         START_UNIT_CODE = 0x01
         STOP_UNIT_CODE = 0x00
-
         # begin_ntminitape
         # Inquiry buffer structure. This is the data returned from the target
         # after it receives an inquiry.
@@ -2756,6 +4635,8 @@ if not defined(_NTSCSI_):
         # The NT SCSI drivers are only interested in the first 36 bytes of
         # data.
         INQUIRYDATABUFFERSIZE = 36
+        VERSION_DESCRIPTOR = USHORT
+        PVERSION_DESCRIPTOR = POINTER(USHORT)
 
         if NTDDI_VERSION < NTDDI_WINXP:
             _INQUIRYDATA._fields_ = [
@@ -2788,36 +4669,42 @@ if not defined(_NTSCSI_):
                 ('Reserved4', UCHAR * 30),
             ]
         else:
-            class _Union_1(ctypes.Union):
+
+            class _Union_13(ctypes.Union):
                 pass
 
-            class _Struct_1(ctypes.Structure):
+
+            class _Struct_5(ctypes.Structure):
                 pass
 
-            _Struct_1._fields_ = [
+
+            _Struct_5._fields_ = [
                 ('ANSIVersion', UCHAR, 3),
                 ('ECMAVersion', UCHAR, 3),
                 ('ISOVersion', UCHAR, 2),
             ]
+            _Union_13._Struct_5 = _Struct_5
 
-            _Union_1._Struct_1 = _Struct_1
-            _Union_1._anonymous_ = (
-                '_Struct_1',
+            _Union_13._anonymous_ = (
+                '_Struct_5',
             )
 
-            _Union_1._fields_ = [
+            _Union_13._fields_ = [
                 ('Versions', UCHAR),
-                ('_Struct_1', _Union_1._Struct_1),
+                ('_Struct_5', _Union_13._Struct_5),
             ]
-            _INQUIRYDATA._Union_1 = _Union_1
+            _INQUIRYDATA._Union_13 = _Union_13
 
-            class _Union_2(ctypes.Union):
+
+            class _Union_14(ctypes.Union):
                 pass
 
-            class _Struct_2(ctypes.Structure):
+
+            class _Struct_6(ctypes.Structure):
                 pass
 
-            _Struct_2._fields_ = [
+
+            _Struct_6._fields_ = [
                 ('PROTECT', UCHAR, 1),
                 ('Reserved_1', UCHAR, 2),
                 ('ThirdPartyCoppy', UCHAR, 1),
@@ -2825,36 +4712,36 @@ if not defined(_NTSCSI_):
                 ('ACC', UCHAR, 1),
                 ('SCCS', UCHAR, 1),
             ]
+            _Union_14._Struct_6 = _Struct_6
 
-            _Union_2._Struct_2 = _Struct_2
-            _Union_2._anonymous_ = (
-                '_Struct_2',
+            _Union_14._anonymous_ = (
+                '_Struct_6',
             )
 
             _Union_2._fields_ = [
                 ('Reserved', UCHAR),
-                ('_Struct_2', _Union_2._Struct_2),
+                ('_Struct_6', _Union_14._Struct_6),
             ]
-
-            _INQUIRYDATA._Union_2 = _Union_2
+            _INQUIRYDATA._Union_14 = _Union_14
 
             _INQUIRYDATA._anonymous_ = (
-                '_Union_1',
-                '_Union_2',
+                '_Union_13',
+                '_Union_14',
             )
+
             _INQUIRYDATA._fields_ = [
                 ('DeviceType', UCHAR, 5),
                 ('DeviceTypeQualifier', UCHAR, 3),
                 ('DeviceTypeModifier', UCHAR, 7),
                 ('RemovableMedia', UCHAR, 1),
-                ('_Union_1', _INQUIRYDATA._Union_1),
+                ('_Union_13', _INQUIRYDATA._Union_13),
                 ('ResponseDataFormat', UCHAR, 4),
                 ('HiSupport', UCHAR, 1),
                 ('NormACA', UCHAR, 1),
                 ('TerminateTask', UCHAR, 1),
                 ('AERC', UCHAR, 1),
                 ('AdditionalLength', UCHAR),
-                ('Union_2', _INQUIRYDATA._Union_2),
+                ('_Union_14', _INQUIRYDATA._Union_14),
                 # defined only for SIP devices.
                 ('Addr16', UCHAR, 1),
                 # defined only for SIP devices.
@@ -2878,21 +4765,21 @@ if not defined(_NTSCSI_):
                 # defined only for SIP devices.
                 ('Wide32Bit', UCHAR, 1),
                 ('RelativeAddressing', UCHAR, 1),
-                ('VendorId[8]', UCHAR),
-                ('ProductId[16]', UCHAR),
+                ('VendorId', UCHAR * 8),
+                ('ProductId', UCHAR * 16),
                 ('ProductRevisionLevel', UCHAR * 4),
                 ('VendorSpecific', UCHAR * 20),
                 ('Reserved3', UCHAR * 2),
                 ('VersionDescriptors', VERSION_DESCRIPTOR * 8),
                 ('Reserved4', UCHAR * 30),
             ]
-        # END IF
 
+        # END IF
         OFFSET_VER_DESCRIPTOR_ONE = (
-            FIELD_OFFSET(INQUIRYDATA, 'VersionDescriptors')[0]
+            FIELD_OFFSET(INQUIRYDATA, 'VersionDescriptors[0]')
         )
         OFFSET_VER_DESCRIPTOR_EIGHT = (
-            FIELD_OFFSET(INQUIRYDATA, 'VersionDescriptors')[8]
+            FIELD_OFFSET(INQUIRYDATA, 'VersionDescriptors[8]')
         )
 
 
@@ -2900,26 +4787,26 @@ if not defined(_NTSCSI_):
         # result
         # of inquiry command.
         # DeviceType field
-        DIRECT_ACCESS_DEVICE = 0x00 # disks
-        SEQUENTIAL_ACCESS_DEVICE = 0x01 # tapes
-        PRINTER_DEVICE = 0x02 # printers
-        PROCESSOR_DEVICE = 0x03 # scanners, printers, etc
-        WRITE_ONCE_READ_MULTIPLE_DEVICE = 0x04 # worms
-        READ_ONLY_DIRECT_ACCESS_DEVICE = 0x05 # cdroms
-        SCANNER_DEVICE = 0x06 # scanners
-        OPTICAL_DEVICE = 0x07 # optical disks
-        MEDIUM_CHANGER = 0x08 # jukebox
-        COMMUNICATION_DEVICE = 0x09 # network
+        DIRECT_ACCESS_DEVICE = 0x00        # disks
+        SEQUENTIAL_ACCESS_DEVICE = 0x01        # tapes
+        PRINTER_DEVICE = 0x02        # printers
+        PROCESSOR_DEVICE = 0x03        # scanners, printers, etc
+        WRITE_ONCE_READ_MULTIPLE_DEVICE = 0x04        # worms
+        READ_ONLY_DIRECT_ACCESS_DEVICE = 0x05        # cdroms
+        SCANNER_DEVICE = 0x06        # scanners
+        OPTICAL_DEVICE = 0x07        # optical disks
+        MEDIUM_CHANGER = 0x08        # jukebox
+        COMMUNICATION_DEVICE = 0x09        # network
 
         # 0xA and 0xB are obsolete
         ARRAY_CONTROLLER_DEVICE = 0x0C
         SCSI_ENCLOSURE_DEVICE = 0x0D
-        REDUCED_BLOCK_DEVICE = 0x0E # e.g., 1394 disk
+        REDUCED_BLOCK_DEVICE = 0x0E        # e.g., 1394 disk
         OPTICAL_CARD_READER_WRITER_DEVICE = 0x0F
         BRIDGE_CONTROLLER_DEVICE = 0x10
-        OBJECT_BASED_STORAGE_DEVICE = 0x11 # OSD
-        HOST_MANAGED_ZONED_BLOCK_DEVICE = 0x14 # Host managed zoned block device
-        UNKNOWN_OR_NO_DEVICE = 0x1F # Unknown or no device type
+        OBJECT_BASED_STORAGE_DEVICE = 0x11        # OSD
+        HOST_MANAGED_ZONED_BLOCK_DEVICE = 0x14        # Host managed zoned block device
+        UNKNOWN_OR_NO_DEVICE = 0x1F        # Unknown or no device type
         LOGICAL_UNIT_NOT_PRESENT_DEVICE = 0x7F
         DEVICE_QUALIFIER_ACTIVE = 0x00
         DEVICE_QUALIFIER_NOT_ACTIVE = 0x01
@@ -2938,16 +4825,12 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
             ('PageLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_MEDIA_SERIAL_NUMBER_PAGE += [
                 ('SerialNumber', UCHAR * 0),
             ]
         # END IF
-
-        _VPD_MEDIA_SERIAL_NUMBER_PAGE._fields_ = (
-            _TEMP__VPD_MEDIA_SERIAL_NUMBER_PAGE
-        )
+        _VPD_MEDIA_SERIAL_NUMBER_PAGE._fields_ = _TEMP__VPD_MEDIA_SERIAL_NUMBER_PAGE
 
         _TEMP__VPD_SERIAL_NUMBER_PAGE = [
             ('DeviceType', UCHAR, 5),
@@ -2956,13 +4839,11 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
             ('PageLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_SERIAL_NUMBER_PAGE += [
                 ('SerialNumber', UCHAR * 0),
             ]
         # END IF
-
         _VPD_SERIAL_NUMBER_PAGE._fields_ = _TEMP__VPD_SERIAL_NUMBER_PAGE
 
 
@@ -3016,17 +4897,12 @@ if not defined(_NTSCSI_):
             ('Reserved3', UCHAR),
             ('IdentifierLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_IDENTIFICATION_DESCRIPTOR += [
                 ('Identifier', UCHAR * 0),
             ]
-
         # END IF
-
-        _VPD_IDENTIFICATION_DESCRIPTOR._fields_ = (
-            _TEMP__VPD_IDENTIFICATION_DESCRIPTOR
-        )
+        _VPD_IDENTIFICATION_DESCRIPTOR._fields_ = _TEMP__VPD_IDENTIFICATION_DESCRIPTOR
 
         _TEMP__VPD_IDENTIFICATION_PAGE = [
             ('DeviceType', UCHAR, 5),
@@ -3035,14 +4911,12 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
             ('PageLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_IDENTIFICATION_PAGE += [
                 # VPD_IDENTIFICATION_DESCRIPTOR Descriptors[0];
                 ('Descriptors', UCHAR * 0),
             ]
         # END IF
-
         _VPD_IDENTIFICATION_PAGE._fields_ = _TEMP__VPD_IDENTIFICATION_PAGE
 
 
@@ -3139,16 +5013,12 @@ if not defined(_NTSCSI_):
                 # Transfers
                 ('PageLength', UCHAR * 2),
             ]
-
             if not defined(__midl):
                 _TEMP__VPD_THIRD_PARTY_COPY_PAGE += [
                     ('ThirdPartyCopyDescriptors', UCHAR * ANYSIZE_ARRAY),
                 ]
             # END IF
-
-            _VPD_THIRD_PARTY_COPY_PAGE._fields_ = (
-                _TEMP__VPD_THIRD_PARTY_COPY_PAGE
-            )
+            _VPD_THIRD_PARTY_COPY_PAGE._fields_ = _TEMP__VPD_THIRD_PARTY_COPY_PAGE
 
             _WINDOWS_BLOCK_DEVICE_TOKEN_LIMITS_DESCRIPTOR._fields_ = [
                 # 0x00
@@ -3166,6 +5036,79 @@ if not defined(_NTSCSI_):
         # END IF  (NTDDI_VERSION >= NTDDI_WIN8)
 
         # VPD Page 0xB0, Block Limits
+        class _Union_3(ctypes.Union):
+            pass
+
+
+        class _Struct_1(ctypes.Structure):
+            pass
+
+
+        class _Union_4(ctypes.Union):
+            pass
+
+
+        class _Struct_2(ctypes.Structure):
+            pass
+
+
+        _Struct_2._fields_ = [
+            ('UnmapGranularityAlignmentByte3', UCHAR, 7),
+            ('UGAValid', UCHAR, 1),
+            ('UnmapGranularityAlignmentByte2', UCHAR),
+            ('UnmapGranularityAlignmentByte1', UCHAR),
+            ('UnmapGranularityAlignmentByte0', UCHAR),
+        ]
+        _Union_4._Struct_2 = _Struct_2
+
+        _Union_4._anonymous_ = (
+            '_Struct_2',
+        )
+
+        _Union_4._fields_ = [
+            ('_Struct_2', _Union_4._Struct_2),
+            ('UnmapGranularityAlignment', UCHAR * 4),
+        ]
+        _Struct_1._Union_4 = _Union_4
+
+        _Struct_1._anonymous_ = (
+            '_Union_4',
+        )
+
+        _Struct_1._fields_ = [
+            ('Reserved0', UCHAR),
+            ('MaximumCompareAndWriteLength', UCHAR),
+            ('OptimalTransferLengthGranularity', UCHAR * 2),
+            ('MaximumTransferLength', UCHAR * 4),
+            ('OptimalTransferLength', UCHAR * 4),
+            ('MaxPrefetchXDReadXDWriteTransferLength', UCHAR * 4),
+            ('MaximumUnmapLBACount', UCHAR * 4),
+            ('MaximumUnmapBlockDescriptorCount', UCHAR * 4),
+            ('OptimalUnmapGranularity', UCHAR * 4),
+            ('_Union_4', _Struct_1._Union_4),
+            ('Reserved1', UCHAR * 28),
+        ]
+        _Union_3._Struct_1 = _Struct_1
+
+        _Union_3._anonymous_ = (
+            '_Struct_1',
+        )
+
+        _TEMP__Union_3 = [
+            ('_Struct_1', _Union_3._Struct_1),
+        ]
+        if not defined(__midl):
+            _TEMP__Union_3 += [
+                ('Descriptors', UCHAR * 0),
+            ]
+        # END IF
+        _Union_3._fields_ = _TEMP__Union_3
+        _VPD_BLOCK_LIMITS_PAGE._Union_3 = _Union_3
+
+        _VPD_BLOCK_LIMITS_PAGE._anonymous_ = (
+            '_Union_3',
+        )
+
         _VPD_BLOCK_LIMITS_PAGE._fields_ = [
             ('DeviceType', UCHAR, 5),
             ('DeviceTypeQualifier', UCHAR, 3),
@@ -3174,12 +5117,15 @@ if not defined(_NTSCSI_):
             # 0x3C if device supports logical block provisioning, otherwise
             # the value may be 0x10.
             ('PageLength', UCHAR * 2),
+            ('_Union_3', _VPD_BLOCK_LIMITS_PAGE._Union_3),
         ]
+
 
         # VPD Page 0xB1, Block Device Characteristics
         ZONED_CAPABILITIES_NOT_REPORTED = 0x0
         ZONED_CAPABILITIES_HOST_AWARE = 0x1
         ZONED_CAPABILITIES_DEVICE_MANAGED = 0x2
+
 
         _VPD_BLOCK_DEVICE_CHARACTERISTICS_PAGE._fields_ = [
             ('DeviceType', UCHAR, 5),
@@ -3231,17 +5177,12 @@ if not defined(_NTSCSI_):
             ('Reserved1', UCHAR, 5),
             ('Reserved2', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_LOGICAL_BLOCK_PROVISIONING_PAGE += [
                 ('ProvisioningGroupDescr', UCHAR * 0),
             ]
-
         # END IF
-
-        _VPD_LOGICAL_BLOCK_PROVISIONING_PAGE._fields_ = (
-            _TEMP__VPD_LOGICAL_BLOCK_PROVISIONING_PAGE
-        )
+        _VPD_LOGICAL_BLOCK_PROVISIONING_PAGE._fields_ = _TEMP__VPD_LOGICAL_BLOCK_PROVISIONING_PAGE
 
 
         # VPD Page 0xB6, Zoned Block Device Characteristics
@@ -3274,15 +5215,12 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
             ('PageLength', UCHAR),
         ]
-
         if not defined(__midl):
             _TEMP__VPD_SUPPORTED_PAGES_PAGE += [
                 ('SupportedPageList', UCHAR * 0),
             ]
         # END IF
-
         _VPD_SUPPORTED_PAGES_PAGE._fields_ = _TEMP__VPD_SUPPORTED_PAGES_PAGE
-
         VPD_MAX_BUFFER_SIZE = 0xFF
         VPD_SUPPORTED_PAGES = 0x00
         VPD_SERIAL_NUMBER = 0x80
@@ -3300,6 +5238,8 @@ if not defined(_NTSCSI_):
         VPD_LOGICAL_BLOCK_PROVISIONING = 0xB2
         VPD_ZONED_BLOCK_DEVICE_CHARACTERISTICS = 0xB6
 
+        # //////////////////////////////////////////////////////////////////////////////
+        #
         # Log page definitions
         LOG_PAGE_CODE_SUPPORTED_LOG_PAGES = 0x00
         LOG_PAGE_CODE_WRITE_ERROR_COUNTERS = 0x02
@@ -3313,14 +5253,218 @@ if not defined(_NTSCSI_):
         LOG_PAGE_CODE_INFORMATIONAL_EXCEPTIONS = 0x2F
 
 
+        class _Union_4(ctypes.Union):
+            pass
+
+
+        class _Struct_1(ctypes.Structure):
+            pass
+
+
+        _Struct_1._fields_ = [
+            # Byte 2, bit 0 - 1
+            ('FormatAndLinking', UCHAR, 2),
+            # Byte 2, bit 2 - 3
+            ('TMC', UCHAR, 2),
+            # Byte 2, bit 4
+            ('ETC', UCHAR, 1),
+            # Byte 2, bit 5
+            ('TSD', UCHAR, 1),
+            # Byte 2, bit 6
+            ('Obsolete', UCHAR, 1),
+            # Byte 2, bit 7
+            ('DU', UCHAR, 1),
+        ]
+        _Union_4._Struct_1 = _Struct_1
+
+        _Union_4._anonymous_ = (
+            '_Struct_1',
+        )
+
+        _Union_4._fields_ = [
+            # Byte 2
+            ('ControlByte', UCHAR),
+            ('_Struct_1', _Union_4._Struct_1),
+        ]
+        _LOG_PARAMETER_HEADER._Union_4 = _Union_4
+
+        _LOG_PARAMETER_HEADER._anonymous_ = (
+            '_Union_4',
+        )
+
         _LOG_PARAMETER_HEADER._fields_ = [
             # Bytes 0 - 1
             ('ParameterCode', UCHAR * 2),
+            ('_Union_4', _LOG_PARAMETER_HEADER._Union_4),
+            # Byte 3
+            ('ParameterLength', UCHAR),
         ]
+
+
+        class _Union_5(ctypes.Union):
+            pass
+
+
+        class _THRESHOLD_RESOURCE_COUNT(ctypes.Structure):
+            pass
+
+
+        _THRESHOLD_RESOURCE_COUNT._fields_ = [
+            # Bytes 4 - 7
+            ('ResourceCount', UCHAR * 4),
+            # Byte 5, bit 0 - 1
+            ('Scope', UCHAR, 2),
+            # Byte 5, bit 2 - 7
+            ('Reserved1', UCHAR, 6),
+            # Byte 6
+            ('Reserved2', UCHAR * 3),
+        ]
+        THRESHOLD_RESOURCE_COUNT = _THRESHOLD_RESOURCE_COUNT
+        _Union_5.THRESHOLD_RESOURCE_COUNT = THRESHOLD_RESOURCE_COUNT
+
+
+        class _TEMPERATURE(ctypes.Structure):
+            pass
+
+
+        _TEMPERATURE._fields_ = [
+            # Byte 4
+            ('Reserved', UCHAR),
+            # Byte 5
+            ('Temperature', UCHAR),
+        ]
+        TEMPERATURE = _TEMPERATURE
+        _Union_5.TEMPERATURE = TEMPERATURE
+
+
+        class _DATE_OF_MANUFACTURE(ctypes.Structure):
+            pass
+
+
+        _DATE_OF_MANUFACTURE._fields_ = [
+            # Bytes 4 - 7
+            ('Year', UCHAR * 4),
+            # Bytes 8 - 9
+            ('Week', UCHAR * 2),
+        ]
+        DATE_OF_MANUFACTURE = _DATE_OF_MANUFACTURE
+        _Union_5.DATE_OF_MANUFACTURE = DATE_OF_MANUFACTURE
+
+
+        class _SELF_TEST_RESULTS(ctypes.Structure):
+            pass
+
+
+        _SELF_TEST_RESULTS._fields_ = [
+            # Byte 4, bit 0 - 3
+            ('SelfTestResults', UCHAR, 4),
+            # Byte 4, bit 4
+            ('Reserved1', UCHAR, 1),
+            # Byte 4, bit 5 - 7
+            ('SelfTestCode', UCHAR, 3),
+            # Byte 5
+            ('SelfTestNumber', UCHAR),
+            # Bytes 6 - 7
+            ('PowerOnHours', UCHAR * 2),
+            # Bytes 8 - 15
+            ('AddressOfFirstFailure', UCHAR * 8),
+            # Byte 16, bit 0 - 3
+            ('SenseKey', UCHAR, 4),
+            # Byte 16, bit 4 - 7
+            ('Reserved2', UCHAR, 4),
+            # Byte 17
+            ('AdditionalSenseCode', UCHAR),
+            # Byte 18
+            ('AdditionalSenseCodeQualifier', UCHAR),
+            # Byte 19
+            ('VendorSpecific', UCHAR),
+        ]
+        SELF_TEST_RESULTS = _SELF_TEST_RESULTS
+        _Union_5.SELF_TEST_RESULTS = SELF_TEST_RESULTS
+
+
+        class _SOLID_STATE_MEDIA(ctypes.Structure):
+            pass
+
+
+        _SOLID_STATE_MEDIA._fields_ = [
+            # Bytes 4 - 6
+            ('Reserved', UCHAR * 3),
+            # Byte 7
+            ('PercentageUsed', UCHAR),
+        ]
+        SOLID_STATE_MEDIA = _SOLID_STATE_MEDIA
+        _Union_5.SOLID_STATE_MEDIA = SOLID_STATE_MEDIA
+
+
+        class _BACKGROUND_SCAN_STATUS(ctypes.Structure):
+            pass
+
+
+        _BACKGROUND_SCAN_STATUS._fields_ = [
+            # Bytes 4 - 7
+            ('PowerOnMinutes', UCHAR * 4),
+            # Byte 8
+            ('Reserved', UCHAR),
+            # Byte 9
+            ('ScanStatus', UCHAR),
+            # Bytes 10 - 11
+            ('ScansPerformed', UCHAR * 2),
+            # Bytes 12 - 13
+            ('ScanProgress', UCHAR * 2),
+            # Bytes 14 - 15
+            ('MediumScansPerformed', UCHAR * 2),
+        ]
+        BACKGROUND_SCAN_STATUS = _BACKGROUND_SCAN_STATUS
+        _Union_5.BACKGROUND_SCAN_STATUS = BACKGROUND_SCAN_STATUS
+
+
+        class _INFORMATIONAL_EXCEPTIONS(ctypes.Structure):
+            pass
+
+
+        _INFORMATIONAL_EXCEPTIONS._fields_ = [
+            # Byte 4
+            ('ASC', UCHAR),
+            # Byte 5
+            ('ASCQ', UCHAR),
+            # Byte 6
+            ('MostRecentTemperature', UCHAR),
+            # Bytes 7 - N
+            ('VendorSpecific', UCHAR * ANYSIZE_ARRAY),
+        ]
+        INFORMATIONAL_EXCEPTIONS = _INFORMATIONAL_EXCEPTIONS
+        _Union_5.INFORMATIONAL_EXCEPTIONS = INFORMATIONAL_EXCEPTIONS
+
+
+        _TEMP__Union_5 = [
+        ]
+        if not defined(__midl):
+            _TEMP__Union_5 += [
+                # Bytes 4 - N
+                ('AsByte', UCHAR * 0),
+            ]
+        # END IF
+        _TEMP__Union_5 += [
+            ('THRESHOLD_RESOURCE_COUNT', _Union_5.THRESHOLD_RESOURCE_COUNT),
+            ('TEMPERATURE', _Union_5.TEMPERATURE),
+            ('DATE_OF_MANUFACTURE', _Union_5.DATE_OF_MANUFACTURE),
+            ('SELF_TEST_RESULTS', _Union_5.SELF_TEST_RESULTS),
+            ('SOLID_STATE_MEDIA', _Union_5.SOLID_STATE_MEDIA),
+            ('BACKGROUND_SCAN_STATUS', _Union_5.BACKGROUND_SCAN_STATUS),
+            ('INFORMATIONAL_EXCEPTIONS', _Union_5.INFORMATIONAL_EXCEPTIONS),
+        ]
+        _Union_5._fields_ = _TEMP__Union_5
+        _LOG_PARAMETER._Union_5 = _Union_5
+
+        _LOG_PARAMETER._anonymous_ = (
+            '_Union_5',
+        )
 
         _LOG_PARAMETER._fields_ = [
             # Bytes 0 - 3
             ('Header', LOG_PARAMETER_HEADER),
+            ('_Union_5', _LOG_PARAMETER._Union_5),
         ]
 
         _TEMP__LOG_PAGE = [
@@ -3335,14 +5479,11 @@ if not defined(_NTSCSI_):
             # Bytes 2 - 3
             ('PageLength', UCHAR * 2),
         ]
-
         if not defined(__midl):
             _TEMP__LOG_PAGE += [
                 ('Parameters', LOG_PARAMETER * 0),
             ]
-
         # END IF
-
         _LOG_PAGE._fields_ = _TEMP__LOG_PAGE
 
 
@@ -3380,16 +5521,12 @@ if not defined(_NTSCSI_):
             ('SubPageCode', UCHAR),
             ('PageLength', UCHAR * 2),
         ]
-
         if not defined(__midl):
             _TEMP__LOG_PAGE_LOGICAL_BLOCK_PROVISIONING += [
                 ('Parameters', LOG_PARAMETER_HEADER * 0),
             ]
         # END IF
-
-        _LOG_PAGE_LOGICAL_BLOCK_PROVISIONING._fields_ = (
-            _TEMP__LOG_PAGE_LOGICAL_BLOCK_PROVISIONING
-        )
+        _LOG_PAGE_LOGICAL_BLOCK_PROVISIONING._fields_ = _TEMP__LOG_PAGE_LOGICAL_BLOCK_PROVISIONING
 
 
         # Optional VERSION DESCRIPTOR fields provide the opportunity for SCSI
@@ -3432,15 +5569,12 @@ if not defined(_NTSCSI_):
             ('Generation', UCHAR * 4),
             ('AdditionalLength', UCHAR * 4),
         ]
-
         if not defined(__midl):
             _TEMP_PRI_REGISTRATION_LIST += [
                 ('ReservationKeyList', (UCHAR * 0)(UCHAR * 8)),
             ]
         # END IF
-
         PRI_REGISTRATION_LIST._fields_ = _TEMP_PRI_REGISTRATION_LIST
-
 
         PRI_RESERVATION_DESCRIPTOR._fields_ = [
             ('ReservationKey', UCHAR * 8),
@@ -3455,12 +5589,11 @@ if not defined(_NTSCSI_):
             ('Generation', UCHAR * 4),
             ('AdditionalLength', UCHAR * 4),
         ]
-
         if not defined(__midl):
             _TEMP_PRI_RESERVATION_LIST += [
                 ('Reservations', PRI_RESERVATION_DESCRIPTOR * 0),
             ]
-
+        # END IF
         PRI_RESERVATION_LIST._fields_ = _TEMP_PRI_RESERVATION_LIST
 
 
@@ -3523,13 +5656,11 @@ if not defined(_NTSCSI_):
                 ('Reserved3', UCHAR * 6),
                 ('BlockDeviceRangeDescriptorListLength', UCHAR * 2),
             ]
-
             if not defined(__midl):
                 _TEMP_POPULATE_TOKEN_HEADER += [
                     ('BlockDeviceRangeDescriptor', UCHAR * ANYSIZE_ARRAY),
                 ]
             # END IF
-
             POPULATE_TOKEN_HEADER._fields_ = _TEMP_POPULATE_TOKEN_HEADER
 
             _TEMP_WRITE_USING_TOKEN_HEADER = [
@@ -3542,16 +5673,12 @@ if not defined(_NTSCSI_):
                 ('Reserved3', UCHAR * 6),
                 ('BlockDeviceRangeDescriptorListLength', UCHAR * 2),
             ]
-
             if not defined(__midl):
                 _TEMP_WRITE_USING_TOKEN_HEADER += [
                     ('BlockDeviceRangeDescriptor', UCHAR * ANYSIZE_ARRAY),
                 ]
             # END IF
-
-            WRITE_USING_TOKEN_HEADER._fields_ = (
-                _TEMP_WRITE_USING_TOKEN_HEADER
-            )
+            WRITE_USING_TOKEN_HEADER._fields_ = _TEMP_WRITE_USING_TOKEN_HEADER
 
             _TEMP_RECEIVE_TOKEN_INFORMATION_HEADER = [
                 ('AvailableData', UCHAR * 4),
@@ -3574,15 +5701,17 @@ if not defined(_NTSCSI_):
                     ('SenseData', UCHAR * ANYSIZE_ARRAY),
                 ]
             # END IF
+            RECEIVE_TOKEN_INFORMATION_HEADER._fields_ = _TEMP_RECEIVE_TOKEN_INFORMATION_HEADER
 
-            RECEIVE_TOKEN_INFORMATION_HEADER._fields_ = (
-                _TEMP_RECEIVE_TOKEN_INFORMATION_HEADER
-            )
-
-                RECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER._fields_ = [
+            _TEMP_RECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER = [
                 ('TokenDescriptorsLength', UCHAR * 4),
+            ]
+            if not defined(__midl):
+                _TEMP_RECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER += [
                     ('TokenDescriptor', UCHAR * ANYSIZE_ARRAY),
                 ]
+            # END IF
+            RECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER._fields_ = _TEMP_RECEIVE_TOKEN_INFORMATION_RESPONSE_HEADER
 
             BLOCK_DEVICE_TOKEN_DESCRIPTOR._fields_ = [
                 ('TokenIdentifier', UCHAR * 2),
@@ -3615,15 +5744,21 @@ if not defined(_NTSCSI_):
             TRANSFER_COUNT_UNITS = _TRANSFER_COUNT_UNITS
             PTRANSFER_COUNT_UNITS = POINTER(_TRANSFER_COUNT_UNITS)
         # END IF  (NTDDI_VERSION >= NTDDI_WIN8)
+
         # SANITIZE related definition
-            _OVERWRITE_PARAMETER_LIST._fields_ = [
+        _TEMP__OVERWRITE_PARAMETER_LIST = [
             ('OverWriteCount', UCHAR, 5),
             ('Test', UCHAR, 2),
             ('Invert', UCHAR, 1),
             ('Reserved1', UCHAR),
             ('InitializationPatternLength', UCHAR * 2),
+        ]
+        if not defined(__midl):
+            _TEMP__OVERWRITE_PARAMETER_LIST += [
                 ('InitializationPattern', UCHAR * ANYSIZE_ARRAY),
             ]
+        # END IF
+        _OVERWRITE_PARAMETER_LIST._fields_ = _TEMP__OVERWRITE_PARAMETER_LIST
 
 
         # SCSIOP_WRITE_DATA_BUFF related definition
@@ -3704,7 +5839,8 @@ if not defined(_NTSCSI_):
 
 
         # Fixed Sense Data Format
-        PFIXED_SENSE_DATA = POINTER(FIXED_SENSE_DATA,)
+        FIXED_SENSE_DATA = _SENSE_DATA
+        PFIXED_SENSE_DATA = POINTER(_SENSE_DATA)
 
 
         # Descriptor Sense Data Format
@@ -3729,8 +5865,8 @@ if not defined(_NTSCSI_):
 
 
         # Default request sense buffer size
-        SENSE_BUFFER_SIZE = ctypes.sizeof(SENSE_DATA
-        SENSE_BUFFER_SIZE_EX = ctypes.sizeof(SENSE_DATA_EX
+        SENSE_BUFFER_SIZE = ctypes.sizeof(SENSE_DATA)
+        SENSE_BUFFER_SIZE_EX = ctypes.sizeof(SENSE_DATA_EX)
         # Maximum request sense buffer size
         MAX_SENSE_BUFFER_SIZE = 255
         # Maximum number of additional sense bytes.
@@ -4084,14 +6220,21 @@ if not defined(_NTSCSI_):
             ('Reserved1', UCHAR, 4),
             ('Reserved2', UCHAR * 3),
         ]
-            _LBA_STATUS_LIST_HEADER._fields_ = [
+        _TEMP__LBA_STATUS_LIST_HEADER = [
             ('ParameterLength', ULONG),
             ('Reserved', ULONG),
+        ]
+        if not defined(__midl):
+            _TEMP__LBA_STATUS_LIST_HEADER += [
                 ('Descriptors', LBA_STATUS_DESCRIPTOR * 0),
             ]
+        # END IF
+        _LBA_STATUS_LIST_HEADER._fields_ = _TEMP__LBA_STATUS_LIST_HEADER
         LBA_STATUS_MAPPED = 0x0
         LBA_STATUS_DEALLOCATED = 0x1
         LBA_STATUS_ANCHORED = 0x2
+
+
         # Read Block Limits Data - returned in Big Endian format
         # This structure returns the maximum and minimum block
         # size for a TAPE device.
@@ -4100,6 +6243,7 @@ if not defined(_NTSCSI_):
             ('BlockMaximumSize', UCHAR * 3),
             ('BlockMinimumSize', UCHAR * 2),
         ]
+
         _READ_BUFFER_CAPACITY_DATA._fields_ = [
             ('DataLength', UCHAR * 2),
             ('Reserved1', UCHAR),
@@ -4108,6 +6252,8 @@ if not defined(_NTSCSI_):
             ('TotalBufferSize', UCHAR * 4),
             ('AvailableBufferSize', UCHAR * 4),
         ]
+
+
         # Report Zones data structures.
         # Returned data contains REPORT_ZONES_DATA as header,
         # and ZONE_DESCRIPTIOR(s)
@@ -4122,6 +6268,8 @@ if not defined(_NTSCSI_):
         ZONE_CONDITION_READ_ONLY = 0xD
         ZONE_CONDITION_FULL = 0xE
         ZONE_CONDITION_OFFLINE = 0xF
+
+
         _ZONE_DESCRIPTIOR._fields_ = [
             ('ZoneType', UCHAR, 4),
             ('Reserved1', UCHAR, 4),
@@ -4139,15 +6287,24 @@ if not defined(_NTSCSI_):
         ZONES_TYPE_SAME_LENGTH_SAME = 0x1
         ZONES_TYPE_SAME_LAST_ZONE_LENGTH_DIFFERENT = 0x2
         ZONES_TYPE_MAY_DIFFERENT_LENGTH_SAME = 0x3
-            _REPORT_ZONES_DATA._fields_ = [
+
+
+        _TEMP__REPORT_ZONES_DATA = [
             ('ZoneListLength', UCHAR * 4),
             ('Same', UCHAR, 4),
             ('Reserved1', UCHAR, 4),
             ('Reserved2', UCHAR * 3),
             ('MaxLBA', UCHAR * 8),
             ('Reserved3', UCHAR * 48),
+        ]
+        if not defined(__midl):
+            _TEMP__REPORT_ZONES_DATA += [
                 ('ZoneDescriptors', ZONE_DESCRIPTIOR * ANYSIZE_ARRAY),
             ]
+        # END IF
+        _REPORT_ZONES_DATA._fields_ = _TEMP__REPORT_ZONES_DATA
+
+
         # Mode data structures.
         # Define Mode parameter header.
         _MODE_PARAMETER_HEADER._fields_ = [
@@ -4156,6 +6313,7 @@ if not defined(_NTSCSI_):
             ('DeviceSpecificParameter', UCHAR),
             ('BlockDescriptorLength', UCHAR),
         ]
+
         _MODE_PARAMETER_HEADER10._fields_ = [
             ('ModeDataLength', UCHAR * 2),
             ('MediumType', UCHAR),
@@ -4168,6 +6326,8 @@ if not defined(_NTSCSI_):
         MODE_FD_MAXIMUM_TYPE = 0x1E
         MODE_DSP_FUA_SUPPORTED = 0x10
         MODE_DSP_WRITE_PROTECT = 0x80
+
+
         # Define the mode parameter block.
         _MODE_PARAMETER_BLOCK._fields_ = [
             ('DensityCode', UCHAR),
@@ -4175,6 +6335,8 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
             ('BlockLength', UCHAR * 3),
         ]
+
+
         # Define Disconnect - Reconnect page.
         _MODE_DISCONNECT_PAGE._fields_ = [
             ('PageCode', UCHAR, 6),
@@ -4190,6 +6352,8 @@ if not defined(_NTSCSI_):
             ('DataTransferDisconnect', UCHAR, 2),
             ('Reserved2', UCHAR * 3),
         ]
+
+
         # Define mode caching page.
         _MODE_CACHING_PAGE._fields_ = [
             ('PageCode', UCHAR, 6),
@@ -4207,6 +6371,7 @@ if not defined(_NTSCSI_):
             ('MaximumPrefetch', UCHAR * 2),
             ('MaximumPrefetchCeiling', UCHAR * 2),
         ]
+
         _MODE_CACHING_PAGE_EX._fields_ = [
             # 0x08
             ('PageCode', UCHAR, 6),
@@ -4237,6 +6402,7 @@ if not defined(_NTSCSI_):
             ('CacheSegmentSize', UCHAR * 2),
             ('Reserved', UCHAR * 4),
         ]
+
         _MODE_CONTROL_PAGE._fields_ = [
             # 0x0A
             ('PageCode', UCHAR, 6),
@@ -4268,6 +6434,8 @@ if not defined(_NTSCSI_):
             ('BusyTimeoutPeriod', UCHAR * 2),
             ('ExtendeSelfTestCompletionTime', UCHAR * 2),
         ]
+
+
         # Define write parameters cdrom page
         _MODE_CDROM_WRITE_PARAMETERS_PAGE2._fields_ = [
             # 0x05
@@ -4299,6 +6467,9 @@ if not defined(_NTSCSI_):
             ('ISRC', UCHAR * 16),
             ('SubHeaderData', UCHAR * 4),
         ]
+
+        DEPRECATE_DDK_FUNCTIONS = None
+
         if not defined(DEPRECATE_DDK_FUNCTIONS):
             # this structure is being retired due to missing fields and overly
             # complex data definitions for the MCN and ISRC.
@@ -4341,6 +6512,7 @@ if not defined(_NTSCSI_):
                 ('SubHeaderData', UCHAR * 4),
             ]
         # END IF  ifndef DEPRECATE_DDK_FUNCTIONS
+
         # Define the MRW mode page for CDROM device types
         _MODE_MRW_PAGE._fields_ = [
             # 0x03
@@ -4597,6 +6769,73 @@ if not defined(_NTSCSI_):
         CDVD_LMT_RESERVED3 = 7
 
 
+        class _Union_6(ctypes.Union):
+            pass
+
+
+        _Union_6._fields_ = [
+            ('ReadSpeedMaximum', UCHAR * 2),
+            # offset 8
+            ('ObsoleteReserved', UCHAR * 2),
+        ]
+        _CDVD_CAPABILITIES_PAGE._Union_6 = _Union_6
+
+
+        class _Union_7(ctypes.Union):
+            pass
+
+
+        _Union_7._fields_ = [
+            ('ReadSpeedCurrent', UCHAR * 2),
+            # offset 14
+            ('ObsoleteReserved2', UCHAR * 2),
+        ]
+        _CDVD_CAPABILITIES_PAGE._Union_7 = _Union_7
+
+
+        class _Union_8(ctypes.Union):
+            pass
+
+
+        _Union_8._fields_ = [
+            ('WriteSpeedMaximum', UCHAR * 2),
+            # offset 18
+            ('ObsoleteReserved4', UCHAR * 2),
+        ]
+        _CDVD_CAPABILITIES_PAGE._Union_8 = _Union_8
+
+
+        class _Union_9(ctypes.Union):
+            pass
+
+
+        _Union_9._fields_ = [
+            ('WriteSpeedCurrent', UCHAR * 2),
+            # offset 20
+            ('ObsoleteReserved11', UCHAR * 2),
+        ]
+        _CDVD_CAPABILITIES_PAGE._Union_9 = _Union_9
+
+
+        class _Union_10(ctypes.Union):
+            pass
+
+
+        _Union_10._fields_ = [
+            # offset 22
+            ('CopyManagementRevision', UCHAR * 2),
+            ('Reserved10', UCHAR * 2),
+        ]
+        _CDVD_CAPABILITIES_PAGE._Union_10 = _Union_10
+
+        _CDVD_CAPABILITIES_PAGE._anonymous_ = (
+            '_Union_6',
+            '_Union_7',
+            '_Union_8',
+            '_Union_9',
+            '_Union_10',
+        )
+
         _CDVD_CAPABILITIES_PAGE._fields_ = [
             # 0x2A
             ('PageCode', UCHAR, 6),
@@ -4653,32 +6892,61 @@ if not defined(_NTSCSI_):
             ('RWInLeadInReadable', UCHAR, 1),
             # offset 7
             ('Reserved7', UCHAR, 2),
+            ('_Union_6', _CDVD_CAPABILITIES_PAGE._Union_6),
+            # offset 10
+            ('NumberVolumeLevels', UCHAR * 2),
+            # offset 12
+            ('BufferSize', UCHAR * 2),
+            ('_Union_7', _CDVD_CAPABILITIES_PAGE._Union_7),
+            # offset 16
+            ('ObsoleteReserved3', UCHAR),
+            ('Reserved8', UCHAR, 1),
+            ('BCK', UCHAR, 1),
+            ('RCK', UCHAR, 1),
+            ('LSBF', UCHAR, 1),
+            ('Length', UCHAR, 2),
+            # offset 17
+            ('Reserved9', UCHAR, 2),
+            ('_Union_8', _CDVD_CAPABILITIES_PAGE._Union_8),
+            ('_Union_9', _CDVD_CAPABILITIES_PAGE._Union_9),
+            # their own by looking at Reserved10[]).
+            ('_Union_10', _CDVD_CAPABILITIES_PAGE._Union_10),
         ]
+        _TEMP__LUN_LIST = [
 
-            _LUN_LIST._fields_ = [
             # (ctypes.sizeof LunSize * 8
             ('LunListLength', UCHAR * 4),
             ('Reserved', UCHAR * 4),
+        ]
+        if not defined(__midl):
+            _TEMP__LUN_LIST += [
                 # 4 level of addressing. 2 bytes each.
                 ('Lun', (UCHAR * 0)(UCHAR * 8)),
             ]
+        # END IF
+        _LUN_LIST._fields_ = _TEMP__LUN_LIST
         LOADING_MECHANISM_CADDY = 0x00
         LOADING_MECHANISM_TRAY = 0x01
         LOADING_MECHANISM_POPUP = 0x02
         LOADING_MECHANISM_INDIVIDUAL_CHANGER = 0x04
         LOADING_MECHANISM_CARTRIDGE_CHANGER = 0x05
+
+
         # end C/DVD 0.9 mode page definitions
         # Mode parameter list block descriptor -
         # set the block length for reading/writing
         MODE_BLOCK_DESC_LENGTH = 8
         MODE_HEADER_LENGTH = 4
         MODE_HEADER_LENGTH10 = 8
+
+
         _MODE_PARM_READ_WRITE._fields_ = [
             # List Header Format
             ('ParameterListHeader', MODE_PARAMETER_HEADER),
             # List Block Descriptor
             ('ParameterListBlock', MODE_PARAMETER_BLOCK),
         ]
+
         # end_ntminitape
         # CDROM audio control (0x0E)
         CDB_AUDIO_PAUSE = 0
@@ -4693,10 +6961,13 @@ if not defined(_NTSCSI_):
         MODE_SELECT_IMMEDIATE = 0x04
         MODE_SELECT_PFBIT = 0x10
         CDB_USE_MSF = 0x01
+
+
         _PORT_OUTPUT._fields_ = [
             ('ChannelSelection', UCHAR),
             ('Volume', UCHAR),
         ]
+
         _AUDIO_OUTPUT._fields_ = [
             ('CodePage', UCHAR),
             ('ParameterLength', UCHAR),
@@ -4706,9 +6977,13 @@ if not defined(_NTSCSI_):
             ('LogicalBlocksPerSecond', UCHAR * 2),
             ('PortOutput', PORT_OUTPUT * 4),
         ]
+
+
         # Multisession CDROM
         GET_LAST_SESSION = 0x01
         GET_SESSION_DATA = 0x02;
+
+
         # Atapi 2.5 changer
         _MECHANICAL_STATUS_INFORMATION_HEADER._fields_ = [
             ('CurrentSlot', UCHAR, 5),
@@ -4720,28 +6995,39 @@ if not defined(_NTSCSI_):
             ('NumberAvailableSlots', UCHAR),
             ('SlotTableLength', UCHAR * 2),
         ]
+
         _SLOT_TABLE_INFORMATION._fields_ = [
             ('DiscChanged', UCHAR, 1),
             ('Reserved', UCHAR, 6),
             ('DiscPresent', UCHAR, 1),
             ('Reserved2', UCHAR * 3),
         ]
+
         _MECHANICAL_STATUS._fields_ = [
             ('MechanicalStatusHeader', MECHANICAL_STATUS_INFORMATION_HEADER),
             ('SlotTableInfo', SLOT_TABLE_INFORMATION * 1),
         ]
+
+
         # Structure related to 0x42 - SCSIOP_UNMAP
         _UNMAP_BLOCK_DESCRIPTOR._fields_ = [
             ('StartingLba', UCHAR * 8),
             ('LbaCount', UCHAR * 4),
             ('Reserved', UCHAR * 4),
         ]
-            _UNMAP_LIST_HEADER._fields_ = [
+
+        _TEMP__UNMAP_LIST_HEADER = [
             ('DataLength', UCHAR * 2),
             ('BlockDescrDataLength', UCHAR * 2),
             ('Reserved', UCHAR * 4),
+        ]
+        if not defined(__midl):
+            _TEMP__UNMAP_LIST_HEADER += [
                 ('Descriptors', UNMAP_BLOCK_DESCRIPTOR * 0),
             ]
+        # END IF
+        _UNMAP_LIST_HEADER._fields_ = _TEMP__UNMAP_LIST_HEADER
+
         # begin_ntminitape
         # Tape definitions
         _TAPE_POSITION_DATA._fields_ = [
@@ -4758,36 +7044,197 @@ if not defined(_NTSCSI_):
             ('NumberOfBlocks', UCHAR * 3),
             ('NumberOfBytes', UCHAR * 4),
         ]
+
+
+        # This structure is used to convert little endian
+        # ULONGs to SCSI CDB big endians values.
+        class _Struct_1(ctypes.Structure):
+            pass
+
+
+        _Struct_1._fields_ = [
+            ('Byte0', UCHAR),
+            ('Byte1', UCHAR),
+            ('Byte2', UCHAR),
+            ('Byte3', UCHAR),
+            ('Byte4', UCHAR),
+            ('Byte5', UCHAR),
+            ('Byte6', UCHAR),
+            ('Byte7', UCHAR),
+        ]
+        _EIGHT_BYTE._Struct_1 = _Struct_1
+
+        _EIGHT_BYTE._anonymous_ = (
+            '_Struct_1',
+        )
+
+        _EIGHT_BYTE._fields_ = [
+            ('_Struct_1', _EIGHT_BYTE._Struct_1),
+            ('AsULongLong', ULONGLONG),
+        ]
+
+
+        class _Struct_2(ctypes.Structure):
+            pass
+
+
+        _Struct_2._fields_ = [
+            ('Byte0', UCHAR),
+            ('Byte1', UCHAR),
+            ('Byte2', UCHAR),
+            ('Byte3', UCHAR),
+        ]
+        _FOUR_BYTE._Struct_2 = _Struct_2
+
+        _FOUR_BYTE._anonymous_ = (
+            '_Struct_2',
+        )
+
+        _FOUR_BYTE._fields_ = [
+            ('_Struct_2', _FOUR_BYTE._Struct_2),
+            ('AsULong', ULONG),
+        ]
+
+
+        class _Struct_3(ctypes.Structure):
+            pass
+
+
+        _Struct_3._fields_ = [
+            ('Byte0', UCHAR),
+            ('Byte1', UCHAR),
+        ]
+        _TWO_BYTE._Struct_3 = _Struct_3
+
+        _TWO_BYTE._anonymous_ = (
+            '_Struct_3',
+        )
+
+        _TWO_BYTE._fields_ = [
+            ('_Struct_3', _TWO_BYTE._Struct_3),
+            ('AsUShort', USHORT),
+        ]
+
+
         # This structure is used to convert little endian
         # ULONGs to SCSI CDB big endians values.
         # Byte reversing macro for converting
         # between big- and little - endian formats
-        REVERSE_BYTES_QUAD = REVERSE_BYTES_8
+
         def REVERSE_BYTES_8(Destination, Source):
-            return { PEIGHT_BYTE d = PEIGHT_BYTEDestination; PEIGHT_BYTE s = PEIGHT_BYTESource; d - >Byte7 = s - >Byte0; d - >Byte6 = s - >Byte1; d - >Byte5 = s - >Byte2; d - >Byte4 = s - >Byte3; d - >Byte3 = s - >Byte4; d - >Byte2 = s - >Byte5; d - >Byte1 = s - >Byte6; d - >Byte0 = s - >Byte7; }
+            d = PEIGHT_BYTE(Destination)
+            s = PEIGHT_BYTE(Source)
+            d.Byte7 = s.Byte0
+            d.Byte6 = s.Byte1
+            d.Byte5 = s.Byte2
+            d.Byte4 = s.Byte3
+            d.Byte3 = s.Byte4
+            d.Byte2 = s.Byte5
+            d.Byte1 = s.Byte6
+            d.Byte0 = s.Byte7
+            return d
+
+
+        REVERSE_BYTES_QUAD = REVERSE_BYTES_8
+
+
         def REVERSE_BYTES_6(Destination, Source):
-            return { PEIGHT_BYTE d = PEIGHT_BYTEDestination; PEIGHT_BYTE s = PEIGHT_BYTESource; d - >Byte5 = s - >Byte0; d - >Byte4 = s - >Byte1; d - >Byte3 = s - >Byte2; d - >Byte2 = s - >Byte3; d - >Byte1 = s - >Byte4; d - >Byte0 = s - >Byte5; }
-        REVERSE_BYTES = REVERSE_BYTES_4
+            d = PEIGHT_BYTE(Destination)
+            s = PEIGHT_BYTE(Source)
+            d.Byte5 = s.Byte0
+            d.Byte4 = s.Byte1
+            d.Byte3 = s.Byte2
+            d.Byte2 = s.Byte3
+            d.Byte1 = s.Byte4
+            d.Byte0 = s.Byte5
+            return d
+
+
         def REVERSE_BYTES_4(Destination, Source):
-            return { PFOUR_BYTE d = PFOUR_BYTEDestination; PFOUR_BYTE s = PFOUR_BYTESource; d - >Byte3 = s - >Byte0; d - >Byte2 = s - >Byte1; d - >Byte1 = s - >Byte2; d - >Byte0 = s - >Byte3; }
-        REVERSE_BYTES_SHORT = REVERSE_BYTES_2
+            d = PEIGHT_BYTE(Destination)
+            s = PEIGHT_BYTE(Source)
+            d.Byte3 = s.Byte0
+            d.Byte2 = s.Byte1
+            d.Byte1 = s.Byte2
+            d.Byte0 = s.Byte3
+            return d
+
+
+        REVERSE_BYTES = REVERSE_BYTES_4
+
+
         def REVERSE_BYTES_2(Destination, Source):
-            return { PTWO_BYTE d = PTWO_BYTEDestination; PTWO_BYTE s = PTWO_BYTESource; d - >Byte1 = s - >Byte0; d - >Byte0 = s - >Byte1; }
+            d = PEIGHT_BYTE(Destination)
+            s = PEIGHT_BYTE(Source)
+            d.Byte1 = s.Byte0
+            d.Byte0 = s.Byte1
+            return d
+
+
+        REVERSE_BYTES_SHORT = REVERSE_BYTES_2
+
+
         # Byte reversing macro for converting
         # USHORTS from big to little endian in place
         def REVERSE_SHORT(Short):
-            return { UCHAR tmp; PTWO_BYTE w = PTWO_BYTEShort; tmp = w - >Byte0; w - >Byte0 = w - >Byte1; w - >Byte1 = tmp; }
+            w = PTWO_BYTE(Short)
+            tmp = w.Byte0
+            w.Byte0 = w.Byte1
+            w.Byte1 = tmp
+
+            return w
+
+
         # Byte reversing macro for converting
         # ULONGS between big & little endian in place
         def REVERSE_LONG(Long):
-            return { UCHAR tmp; PFOUR_BYTE l = PFOUR_BYTELong; tmp = l - >Byte3; l - >Byte3 = l - >Byte0; l - >Byte0 = tmp; tmp = l - >Byte2; l - >Byte2 = l - >Byte1; l - >Byte1 = tmp; }
+            l = PFOUR_BYTE(Long)
+            tmp = l.Byte3
+            l.Byte3 = l.Byte0
+            l.Byte0 = tmp
+            tmp = l.Byte2
+            l.Byte2 = l.Byte1
+            l.Byte1 = tmp
+            return l
+
+
         # Byte reversing macro for converting
         # ULONGLONGS between big & little endian in place
         def REVERSE_LONGLONG(Longlong):
-            return { UCHAR tmp; PEIGHT_BYTE q = PEIGHT_BYTELonglong; tmp = q - >Byte7; q - >Byte7 = q - >Byte0; q - >Byte0 = tmp; tmp = q - >Byte6; q - >Byte6 = q - >Byte1; q - >Byte1 = tmp; tmp = q - >Byte5; q - >Byte5 = q - >Byte2; q - >Byte2 = tmp; tmp = q - >Byte4; q - >Byte4 = q - >Byte3; q - >Byte3 = tmp; }
+            q = PEIGHT_BYTE(Longlong)
+            tmp = q.Byte7
+            q.Byte7 = q.Byte0
+            q.Byte0 = tmp
+            tmp = q.Byte6
+            q.Byte6 = q.Byte1
+            q.Byte1 = tmp
+            tmp = q.Byte5
+            q.Byte5 = q.Byte2
+            q.Byte2 = tmp
+            tmp = q.Byte4
+            q.Byte4 = q.Byte3
+            q.Byte3 = tmp
+
+            return q
+
+
         # This macro has the effect of Bit = log2(Data)
+
+        from pyWinAPI.km.crt import intrin_h  # NOQA
+
+
+        def BitScanReverse(*args):
+            pass
+
+
         def WHICH_BIT(Data, Bit):
-            return { ULONG idx; BitScanReverse( & idx, Data); Bit = UCHARidx; }
+            idx = ULONG()
+            BitScanReverse(ctypes.byref(idx), Data)
+            Bit = UCHAR(idx.value)
+
+            return Bit
+
+
         # Define alignment requirements for variable length components in
         # extended SRB.
         # For Win64, need to ensure all variable length components are 8 bytes
@@ -4795,9 +7242,11 @@ if not defined(_NTSCSI_):
         # so the pointer fields within the variable length components are 8
         # bytes align.
         if defined(_WIN64) or defined(_M_ALPHA):
-            STOR_ADDRESS_ALIGN = DECLSPEC_ALIGN(8)
+            STOR_ADDRESS_ALIGN = ctypes.Structure
         else:
-            #~#~#~            #define STOR_ADDRESS_ALIGN        # END IF
+            STOR_ADDRESS_ALIGN = ctypes.Structure
+        # END IF
+
         # Generic structure definition for accessing any STOR_ADDRESS. All
         # STOR_ADDRESS must begin with a Type, Port and AddressLength field.
         _STOR_ADDRESS._fields_ = [
@@ -4826,7 +7275,7 @@ if not defined(_NTSCSI_):
             ('Reserved', UCHAR),
         ]
         if NTDDI_VERSION >= NTDDI_WIN8:
-            # //////////////////////////////////////////////////////////////////////////////
+            # /////////////////////////////////////////////////////////////////
             #
             # Ses definitions
             SES_DIAGNOSTIC_PAGE_CONFIGURATION = 0x01
@@ -4956,6 +7405,247 @@ if not defined(_NTSCSI_):
                 ('Descriptors', SES_ENCLOSURE_DESCRIPTOR * ANYSIZE_ARRAY),
             ]
 
+
+            class _Union_11(ctypes.Union):
+                pass
+
+
+            class DeviceSlot(ctypes.Structure):
+                pass
+
+
+            DeviceSlot._fields_ = [
+                # Byte 1
+                ('Reserved1', UCHAR),
+                # Byte 2, bit 0
+                ('Reserved2', UCHAR, 1),
+                # Byte 2, bit 1
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2, bit 2
+                ('RequestRemove', UCHAR, 1),
+                # Byte 2, bit 3
+                ('RequestInsert', UCHAR, 1),
+                # Byte 2, bit 4
+                ('RequestMissing', UCHAR, 1),
+                # Byte 2, bit 5
+                ('Reserved3', UCHAR, 1),
+                # Byte 2, bit 6
+                ('DoNotRemove', UCHAR, 1),
+                # Byte 2, bit 7
+                ('RequestActive', UCHAR, 1),
+                # Byte 3, bit 0 - 1
+                ('Reserved4', UCHAR, 2),
+                # Byte 3, bit 2
+                ('EnableBypassB', UCHAR, 1),
+                # Byte 3, bit 3
+                ('EnableBypassA', UCHAR, 1),
+                # Byte 3, bit 4
+                ('DeviceOff', UCHAR, 1),
+                # Byte 3, bit 5
+                ('RequestFault', UCHAR, 1),
+                # Byte 3, bit 6 - 7
+                ('Reserved5', UCHAR, 2),
+            ]
+            _Union_11.DeviceSlot = DeviceSlot
+
+
+            class PowerSupply(ctypes.Structure):
+                pass
+
+
+            PowerSupply._fields_ = [
+                # Byte 1, bit 0 - 6
+                ('Reserved1', UCHAR, 7),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2
+                ('Reserved2', UCHAR),
+                # Byte 3, bit 0 - 4
+                ('Reserved3', UCHAR, 5),
+                # Byte 3, bit 5
+                ('RequestOn', UCHAR, 1),
+                # Byte 3, bit 6
+                ('RequestFail', UCHAR, 1),
+                # Byte 3, bit 7
+                ('Reserved4', UCHAR, 1),
+            ]
+            _Union_11.PowerSupply = PowerSupply
+
+
+            class Cooling(ctypes.Structure):
+                pass
+
+
+            Cooling._fields_ = [
+                # Byte 1, bit 0 - 6
+                ('Reserved1', UCHAR, 7),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2
+                ('Reserved2', UCHAR),
+                # Byte 3, bit 0 - 2
+                ('RequestSpeedCode', UCHAR, 3),
+                # Byte 3, bit 3 - 4
+                ('Reserved3', UCHAR, 2),
+                # Byte 3, bit 5
+                ('RequestOn', UCHAR, 1),
+                # Byte 3, bit 6
+                ('RequestFail', UCHAR, 1),
+                # Byte 3, bit 7
+                ('Reserved4', UCHAR, 1),
+            ]
+            _Union_11.Cooling = Cooling
+
+
+            class TemperatureSensor(ctypes.Structure):
+                pass
+
+
+            TemperatureSensor._fields_ = [
+                # Byte 1, bit 0 - 5
+                ('Reserved1', UCHAR, 6),
+                # Byte 1, bit 6
+                ('RequestFail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2
+                ('Reserved2', UCHAR),
+                # Byte 3
+                ('Reserved3', UCHAR),
+            ]
+            _Union_11.TemperatureSensor = TemperatureSensor
+
+
+            class VoltageSensor(ctypes.Structure):
+                pass
+
+
+            VoltageSensor._fields_ = [
+                # Byte 1, bit 0 - 5
+                ('Reserved1', UCHAR, 6),
+                # Byte 1, bit 6
+                ('RequestFail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2
+                ('Reserved2', UCHAR),
+                # Byte 3
+                ('Reserved3', UCHAR),
+            ]
+            _Union_11.VoltageSensor = VoltageSensor
+
+
+            class CurrentSensor(ctypes.Structure):
+                pass
+
+
+            CurrentSensor._fields_ = [
+                # Byte 1, bit 0 - 5
+                ('Reserved1', UCHAR, 6),
+                # Byte 1, bit 6
+                ('RequestFail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2
+                ('Reserved2', UCHAR),
+                # Byte 3
+                ('Reserved3', UCHAR),
+            ]
+            _Union_11.CurrentSensor = CurrentSensor
+
+
+            class Enclosure(ctypes.Structure):
+                pass
+
+
+            Enclosure._fields_ = [
+                # Byte 1, bit 0 - 6
+                ('Reserved1', UCHAR, 7),
+                # Byte 1, bit 7
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2, bit 0 - 5
+                ('PowerCycleDelay', UCHAR, 6),
+                # Byte 2, bit 6 - 7
+                ('PowerCycleRequest', UCHAR, 2),
+                # Byte 3, bit 0
+                ('RequestWarning', UCHAR, 1),
+                # Byte 3, bit 1
+                ('RequestFailure', UCHAR, 1),
+                # Byte 3, bit 2 - 7
+                ('PowerOffDuration', UCHAR, 6),
+            ]
+            _Union_11.Enclosure = Enclosure
+
+
+            class ArrayDeviceSlot(ctypes.Structure):
+                pass
+
+
+            ArrayDeviceSlot._fields_ = [
+                # Byte 1, bit 0
+                ('RequestRebuildAbort', UCHAR, 1),
+                # Byte 1, bit 1
+                ('RequestRebuild', UCHAR, 1),
+                # Byte 1, bit 2
+                ('RequestInFailedArray', UCHAR, 1),
+                # Byte 1, bit 3
+                ('RequestInCriticalArray', UCHAR, 1),
+                # Byte 1, bit 4
+                ('RequestConsistencyArray', UCHAR, 1),
+                # Byte 1, bit 5
+                ('RequestHotSpare', UCHAR, 1),
+                # Byte 1, bit 6
+                ('RequestReservedDevice', UCHAR, 1),
+                # Byte 1, bit 7
+                ('RequestOK', UCHAR, 1),
+                # Byte 2, bit 0
+                ('Reserved1', UCHAR, 1),
+                # Byte 2, bit 1
+                ('RequestIdentify', UCHAR, 1),
+                # Byte 2, bit 2
+                ('RequestRemove', UCHAR, 1),
+                # Byte 2, bit 3
+                ('RequestInsert', UCHAR, 1),
+                # Byte 2, bit 4
+                ('RequestMissing', UCHAR, 1),
+                # Byte 2, bit 5
+                ('Reserved2', UCHAR, 1),
+                # Byte 2, bit 6
+                ('DoNotRemove', UCHAR, 1),
+                # Byte 2, bit 7
+                ('RequestActive', UCHAR, 1),
+                # Byte 3, bit 0 - 1
+                ('Reserved3', UCHAR, 2),
+                # Byte 3, bit 2
+                ('EnableBypassB', UCHAR, 1),
+                # Byte 3, bit 3
+                ('EnableBypassA', UCHAR, 1),
+                # Byte 3, bit 4
+                ('DeviceOff', UCHAR, 1),
+                # Byte 3, bit 5
+                ('RequestFault', UCHAR, 1),
+                # Byte 3, bit 6 - 7
+                ('Reserved4', UCHAR, 2),
+            ]
+            _Union_11.ArrayDeviceSlot = ArrayDeviceSlot
+
+
+            _Union_11._fields_ = [
+                ('DeviceSlot', _Union_11.DeviceSlot),
+                ('PowerSupply', _Union_11.PowerSupply),
+                ('Cooling', _Union_11.Cooling),
+                ('TemperatureSensor', _Union_11.TemperatureSensor),
+                ('VoltageSensor', _Union_11.VoltageSensor),
+                ('CurrentSensor', _Union_11.CurrentSensor),
+                ('Enclosure', _Union_11.Enclosure),
+                ('ArrayDeviceSlot', _Union_11.ArrayDeviceSlot),
+            ]
+            _SES_CONTROL_DESCRIPTOR._Union_11 = _Union_11
+
+            _SES_CONTROL_DESCRIPTOR._anonymous_ = (
+                '_Union_11',
+            )
+
             _SES_CONTROL_DESCRIPTOR._fields_ = [
                 # Byte 0, bit 0 - 3
                 ('Reserved', UCHAR, 4),
@@ -4967,6 +7657,7 @@ if not defined(_NTSCSI_):
                 ('PredictFailure', UCHAR, 1),
                 # Byte 0, bit 7
                 ('Select', UCHAR, 1),
+                ('_Union_11', _SES_CONTROL_DESCRIPTOR._Union_11),
             ]
 
             _SES_CONTROL_DIAGNOSTIC_PAGE._fields_ = [
@@ -4989,6 +7680,301 @@ if not defined(_NTSCSI_):
                 ('Descriptors', SES_CONTROL_DESCRIPTOR * ANYSIZE_ARRAY),
             ]
 
+
+            class _Union_12(ctypes.Union):
+                pass
+
+
+            class DeviceSlot(ctypes.Structure):
+                pass
+
+
+            DeviceSlot._fields_ = [
+                # Byte 1
+                ('SlotAddress', UCHAR),
+                # Byte 2, bit 0
+                ('Report', UCHAR, 1),
+                # Byte 2, bit 1
+                ('Identify', UCHAR, 1),
+                # Byte 2, bit 2
+                ('Remove', UCHAR, 1),
+                # Byte 2, bit 3
+                ('ReadyToInsert', UCHAR, 1),
+                # Byte 2, bit 4
+                ('EnclosureBypassedB', UCHAR, 1),
+                # Byte 2, bit 5
+                ('EnclosureBypassedA', UCHAR, 1),
+                # Byte 2, bit 6
+                ('DoNotRemove', UCHAR, 1),
+                # Byte 2, bit 7
+                ('AppBypassedA', UCHAR, 1),
+                # Byte 3, bit 0
+                ('DeviceBypassedB', UCHAR, 1),
+                # Byte 3, bit 1
+                ('DeviceBypassedA', UCHAR, 1),
+                # Byte 3, bit 2
+                ('BypassedB', UCHAR, 1),
+                # Byte 3, bit 3
+                ('BypassedA', UCHAR, 1),
+                # Byte 3, bit 4
+                ('DeviceOff', UCHAR, 1),
+                # Byte 3, bit 5
+                ('FaultRequested', UCHAR, 1),
+                # Byte 3, bit 6
+                ('FaultSensed', UCHAR, 1),
+                # Byte 3, bit 7
+                ('AppBypassedB', UCHAR, 1),
+            ]
+            _Union_12.DeviceSlot = DeviceSlot
+
+
+            class PowerSupply(ctypes.Structure):
+                pass
+
+
+            PowerSupply._fields_ = [
+                # Byte 1, bit 0 - 6
+                ('Reserved1', UCHAR, 7),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2, bit 0
+                ('Reserved2', UCHAR, 1),
+                # Byte 2, bit 1
+                ('DCOverCurrent', UCHAR, 1),
+                # Byte 2, bit 2
+                ('DCUnderVoltage', UCHAR, 1),
+                # Byte 2, bit 3
+                ('DCOverVoltage', UCHAR, 1),
+                # Byte 2, bit 4 - 7
+                ('Reserved3', UCHAR, 4),
+                # Byte 3, bit 0
+                ('DCFail', UCHAR, 1),
+                # Byte 3, bit 1
+                ('ACFail', UCHAR, 1),
+                # Byte 3, bit 2
+                ('TemperatureWarning', UCHAR, 1),
+                # Byte 3, bit 3
+                ('OverTemperatureFail', UCHAR, 1),
+                # Byte 3, bit 4
+                ('Off', UCHAR, 1),
+                # Byte 3, bit 5
+                ('RequestedOn', UCHAR, 1),
+                # Byte 3, bit 6
+                ('Fail', UCHAR, 1),
+                # Byte 3, bit 7
+                ('HotSwap', UCHAR, 1),
+            ]
+            _Union_12.PowerSupply = PowerSupply
+
+
+            class Cooling(ctypes.Structure):
+                pass
+
+
+            Cooling._fields_ = [
+                # Byte 1, bit 0 - 2
+                ('ActualFanSpeedMSB', UCHAR, 3),
+                # Byte 1, bit 3 - 6
+                ('Reserved1', UCHAR, 4),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2
+                ('ActualFanSpeedLSB', UCHAR),
+                # Byte 3, bit 0 - 2
+                ('ActualSpeedCode', UCHAR, 3),
+                # Byte 3, bit 3
+                ('Reserved2', UCHAR, 1),
+                # Byte 3, bit 4
+                ('Off', UCHAR, 1),
+                # Byte 3, bit 5
+                ('RequestedOn', UCHAR, 1),
+                # Byte 3, bit 6
+                ('Fail', UCHAR, 1),
+                # Byte 3, bit 7
+                ('HotSwap', UCHAR, 1),
+            ]
+            _Union_12.Cooling = Cooling
+
+
+            class TemperatureSensor(ctypes.Structure):
+                pass
+
+
+            TemperatureSensor._fields_ = [
+                # Byte 1, bit 0 - 5
+                ('Reserved1', UCHAR, 6),
+                # Byte 1, bit 6
+                ('Fail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2
+                ('Temperature', UCHAR),
+                # Byte 3, bit 0
+                ('UnderTemperatureWarning', UCHAR, 1),
+                # Byte 3, bit 1
+                ('UnderTemperatureFailure', UCHAR, 1),
+                # Byte 3, bit 2
+                ('OverTemperatureWarning', UCHAR, 1),
+                # Byte 3, bit 3
+                ('OverTemperatureFailure', UCHAR, 1),
+                # Byte 3, bit 4 - 7
+                ('Reserved2', UCHAR, 4),
+            ]
+            _Union_12.TemperatureSensor = TemperatureSensor
+
+
+            class VoltageSensor(ctypes.Structure):
+                pass
+
+
+            VoltageSensor._fields_ = [
+                # Byte 1, bit 0
+                ('CritUnder', UCHAR, 1),
+                # Byte 1, bit 1
+                ('CritOver', UCHAR, 1),
+                # Byte 1, bit 2
+                ('WarnUnder', UCHAR, 1),
+                # Byte 1, bit 3
+                ('WarnOver', UCHAR, 1),
+                # Byte 1, bit 4 - 5
+                ('Reserved1', UCHAR, 2),
+                # Byte 1, bit 6
+                ('Fail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2
+                ('VoltageMSB', UCHAR),
+                # Byte 3
+                ('VoltageLSB', UCHAR),
+            ]
+            _Union_12.VoltageSensor = VoltageSensor
+
+
+            class CurrentSensor(ctypes.Structure):
+                pass
+
+
+            CurrentSensor._fields_ = [
+                # Byte 1, bit 0
+                ('Reserved1', UCHAR, 1),
+                # Byte 1, bit 1
+                ('CritOver', UCHAR, 1),
+                # Byte 1, bit 2
+                ('Reserved2', UCHAR, 1),
+                # Byte 1, bit 3
+                ('WarnOver', UCHAR, 1),
+                # Byte 1, bit 4 - 5
+                ('Reserved3', UCHAR, 2),
+                # Byte 1, bit 6
+                ('Fail', UCHAR, 1),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2
+                ('CurrentMSB', UCHAR),
+                # Byte 3
+                ('CurrentLSB', UCHAR),
+            ]
+            _Union_12.CurrentSensor = CurrentSensor
+
+
+            class Enclosure(ctypes.Structure):
+                pass
+
+
+            Enclosure._fields_ = [
+                # Byte 1, bit 0 - 6
+                ('Reserved1', UCHAR, 7),
+                # Byte 1, bit 7
+                ('Identify', UCHAR, 1),
+                # Byte 2, bit 0
+                ('WarningIndication', UCHAR, 1),
+                # Byte 2, bit 1
+                ('FailureIndication', UCHAR, 1),
+                # Byte 2, bit 6
+                ('TimeUntilPowerCycle', UCHAR, 6),
+                # Byte 3, bit 0
+                ('WarningRequested', UCHAR, 1),
+                # Byte 3, bit 1
+                ('FailureRequested', UCHAR, 1),
+                # Byte 3, bit 6
+                ('RequestedPowerOffTime', UCHAR, 6),
+            ]
+            _Union_12.Enclosure = Enclosure
+
+
+            class ArrayDeviceSlot(ctypes.Structure):
+                pass
+
+
+            ArrayDeviceSlot._fields_ = [
+                # Byte 1, bit 0
+                ('RebuildAbort', UCHAR, 1),
+                # Byte 1, bit 1
+                ('Rebuild', UCHAR, 1),
+                # Byte 1, bit 2
+                ('InFailedArray', UCHAR, 1),
+                # Byte 1, bit 3
+                ('InCriticalArray', UCHAR, 1),
+                # Byte 1, bit 4
+                ('ConsistencyCheck', UCHAR, 1),
+                # Byte 1, bit 5
+                ('HotSpare', UCHAR, 1),
+                # Byte 1, bit 6
+                ('ReservedDevice', UCHAR, 1),
+                # Byte 1, bit 7
+                ('OK', UCHAR, 1),
+                # Byte 2, bit 0
+                ('Report', UCHAR, 1),
+                # Byte 2, bit 1
+                ('Identify', UCHAR, 1),
+                # Byte 2, bit 2
+                ('Remove', UCHAR, 1),
+                # Byte 2, bit 3
+                ('ReadyToInsert', UCHAR, 1),
+                # Byte 2, bit 4
+                ('EnclosureBypassedB', UCHAR, 1),
+                # Byte 2, bit 5
+                ('EnclosureBypassedA', UCHAR, 1),
+                # Byte 2, bit 6
+                ('DoNotRemove', UCHAR, 1),
+                # Byte 2, bit 7
+                ('AppBypassedA', UCHAR, 1),
+                # Byte 3, bit 0
+                ('DeviceBypassedB', UCHAR, 1),
+                # Byte 3, bit 1
+                ('DeviceBypassedA', UCHAR, 1),
+                # Byte 3, bit 2
+                ('BypassedB', UCHAR, 1),
+                # Byte 3, bit 3
+                ('BypassedA', UCHAR, 1),
+                # Byte 3, bit 4
+                ('DeviceOff', UCHAR, 1),
+                # Byte 3, bit 5
+                ('FaultRequested', UCHAR, 1),
+                # Byte 3, bit 6
+                ('FaultSensed', UCHAR, 1),
+                # Byte 3, bit 7
+                ('AppBypassedB', UCHAR, 1),
+            ]
+            _Union_12.ArrayDeviceSlot = ArrayDeviceSlot
+
+
+            _Union_12._fields_ = [
+                ('DeviceSlot', _Union_12.DeviceSlot),
+                ('PowerSupply', _Union_12.PowerSupply),
+                ('Cooling', _Union_12.Cooling),
+                ('TemperatureSensor', _Union_12.TemperatureSensor),
+                ('VoltageSensor', _Union_12.VoltageSensor),
+                ('CurrentSensor', _Union_12.CurrentSensor),
+                ('Enclosure', _Union_12.Enclosure),
+                ('ArrayDeviceSlot', _Union_12.ArrayDeviceSlot),
+            ]
+            _SES_STATUS_DESCRIPTOR._Union_12 = _Union_12
+
+            _SES_STATUS_DESCRIPTOR._anonymous_ = (
+                '_Union_12',
+            )
+
             _SES_STATUS_DESCRIPTOR._fields_ = [
                 # Byte 0, bit 0 - 3
                 ('ElementStatus', UCHAR, 4),
@@ -5000,6 +7986,7 @@ if not defined(_NTSCSI_):
                 ('PredictedFailure', UCHAR, 1),
                 # Byte 0, bit 7
                 ('Reserved1', UCHAR, 1),
+                ('_Union_12', _SES_STATUS_DESCRIPTOR._Union_12),
             ]
 
             _SES_STATUS_DIAGNOSTIC_PAGE._fields_ = [
@@ -5365,171 +8352,760 @@ if not defined(_NTSCSI_):
         # Note: Error Code is same as "Response Code" defined in SPC
         # Specification.
         def ScsiGetSenseErrorCode(SenseInfoBuffer):
-            return ((PUCHARSenseInfoBuffer)[0] & 0x7F)
+            return PUCHAR(SenseInfoBuffer)[0].value & 0x7F
 
 
         # Determine the buffer length of a descriptor
         def ScsiGetSenseDescriptorLength(DescriptorBuffer):
-            return 1
+            return (
+                ctypes.sizeof(SCSI_SENSE_DESCRIPTOR_HEADER) +
+                PSCSI_SENSE_DESCRIPTOR_HEADER(
+                    DescriptorBuffer).AdditionalLength
+            )
 
 
         # Determine if sense data is in Fixed format
         def IsFixedSenseDataFormat(SenseInfoBuffer):
-            return ((ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_FIXED_CURRENT or (ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_FIXED_DEFERRED)
+            return (
+                ScsiGetSenseErrorCode(SenseInfoBuffer) in
+                (
+                    SCSI_SENSE_ERRORCODE_FIXED_CURRENT,
+                    SCSI_SENSE_ERRORCODE_FIXED_DEFERRED
+                )
+            )
 
 
         # Determine if sense data is in Descriptor format
         def IsDescriptorSenseDataFormat(SenseInfoBuffer):
-            return ((ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_DESCRIPTOR_CURRENT or (ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_DESCRIPTOR_DEFERRED)
+            return (
+                ScsiGetSenseErrorCode(SenseInfoBuffer) in
+                (
+                    SCSI_SENSE_ERRORCODE_DESCRIPTOR_CURRENT,
+                    SCSI_SENSE_ERRORCODE_DESCRIPTOR_DEFERRED
+                )
+            )
 
 
         # Determine if sense data is Current error type
         def IsSenseDataCurrentError(SenseInfoBuffer):
-            return ((ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_FIXED_CURRENT or (ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_DESCRIPTOR_CURRENT)
+            return (
+                ScsiGetSenseErrorCode(SenseInfoBuffer) in
+                (
+                    SCSI_SENSE_ERRORCODE_FIXED_CURRENT,
+                    SCSI_SENSE_ERRORCODE_DESCRIPTOR_CURRENT
+                )
+            )
 
 
         # Determine if sense data is Deferred error type
         def IsSenseDataDeferredError(SenseInfoBuffer):
-            return ((ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_FIXED_DEFERRED or (ScsiGetSenseErrorCodeSenseInfoBuffer) == SCSI_SENSE_ERRORCODE_DESCRIPTOR_DEFERRED)
+            return (
+                ScsiGetSenseErrorCode(SenseInfoBuffer) in
+                (
+                    SCSI_SENSE_ERRORCODE_FIXED_DEFERRED,
+                    SCSI_SENSE_ERRORCODE_DESCRIPTOR_DEFERRED
+                )
+            )
 
 
         # Determine if sense data format indicated in sense data payload is a
         # valid value
         def IsSenseDataFormatValueValid(SenseInfoBuffer):
-            return (IsFixedSenseDataFormatSenseInfoBuffer or IsDescriptorSenseDataFormatSenseInfoBuffer)
+            return (
+                IsFixedSenseDataFormat(SenseInfoBuffer) or
+                IsDescriptorSenseDataFormat(SenseInfoBuffer)
+            )
 
-        # /* + + Description: This function returns size of available sense
-        # data. This is based on AdditionalSenseLength field in the sense data
-        # payload as indicated by the device. This function handles both Fixed
-        # and Desciptor format. Arguments: SenseInfoBuffer - A pointer to
-        # sense info buffer SenseInfoBufferLength - Size of the buffer
-        # SenseInfoBuffer points to. TotalByteCountIndicated - On output, it
-        # contains total byte counts of available sense data Returns: TRUE if
-        # the function is able to determine size of available sense data
-        # Otherwise, FALSE Note: The routine returns FALSE when available
-        # sense data amount is greater than MAX_SENSE_BUFFER_SIZE - -
+
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetTotalSenseByteCountIndicated (
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_  UCHAR SenseInfoBufferLength,
+        # _Out_ UCHAR *TotalByteCountIndicated
+        # )
+        #
+        # Description:
+        #
+        # This function returns size of available sense data. This is based on
+        # AdditionalSenseLength field in the sense data payload as indicated
+        # by the device.
+        #
+        # This function handles both Fixed and Desciptor format.
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense info buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # TotalByteCountIndicated
+        # - On output, it contains total byte counts of available sense data
+        #
+        # Returns:
+        #
+        # TRUE if the function is able to determine size of available sense data
+        #
+        # Otherwise, FALSE
+        #
+        # Note: The routine returns FALSE when available sense data amount is
+        # greater than MAX_SENSE_BUFFER_SIZE
+        #
+        # {
+        # BOOLEAN succeed = FALSE;
+        # UCHAR byteCount = 0;
+        # PFIXED_SENSE_DATA senseInfoBuffer = NULL;
+        #
+        # if (SenseInfoBuffer == NULL ||
+        # SenseInfoBufferLength == 0 ||
+        # TotalByteCountIndicated == NULL) {
+        #
+        # return FALSE;
+        # }
+        #
+        #
         # Offset to AdditionalSenseLength field is same between
         # Fixed and Descriptor format.
-        # /* + + Description: This function retrieves the following
-        # information from sense data in Fixed format: 1. Sense key 2.
-        # Additional Sense Code 3. Additional Sense Code Qualifier If
-        # Additional Sense Code or Additional Sense Code Qualifer is not
-        # available, it is set to 0 when the function returns. Arguments:
-        # SenseInfoBuffer - A pointer to sense info buffer
-        # SenseInfoBufferLength - Size of the buffer SenseInfoBuffer points
-        # to. SenseKey - On output, buffer contains the sense key. If null is
-        # specified, the function will not retrieve the sense key
-        # AdditionalSenseCode - On output, buffer contains the additional
-        # sense code. If null is specified, the function will not retrieve the
-        # additional sense code. AdditionalSenseCodeQualifier - On output,
-        # buffer contains the additional sense code qualifier. If null is
-        # specified, the function will not retrieve the additional sense code
-        # qualifier. Returns: TRUE if the function is able to retrieve the
-        # requested information. Otherwise, FALSE - -
-        # /* + + Description: This function retrieves the following
-        # information from sense data in Descriptor format: 1. Sense key 2.
-        # Additional Sense Code 3. Additional Sense Code Qualifier Arguments:
-        # SenseInfoBuffer - A pointer to sense info buffer
-        # SenseInfoBufferLength - Size of the buffer SenseInfoBuffer points
-        # to. SenseKey - On output, buffer contains the sense key. Note: If
-        # null is specified, the function will not retrieve the sense key
-        # AdditionalSenseCode - On output, buffer contains the additional
-        # sense code. Note: If null is specified, the function will not
-        # retrieve the additional sense code. AdditionalSenseCodeQualifier -
-        # On output, buffer contains the additional sense code qualifier.
-        # Note: If null is specified, the function will not retrieve the
-        # additional sense code qualifier. Returns: TRUE if the function is
-        # able to retrieve the requested information. Otherwise, FALSE - -
+        # senseInfoBuffer = (PFIXED_SENSE_DATA)SenseInfoBuffer;
+        #
+        # if (RTL_CONTAINS_FIELD(senseInfoBuffer,
+        # SenseInfoBufferLength,
+        # AdditionalSenseLength)) {
+        #
+        # if (senseInfoBuffer->AdditionalSenseLength <=
+        # (MAX_SENSE_BUFFER_SIZE - RTL_SIZEOF_THROUGH_FIELD(FIXED_SENSE_DATA, AdditionalSenseLength))) {
+        #
+        # byteCount = senseInfoBuffer->AdditionalSenseLength
+        # + RTL_SIZEOF_THROUGH_FIELD(FIXED_SENSE_DATA, AdditionalSenseLength);
+        #
+        # *TotalByteCountIndicated = byteCount;
+        #
+        # succeed = TRUE;
+        # }
+        # }
+        #
+        # return succeed;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetFixedSenseKeyAndCodes (
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_ UCHAR SenseInfoBufferLength,
+        # _Out_opt_ PUCHAR SenseKey,
+        # _Out_opt_ PUCHAR AdditionalSenseCode,
+        # _Out_opt_ PUCHAR AdditionalSenseCodeQualifier
+        # )
+        #
+        # Description:
+        #
+        # This function retrieves the following information from sense data
+        # in Fixed format:
+        #
+        # 1. Sense key
+        # 2. Additional Sense Code
+        # 3. Additional Sense Code Qualifier
+        #
+        # If Additional Sense Code or Additional Sense Code Qualifer is not available,
+        # it is set to 0 when the function returns.
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense info buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # SenseKey
+        # - On output, buffer contains the sense key.
+        # If null is specified, the function will not retrieve the sense key
+        #
+        # AdditionalSenseCode
+        # - On output, buffer contains the additional sense code.
+        # If null is specified, the function will not retrieve the additional sense code.
+        #
+        # AdditionalSenseCodeQualifier
+        # - On output, buffer contains the additional sense code qualifier.
+        # If null is specified, the function will not retrieve the additional sense code qualifier.
+        #
+        # Returns:
+        #
+        # TRUE if the function is able to retrieve the requested information.
+        #
+        # Otherwise, FALSE
+        #
+        # {
+        # PFIXED_SENSE_DATA fixedSenseData = (PFIXED_SENSE_DATA)SenseInfoBuffer;
+        # BOOLEAN succeed = FALSE;
+        # ULONG dataLength = 0;
+        #
+        # if (SenseInfoBuffer == NULL || SenseInfoBufferLength == 0) {
+        # return FALSE;
+        # }
+        #
+        # if (RTL_CONTAINS_FIELD(fixedSenseData, SenseInfoBufferLength, AdditionalSenseLength)) {
+        #
+        # dataLength = fixedSenseData->AdditionalSenseLength + RTL_SIZEOF_THROUGH_FIELD(FIXED_SENSE_DATA, AdditionalSenseLength);
+        #
+        # if (dataLength > SenseInfoBufferLength) {
+        # dataLength = SenseInfoBufferLength;
+        # }
+        #
+        # if (SenseKey != NULL) {
+        # *SenseKey = fixedSenseData->SenseKey;
+        # }
+        #
+        # if (AdditionalSenseCode != NULL) {
+        # *AdditionalSenseCode = RTL_CONTAINS_FIELD(fixedSenseData, dataLength, AdditionalSenseCode) ?
+        # fixedSenseData->AdditionalSenseCode : 0;
+        # }
+        #
+        # if (AdditionalSenseCodeQualifier != NULL) {
+        # *AdditionalSenseCodeQualifier = RTL_CONTAINS_FIELD(fixedSenseData, dataLength, AdditionalSenseCodeQualifier) ?
+        # fixedSenseData->AdditionalSenseCodeQualifier : 0;
+        # }
+        #
+        # succeed = TRUE;
+        # }
+        #
+        # return succeed;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetDescriptorSenseKeyAndCodes (
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_ UCHAR SenseInfoBufferLength,
+        # _Out_opt_ PUCHAR SenseKey,
+        # _Out_opt_ PUCHAR AdditionalSenseCode,
+        # _Out_opt_ PUCHAR AdditionalSenseCodeQualifier
+        # )
+        #
+        # Description:
+        #
+        # This function retrieves the following information from sense data
+        # in Descriptor format:
+        #
+        # 1. Sense key
+        # 2. Additional Sense Code
+        # 3. Additional Sense Code Qualifier
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense info buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # SenseKey
+        # - On output, buffer contains the sense key.
+        # Note: If null is specified, the function will not retrieve the sense key
+        #
+        # AdditionalSenseCode
+        # - On output, buffer contains the additional sense code.
+        # Note: If null is specified, the function will not retrieve the additional sense code.
+        #
+        # AdditionalSenseCodeQualifier
+        # - On output, buffer contains the additional sense code qualifier.
+        # Note: If null is specified, the function will not retrieve the additional sense code qualifier.
+        #
+        # Returns:
+        #
+        # TRUE if the function is able to retrieve the requested information.
+        #
+        # Otherwise, FALSE
+        #
+        # {
+        # PDESCRIPTOR_SENSE_DATA descriptorSenseData = (PDESCRIPTOR_SENSE_DATA)SenseInfoBuffer;
+        # BOOLEAN succeed = FALSE;
+        #
+        # if (SenseInfoBuffer == NULL || SenseInfoBufferLength == 0) {
+        # return FALSE;
+        # }
+        # if (RTL_CONTAINS_FIELD(descriptorSenseData, SenseInfoBufferLength, AdditionalSenseLength)) {
+        #
+        # if (SenseKey) {
+        # *SenseKey = descriptorSenseData->SenseKey;
+        # }
+        #
+        # if (AdditionalSenseCode != NULL) {
+        # *AdditionalSenseCode = descriptorSenseData->AdditionalSenseCode;
+        # }
+        #
+        # if (AdditionalSenseCodeQualifier != NULL) {
+        # *AdditionalSenseCodeQualifier = descriptorSenseData->AdditionalSenseCodeQualifier;
+        # }
+        #
+        # succeed = TRUE;
+        # }
+        #
+        # return succeed;
+        # }
+        #
         # SCSI_SENSE_OPTIONS
+        #
+        SCSI_SENSE_OPTIONS = ULONG
+        #
         # No options is specified
-        SCSI_SENSE_OPTIONS_NONE = (SCSI_SENSE_OPTIONS)0x00000000
-
-
+        SCSI_SENSE_OPTIONS_NONE = 0x00000000
+        #
         # If no known format is indicated in the sense buffer, interpret
         # the sense buffer as Fixed format.
         SCSI_SENSE_OPTIONS_FIXED_FORMAT_IF_UNKNOWN_FORMAT_INDICATED = (
-            (SCSI_SENSE_OPTIONS)0x00000001
+            0x00000001
         )
-
-        # /* + + Description: This function retrieves the following
-        # information from sense data 1. Sense key 2. Additional Sense Code 3.
-        # Additional Sense Code Qualifier This function handles both Fixed and
-        # Descriptor format. Arguments: SenseInfoBuffer - A pointer to sense
-        # info buffer SenseInfoBufferLength - Size of the buffer
-        # SenseInfoBuffer points to. Options - Options used by this routine.
-        # It is a bit - field value. See defintions of list of define
-        # SCSI_SENSE_OPTIONS above in this file. SenseKey - On output, buffer
-        # contains the sense key. Note: If null is specified, the function
-        # will not retrieve the sense key AdditionalSenseCode - On output,
-        # buffer contains the additional sense code. Note: If null is
-        # specified, the function will not retrieve the additional sense code.
-        # AdditionalSenseCodeQualifier - On output, buffer contains the
-        # additional sense code qualifier. Note: If null is specified, the
-        # function will not retrieve the additional sense code qualifier.
-        # Returns: TRUE if the function is able to retrieve the requested
-        # information. Otherwise, FALSE - -
-        # /* + + Description: This function calculates available amount of
-        # descriptors information within sense data in Descriptor format.
-        # Then, it returns the starting address of descriptors and amount of
-        # descriptor data available. Arguments: SenseInfoBuffer - A pointer to
-        # sense info buffer SenseInfoBufferLength - Size of the buffer
-        # SenseInfoBuffer points to. DescriptorBuffer - On output, it contains
-        # pointer to the starting address of descriptor DescriptorBufferLength
-        # - On output, it contains number of bytes of available descriptor
-        # data Returns: TRUE if the function succeeds Otherwise, FALSE Note:
-        # FALSE if no descriptor data are available. - -
-        # /* + + Description: This function validates if buffer contains a
-        # valid payload for descriptor of Information type Arguments:
-        # DescriptorBuffer - Pointer to the starting address of descriptor
-        # payload DescriptorBufferLength - Size of the buffer that
-        # DescriptorBuffer points to. Returns: TRUE if DescriptorBuffer
-        # contains valid payload for Information type descriptor. Otherwise,
-        # FALSE - -
-        # /* + + Description: This function validates if buffer contains a
-        # valid payload for Block Command type descriptor Arguments:
-        # DescriptorBuffer - Pointer to the starting address of descriptor
-        # payload DescriptorBufferLength - Size of the buffer that
-        # DescriptorBuffer points to Returns: TRUE if DescriptorBuffer
-        # contains a valid payload for descriptor of Block Command type
-        # Otherwise, FALSE - -
-        # /* + + Description: This routine converts descriptor format sense
-        # data to fixed format sense data. Due to differences between two
-        # formats, the conversion is only based on Sense Key, Additional Sense
-        # Code, and Additional Sense Code Qualififer. Arguments:
-        # SenseInfoBuffer - A pointer to sense data buffer
-        # SenseInfoBufferLength - Size of the buffer SenseInfoBuffer points
-        # to. OutBuffer - On output, OutBuffer contains the fixed sense data
-        # as result of conversion. OutBufferLength - Size of the buffer that
-        # OutBuffer points to. Returns: TRUE if conversion to Fixed format is
-        # successful. Otherwise, FALSE. - -
-        ntoskrnl = ctypes.windll.NTOSKRNL
-
-
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetSenseKeyAndCodes (
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_ UCHAR SenseInfoBufferLength,
+        # _In_ SCSI_SENSE_OPTIONS Options,
+        # _Out_opt_ PUCHAR SenseKey,
+        # _Out_opt_ PUCHAR AdditionalSenseCode,
+        # _Out_opt_ PUCHAR AdditionalSenseCodeQualifier
+        # )
+        #
+        # Description:
+        #
+        # This function retrieves the following information from sense data
+        #
+        # 1. Sense key
+        # 2. Additional Sense Code
+        # 3. Additional Sense Code Qualifier
+        #
+        # This function handles both Fixed and Descriptor format.
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense info buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # Options
+        # - Options used by this routine. It is a bit-field value. See defintions
+        # of list of #define SCSI_SENSE_OPTIONS above in this file.
+        #
+        # SenseKey
+        # - On output, buffer contains the sense key.
+        # Note: If null is specified, the function will not retrieve the sense key
+        #
+        # AdditionalSenseCode
+        # - On output, buffer contains the additional sense code.
+        # Note: If null is specified, the function will not retrieve the additional sense code.
+        #
+        # AdditionalSenseCodeQualifier
+        # - On output, buffer contains the additional sense code qualifier.
+        # Note: If null is specified, the function will not retrieve the additional sense code qualifier.
+        #
+        # Returns:
+        #
+        # TRUE if the function is able to retrieve the requested information.
+        #
+        # Otherwise, FALSE
+        #
+        # {
+        # BOOLEAN succeed = FALSE;
+        #
+        # if (SenseInfoBuffer == NULL || SenseInfoBufferLength == 0) {
+        # return FALSE;
+        # }
+        #
+        # if (IsDescriptorSenseDataFormat(SenseInfoBuffer)) {
+        #
+        # succeed = ScsiGetDescriptorSenseKeyAndCodes( SenseInfoBuffer,
+        # SenseInfoBufferLength,
+        # SenseKey,
+        # AdditionalSenseCode,
+        # AdditionalSenseCodeQualifier );
+        # } else {
+        #
+        # if ((Options & SCSI_SENSE_OPTIONS_FIXED_FORMAT_IF_UNKNOWN_FORMAT_INDICATED) ||
+        # IsFixedSenseDataFormat(SenseInfoBuffer)) {
+        #
+        # succeed = ScsiGetFixedSenseKeyAndCodes( SenseInfoBuffer,
+        # SenseInfoBufferLength,
+        # SenseKey,
+        # AdditionalSenseCode,
+        # AdditionalSenseCodeQualifier );
+        # }
+        # }
+        #
+        # return succeed;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetSenseDescriptor(
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_ UCHAR SenseInfoBufferLength,
+        # _Outptr_result_bytebuffer_(*DescriptorBufferLength) PVOID *DescriptorBuffer,
+        # _Out_ UCHAR *DescriptorBufferLength
+        # )
+        #
+        # Description:
+        #
+        # This function calculates available amount of descriptors information
+        # within sense data in Descriptor format.  Then, it returns the starting
+        # address of descriptors and amount of descriptor data available.
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense info buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # DescriptorBuffer
+        # - On output, it contains pointer to the starting address of descriptor
+        #
+        # DescriptorBufferLength
+        # - On output, it contains number of bytes of available descriptor data
+        #
+        # Returns:
+        #
+        # TRUE if the function succeeds
+        #
+        # Otherwise, FALSE
+        #
+        # Note: FALSE if no descriptor data are available.
+        #
+        # {
+        # PDESCRIPTOR_SENSE_DATA descriptorSenseData;
+        # BOOLEAN succeed = FALSE;
+        # UCHAR dataLength = 0;
+        #
+        # if (SenseInfoBuffer == NULL    ||
+        # SenseInfoBufferLength == 0 ||
+        # DescriptorBuffer == NULL   ||
+        # DescriptorBufferLength == NULL) {
+        # return FALSE;
+        # }
+        #
+        # *DescriptorBuffer = NULL;
+        # *DescriptorBufferLength = 0;
+        #
+        # if (!IsDescriptorSenseDataFormat(SenseInfoBuffer)) {
+        # return FALSE;
+        # }
+        #
+        # descriptorSenseData = (PDESCRIPTOR_SENSE_DATA)SenseInfoBuffer;
+        #
+        # if (RTL_CONTAINS_FIELD(descriptorSenseData, SenseInfoBufferLength, AdditionalSenseLength)) {
+        #
+        # if (descriptorSenseData->AdditionalSenseLength <= (MAX_SENSE_BUFFER_SIZE - RTL_SIZEOF_THROUGH_FIELD(DESCRIPTOR_SENSE_DATA, AdditionalSenseLength))) {
+        #
+        # dataLength = descriptorSenseData->AdditionalSenseLength + RTL_SIZEOF_THROUGH_FIELD(DESCRIPTOR_SENSE_DATA, AdditionalSenseLength);
+        #
+        # if (dataLength > SenseInfoBufferLength) {
+        # dataLength = SenseInfoBufferLength;
+        # }
+        #
+        # *DescriptorBufferLength = dataLength - RTL_SIZEOF_THROUGH_FIELD(DESCRIPTOR_SENSE_DATA, AdditionalSenseLength);
+        #
+        # if (*DescriptorBufferLength > 0) {
+        # *DescriptorBuffer = (PVOID)(descriptorSenseData->DescriptorBuffer);
+        # succeed = TRUE;
+        # }
+        # }
+        # }
+        #
+        # return succeed;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiValidateInformationSenseDescriptor(
+        # _In_reads_bytes_(DescriptorBufferLength) PVOID DescriptorBuffer,
+        # _In_ UCHAR DescriptorBufferLength
+        # )
+        #
+        # Description:
+        #
+        # This function validates if buffer contains a valid payload for descriptor of Information type
+        #
+        # Arguments:
+        #
+        # DescriptorBuffer
+        # - Pointer to the starting address of descriptor payload
+        #
+        # DescriptorBufferLength
+        # - Size of the buffer that DescriptorBuffer points to.
+        #
+        # Returns:
+        #
+        # TRUE if DescriptorBuffer contains valid payload for Information type descriptor.
+        #
+        # Otherwise, FALSE
+        #
+        # {
+        # PSCSI_SENSE_DESCRIPTOR_INFORMATION descriptor;
+        # UCHAR additionalLength;
+        #
+        # if (DescriptorBuffer == NULL || DescriptorBufferLength < sizeof(SCSI_SENSE_DESCRIPTOR_INFORMATION)) {
+        # return FALSE;
+        # }
+        #
+        # descriptor = (PSCSI_SENSE_DESCRIPTOR_INFORMATION)DescriptorBuffer;
+        #
+        # if (descriptor->Header.DescriptorType != SCSI_SENSE_DESCRIPTOR_TYPE_INFORMATION) {
+        # return FALSE;
+        # }
+        #
+        # additionalLength = sizeof(SCSI_SENSE_DESCRIPTOR_INFORMATION) - RTL_SIZEOF_THROUGH_FIELD(SCSI_SENSE_DESCRIPTOR_INFORMATION, Header);
+        #
+        # if (descriptor->Header.AdditionalLength != additionalLength) {
+        # return FALSE;
+        # }
+        #
+        # if (descriptor->Valid == 0) {
+        # return FALSE;
+        # }
+        #
+        # return TRUE;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiValidateBlockCommandSenseDescriptor(
+        # _In_reads_bytes_(DescriptorBufferLength) PVOID DescriptorBuffer,
+        # _In_ UCHAR DescriptorBufferLength
+        # )
+        #
+        # Description:
+        #
+        # This function validates if buffer contains a valid payload for Block Command type descriptor
+        #
+        # Arguments:
+        #
+        # DescriptorBuffer
+        # - Pointer to the starting address of descriptor payload
+        #
+        # DescriptorBufferLength
+        # - Size of the buffer that DescriptorBuffer points to
+        #
+        # Returns:
+        #
+        # TRUE if DescriptorBuffer contains a valid payload for descriptor of Block Command type
+        #
+        # Otherwise, FALSE
+        #
+        # {
+        # PSCSI_SENSE_DESCRIPTOR_BLOCK_COMMAND descriptor;
+        # UCHAR additionalLength;
+        #
+        # if (DescriptorBuffer == NULL || DescriptorBufferLength < sizeof(SCSI_SENSE_DESCRIPTOR_BLOCK_COMMAND)) {
+        # return FALSE;
+        # }
+        #
+        # descriptor = (PSCSI_SENSE_DESCRIPTOR_BLOCK_COMMAND)DescriptorBuffer;
+        #
+        # if (descriptor->Header.DescriptorType != SCSI_SENSE_DESCRIPTOR_TYPE_BLOCK_COMMAND) {
+        # return FALSE;
+        # }
+        #
+        # additionalLength = sizeof(SCSI_SENSE_DESCRIPTOR_BLOCK_COMMAND) - RTL_SIZEOF_THROUGH_FIELD(SCSI_SENSE_DESCRIPTOR_BLOCK_COMMAND, Header);
+        #
+        # if (descriptor->Header.AdditionalLength != additionalLength) {
+        # return FALSE;
+        # }
+        #
+        # return TRUE;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiConvertToFixedSenseFormat(
+        # _In_reads_bytes_(SenseInfoBufferLength) PVOID SenseInfoBuffer,
+        # _In_ UCHAR SenseInfoBufferLength,
+        # _Out_writes_bytes_(OutBufferLength) PVOID OutBuffer,
+        # _In_ UCHAR OutBufferLength
+        # )
+        #
+        # Description:
+        #
+        # This routine converts descriptor format sense data to fixed format sense data.
+        #
+        # Due to differences between two formats, the conversion is only based on Sense Key,
+        # Additional Sense Code, and Additional Sense Code Qualififer.
+        #
+        # Arguments:
+        #
+        # SenseInfoBuffer
+        # - A pointer to sense data buffer
+        #
+        # SenseInfoBufferLength
+        # - Size of the buffer SenseInfoBuffer points to.
+        #
+        # OutBuffer
+        # - On output, OutBuffer contains the fixed sense data as result of conversion.
+        #
+        # OutBufferLength
+        # - Size of the buffer that OutBuffer points to.
+        #
+        # Returns:
+        #
+        # TRUE if conversion to Fixed format is successful.
+        #
+        # Otherwise, FALSE.
+        #
+        # {
+        # BOOLEAN succeed = FALSE;
+        # BOOLEAN validSense  = FALSE;
+        # UCHAR senseKey = 0;
+        # UCHAR additionalSenseCode = 0;
+        # UCHAR additionalSenseCodeQualifier = 0;
+        # PFIXED_SENSE_DATA outBuffer = (PFIXED_SENSE_DATA)OutBuffer;
+        #
+        # if (SenseInfoBuffer == NULL ||
+        # SenseInfoBufferLength == 0 ||
+        # OutBuffer == NULL ||
+        # OutBufferLength < sizeof(FIXED_SENSE_DATA)) {
+        # return FALSE;
         # }
         #
         # if (IsDescriptorSenseDataFormat(SenseInfoBuffer)) {
         #
         # RtlZeroMemory(OutBuffer, OutBufferLength);
-        RtlZeroMemory = ntoskrnl.RtlZeroMemory
-        RtlZeroMemory.restype = (IsDescriptorSenseDataFormat(SenseInfoBuffer))
-
-
-        # /* + + Description: This routine locates the next descriptor with
-        # type equals to one of the types specified by caller. Arguments:
-        # Buffer - pointer to buffer to be searched. BufferLength - Size of
-        # the buffer that Buffer points to. TypeList - Pointer to array of
-        # descriptor types to be searched TypeListCount - Number of element in
-        # TypeList array OutType - Upon return, if a descriptor is found, it
-        # contains the type of the descriptor. OutBuffer - Upon return, if a
-        # descriptor is found, it points to start address of the descriptor
-        # buffer OutBufferLength - Upon return, if a descriptor is found, it
-        # contains the number of bytes available starting at OutBuffer. i.e.
-        # This is the buffer available between OutBuffer pointer and end of
-        # Buffer. Returns: TRUE if descriptor of specified type is found.
-        # Otherwise, FALSE. - -
+        #
+        # validSense = ScsiGetSenseKeyAndCodes(SenseInfoBuffer,
+        # SenseInfoBufferLength,
+        # SCSI_SENSE_OPTIONS_NONE,
+        # &senseKey,
+        # &additionalSenseCode,
+        # &additionalSenseCodeQualifier);
+        # if (validSense) {
+        #
+        # if (IsSenseDataCurrentError(SenseInfoBuffer)) {
+        # outBuffer->ErrorCode = SCSI_SENSE_ERRORCODE_FIXED_CURRENT;
+        # } else {
+        # outBuffer->ErrorCode = SCSI_SENSE_ERRORCODE_FIXED_DEFERRED;
+        # }
+        # outBuffer->AdditionalSenseLength = sizeof(FIXED_SENSE_DATA) - RTL_SIZEOF_THROUGH_FIELD(FIXED_SENSE_DATA, AdditionalSenseLength);
+        # outBuffer->SenseKey = senseKey;
+        # outBuffer->AdditionalSenseCode = additionalSenseCode;
+        # outBuffer->AdditionalSenseCodeQualifier = additionalSenseCodeQualifier;
+        #
+        # succeed = TRUE;
+        # }
+        # }
+        #
+        # return succeed;
+        # }
+        #
+        # _Success_(return != FALSE)
+        # FORCEINLINE BOOLEAN
+        # ScsiGetNextSenseDescriptorByType (
+        # _In_reads_bytes_(BufferLength) PVOID Buffer,
+        # _In_ UCHAR BufferLength,
+        # _In_reads_(TypeListCount) PUCHAR TypeList,
+        # _In_ ULONG TypeListCount,
+        # _Out_ PUCHAR OutType,
+        # _Outptr_result_bytebuffer_(*OutBufferLength) PVOID *OutBuffer,
+        # _Out_ UCHAR *OutBufferLength
+        # )
+        #
+        # Description:
+        #
+        # This routine locates the next descriptor with type equals to one of the
+        # types specified by caller.
+        #
+        # Arguments:
+        #
+        # Buffer - pointer to buffer to be searched.
+        #
+        # BufferLength - Size of the buffer that Buffer points to.
+        #
+        # TypeList - Pointer to array of descriptor types to be searched
+        #
+        # TypeListCount - Number of element in TypeList array
+        #
+        # OutType - Upon return, if a descriptor is found,
+        # it contains the type of the descriptor.
+        #
+        # OutBuffer - Upon return, if a descriptor is found,
+        # it points to start address of the descriptor buffer
+        #
+        # OutBufferLength - Upon return, if a descriptor is found,
+        # it contains the number of bytes available starting at
+        # OutBuffer. i.e. This is the buffer available between
+        # OutBuffer pointer and end of Buffer.
+        #
+        # Returns:
+        #
+        # TRUE if descriptor of specified type is found.
+        #
+        # Otherwise, FALSE.
+        #
+        # {
+        # PUCHAR remainingBuffer;
+        # UCHAR remainingBufferLength;
+        # UCHAR type;
+        # ULONG i;
+        # UCHAR descriptorLength;
+        #
+        # if (Buffer          == NULL ||
+        # BufferLength    == 0    ||
+        # TypeList        == NULL ||
+        # TypeListCount   == 0    ||
+        # OutType         == NULL ||
+        # OutBuffer       == NULL ||
+        # OutBufferLength == NULL) {
+        #
+        # return FALSE;
+        # }
+        #
+        # *OutBuffer = NULL;
+        # *OutBufferLength = 0;
+        # *OutType = 0;
+        #
+        # remainingBuffer = (PUCHAR)Buffer;
+        # remainingBufferLength = BufferLength;
+        #
+        # while (remainingBufferLength >= sizeof(SCSI_SENSE_DESCRIPTOR_HEADER)) {
+        #
+        # for (i = 0; i < TypeListCount; i++) {
+        #
+        # type = TypeList[i];
+        #
+        # if (((PSCSI_SENSE_DESCRIPTOR_HEADER)remainingBuffer)->DescriptorType == type) {
+        # *OutBuffer = (PVOID)remainingBuffer;
+        # *OutBufferLength = remainingBufferLength;
+        # *OutType = type;
+        # return TRUE;
+        # }
+        # }
+        #
+        # descriptorLength = ScsiGetSenseDescriptorLength(remainingBuffer);
+        #
+        # if (remainingBufferLength > descriptorLength) {
+        #
         # Advance to start address of next descriptor
+        # remainingBuffer += descriptorLength;
+        # remainingBufferLength -= descriptorLength;
+        #
+        # } else {
+        #
         # Search is completed.
+        # break;
+        # }
+        #
+        # }
+        #
+        # return FALSE;
+        # }
+        #
         # [END] Collections of SCSI utiltiy functions
+        #
         # end_storport end_storportp
-        # end_ntminitape    # END IF  WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_PKG_STORAGE)
+        #
+        # end_ntminitape
+    # END IF  WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_PKG_STORAGE)
 # END IF   not defined _NTSCSI_
