@@ -1,6 +1,11 @@
 from __future__ import print_function, absolute_import
 import os
 import re
+import sys
+
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from code_converter.includes import parse_include
 from code_converter.enum import parse_enum
 from code_converter.define import parse_define
@@ -10,9 +15,8 @@ from code_converter.interface import parse_interface, interface_declarations
 from code_converter.dll import parse_dll, write_functions, print_not_found
 from code_converter.guid import parse_guid
 from code_converter.utils import process_param
+from code_converter.preprocessor import parse_macro
 from code_converter import preprocessor
-
-parse_macro = preprocessor.parse_macro
 
 
 class Allowed:
@@ -89,9 +93,32 @@ FUNDAMENTAL_TYPES = {
     '&lt;': '<',
     '&gt;': '>'
 }
+interface_template_1 = '''
 
+{indent}class {cls_name}(comtypes.IUnknown):
+{indent}    _case_insensitive_ = True
+{indent}    _iid_ = None
+{indent}    _idlflags_ = []
+
+'''
+
+interface_template_2 = '''
+
+{indent}class {cls_name}({parent_cls}):
+{indent}    _case_insensitive_ = True
+{indent}    _iid_ = None
+{indent}    _idlflags_ = []
+
+'''
 
 def convert(data):
+    data = data.replace('__RPC_FAR ', '')
+    data = data.replace('__RPC_unique_pointer ', '')
+    data = data.replace('__RPC_USER ', '')
+    data = re.sub(r" \-\> ", '.', data)
+    data = re.sub(r"\-\> ", '.', data)
+    data = re.sub(r" \-\>", '.', data)
+    data = re.sub(r"\-\>", '.', data)
     data = re.sub(r" unsigned short int ", ' USHORT ', data)
     data = re.sub(r"\nunsigned short int ", '\nUSHORT ', data)
     data = re.sub(r" signed short int ", ' SHORT ', data)
@@ -261,7 +288,7 @@ def convert(data):
     data = re.sub(r"!(?!=)", 'not ', data)
     data = re.sub(r"(?! )==(?! )", ' == ', data)
     data = re.sub(r"(?! )\+(?! )", ' + ', data)
-    data = re.sub(r"(?! )\-(?! )", ' - ', data)
+    # data = re.sub(r"(?! )\-(?! )", ' - ', data)
     data = re.sub(r"(?! )<=(?! )", ' <= ', data)
     data = re.sub(r"(?! )>=(?! )", ' >= ', data)
     data = re.sub(r"(?! )!=(?! )", ' != ', data)
@@ -295,6 +322,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
     idl_file = os.path.splitext(file_path)[0] + '.idl'
 
     interfaces = []
+    built_interfaces = {}
     libraries = []
     preprocessor.module_name = file_path
 
@@ -752,12 +780,34 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     )
                     continue
 
+        line = line.strip()
+
+        if line.startswith('MIDL_INTERFACE'):
+            handle_preprocessor()
+
+            iface, skip_until = combine_extended_lines(i + 1, indent, ';', '{}')
+            iface = iface.split('\n')
+            line = line.replace('("', '(\n' + indent + '    "{')
+            line = line.replace('")', '}"\n' + indent + ')').upper()
+
+            cls_name = iface[0].split(':')[0].strip()
+            interface_iid = indent + 'IID_' + cls_name + ' = ' + line + '\n'
+            interface_iid += indent + cls_name + '._iid_ = IID_' + cls_name + '\n\n'
+
+            cls_name, b_interface = parse_interface(indent, iface, Importer, cls_name, False)
+
+            print(indent[:-4] + 'else:')
+            print(interface_iid)
+            print(b_interface)
+            skip_until = combine_extended_lines(i, marker='#endif')[1]
+            continue
+
         for interface_data in interfaces[:]:
-            pattern1 = 'typedef interface {0} {0};'.format(
+            pattern1 = 'typedef interface {0}'.format(
                 interface_data['cls_name']
             )
 
-            pattern2 = 'typedef struct {0}Vtbl'.format(
+            pattern2 = '{0}Vtbl'.format(
                 interface_data['cls_name']
             )
 
@@ -770,43 +820,47 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     interface_data,
                     True
                 )
+                skip_until = i
                 break
 
             if pattern2 in line:
+                sys.stderr.write('PATTERN2: ' + pattern2 + ' ' + line + '\n')
                 handle_preprocessor()
-                parse_interface(
-                    indent,
-                    interface_data['methods'],
-                    Importer,
-                    interface_data,
-                    False
-                )
-                interfaces.remove(interface_data)
-                break
-        else:
-            for interface_data in libraries:
-                pattern = 'typedef struct {0} {0};'.format(
-                    interface_data['cls_name']
-                )
 
-                declare = 'defined' not in interface_data
-                if pattern in line:
-                    handle_preprocessor()
+                if interface_data['cls_name'] in built_interfaces:
+                    print(built_interfaces.pop(interface_data['cls_name']))
+
+                else:
                     parse_interface(
                         indent,
                         interface_data['methods'],
                         Importer,
                         interface_data,
-                        declare
+                        False
                     )
+                interfaces.remove(interface_data)
+
+                skip_until = combine_extended_lines(i, marker='#endif')[1]
+            break
+
+        else:
+            for interface_cls_name in built_interfaces.keys():
+                pattern = '{0}Vtbl'.format(
+                    interface_cls_name
+                )
+
+                if pattern in line:
+                    handle_preprocessor()
+                    print(built_interfaces.pop(interface_cls_name))
+                    skip_until = combine_extended_lines(i, marker='#endif')[1]
                     break
-
-                for pattern in ('IID', 'CLSID'):
-                    pattern = 'EXTERN_C const {0} {1}'.format(
-                        pattern,
-                        interface_data['iid_name']
+            else:
+                for interface_data in libraries:
+                    pattern = 'typedef struct {0} {0};'.format(
+                        interface_data['cls_name']
                     )
 
+                    declare = 'defined' not in interface_data
                     if pattern in line:
                         handle_preprocessor()
                         parse_interface(
@@ -817,30 +871,51 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                             declare
                         )
                         break
-                else:
-                    continue
 
-                if not declare:
-                    libraries.remove(interface_data)
-                break
-            else:
-                if line.strip().startswith('DECLARE_HANDLE'):
-                    var_name = line.split('(', 1)[1].split(')', 1)[0]
-                    print(indent + var_name + ' = DECLARE_HANDLE()')
-                    continue
+                    for pattern in ('IID', 'CLSID'):
+                        pattern = 'EXTERN_C const {0} {1}'.format(
+                            pattern,
+                            interface_data['iid_name']
+                        )
 
-                if line.strip().startswith('#define'):
-                    define_line, skip_until = combine_extended_lines(i, indent)
-                    handle_preprocessor()
-                    if parse_define('    ' * (len(steps) - 1), define_line, Importer):
-                        print_newline = True
-                        continue
+                        if pattern in line:
+                            handle_preprocessor()
+                            parse_interface(
+                                indent,
+                                interface_data['methods'],
+                                Importer,
+                                interface_data,
+                                declare
+                            )
+                            break
                     else:
-                        skip_until = None
+                        continue
 
-        line = line.strip()
+                    if not declare:
+                        libraries.remove(interface_data)
+                    break
+                else:
+                    if line.strip().startswith('DECLARE_HANDLE'):
+                        var_name = line.split('(', 1)[1].split(')', 1)[0]
+                        print(indent + var_name + ' = DECLARE_HANDLE()')
+                        continue
 
-        if line.startswith('enum') or line.startswith('typedef enum'):
+                    if line.strip().startswith('#define'):
+                        define_line, skip_until = combine_extended_lines(i, indent)
+                        handle_preprocessor()
+                        if parse_define('    ' * (len(steps) - 1), define_line, Importer):
+                            print_newline = True
+                            continue
+                        else:
+                            skip_until = None
+        if skip_until is not None:
+            continue
+
+        if (
+            (line.strip().startswith('typedef') and string_data[i + 1].strip().startswith('enum')) or
+            line.startswith('enum') or
+            line.startswith('typedef enum')
+        ):
             if print_newline:
                 print()
                 print_newline = False
@@ -853,6 +928,14 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             if tdef:
                 enum[0] = enum[0].replace('enum', 'typedef enum', 1)
                 tdef = False
+
+            if 'typedef enum' not in enum[0] and 'typedef' in enum[0]:
+                enum.pop(0)
+                enum[0] = enum[0].replace('enum', 'typedef enum')
+
+            if not enum[0].endswith('{'):
+                enum[0] += '{'
+                enum[1] = enum[1].replace('{    ', '')
 
             handle_preprocessor()
             parse_enum(indent, enum, namespace)
@@ -898,9 +981,23 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
         if line.startswith('typedef') or (tdef and line):
             handle_preprocessor()
 
-            typedef, skip_until = combine_extended_lines(i, indent, ';')
-            sys.stderr.write('TYPEDEF: ' + typedef)
+            if line.startswith('typedef interface '):
+                line = line.replace('typedef interface ', '').strip()
+                try:
+                    parent_cls, cls_name = line.split(' ')
+                except ValueError:
+                    line = line.replace(';', '').strip()
+                    parent_cls = cls_name = line
 
+                cls_name = cls_name.replace(';', '').strip()
+                parent_cls = parent_cls.strip()
+                if parent_cls == cls_name:
+                    print(interface_template_1.format(indent=indent, cls_name=cls_name))
+                else:
+                    print(interface_template_2.format(indent=indent, cls_name=cls_name, parent_cls=parent_cls))
+                continue
+
+            typedef, skip_until = combine_extended_lines(i, indent, ';')
             cls_name = None
             callback = 'CALLBACK'
             ret_val = None
@@ -924,11 +1021,14 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                             cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
                             if itm
                         )
+                        if not cls_name:
+                            break
                         if len(cls_name) == 1:
                             cls_name = cls_name[0]
                         else:
-                            cls_name = cls_name[-1]
                             callback = cls_name[-2]
+                            cls_name = cls_name[-1]
+
                     else:
                         if cls_name is None:
                             lne = list(
@@ -945,8 +1045,9 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                                     if len(cls_name) == 1:
                                         cls_name = cls_name[0]
                                     else:
-                                        cls_name = cls_name[-1]
                                         callback = cls_name[-2]
+                                        cls_name = cls_name[-1]
+
                                 else:
                                     ret_val = list(itm for itm in lne.split(' ') if itm)[-1]
                                 continue
@@ -962,8 +1063,8 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                                 if len(cls_name) == 1:
                                     cls_name = cls_name[0]
                                 else:
-                                    cls_name = cls_name[-1]
                                     callback = cls_name[-2]
+                                    cls_name = cls_name[-1]
 
                                 lne = lne[:-2]
                                 if not lne:
@@ -979,9 +1080,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                             else:
                                 if lne.count('(') != lne.count(')'):
                                     continue
-
-                                sys.stderr.write('LNE: ' + repr(lne) + '\n')
-                                raise
+                                break
 
             if cls_name is not None:
                 tmpl = '{indent}{cls_name} = {callback}(\n'
@@ -991,22 +1090,39 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     callback=callback
                 )
 
-                tmpl += '{indent}    {ret_val},'.format(
+                tmpl += '{indent}    {ret_val},\n'.format(
                     indent=indent,
                     ret_val=ret_val
                 )
 
                 for param in params:
-                    tmpl += '{indent}    {param},'.format(
+                    tmpl += '{indent}    {param},\n'.format(
                         indent=indent,
                         param=param
                     )
                 tmpl += '{indent})'.format(indent=indent)
-                comment = '\n'.join('# ' + lne.strip() for lne in typedef.split('\n'))
+                comment = '\n'.join(indent + '# ' + lne.strip() for lne in typedef.split('\n'))
                 print('\n' + comment + '\n')
                 print(tmpl + '\n\n')
             else:
-                sys.stderr.write('TYPEDEF ERROR: ' + repr(typedef))
+                typedef, comment = parse_comment(typedef)
+                if comment:
+                    print('\n' + indent + '# ' + comment[1:].strip())
+                typedef = typedef.replace('typedef', '').replace(';', '').strip()
+                try:
+                    value, typedefs = typedef.split(' ', 1)
+                    typedefs = list(td.strip() for td in typedefs.split(','))
+
+                    for td in typedefs:
+                        if td == value:
+                            continue
+
+                        td, new_value = process_param(td, value)
+                        print(indent + td + ' = ' + new_value)
+                except ValueError:
+
+                    # typedef UCHAR ERROR_SEVERITY, *PERROR_SEVERITY;
+                    print(indent + '# TYPEDEF ERROR:', typedef.split('\n'))
 
             #     if '(CALLBACK' in typedef:
             #         restype, callback = typedef.split('(CALLBACK', 1)
@@ -1150,36 +1266,37 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             comment = equalize_width(indent, comment)
             print(comment)
             continue
-
-    for interface_data in interfaces:
-        indent = ''
-        methods = interface_data['methods']
-        importer = Importer
-
-        parse_interface(
-            indent,
-            methods,
-            importer,
-            interface_data,
-            False
-        )
-
-    for interface_data in libraries:
-        indent = ''
-        methods = interface_data['methods']
-        importer = Importer
-
-        parse_interface(
-            indent,
-            methods,
-            importer,
-            interface_data,
-            False
-        )
+    #
+    # for interface_data in interfaces:
+    #     indent = ''
+    #     methods = interface_data['methods']
+    #     importer = Importer
+    #
+    #     parse_interface(
+    #         indent,
+    #         methods,
+    #         importer,
+    #         interface_data,
+    #         False
+    #     )
+    #
+    # for interface_data in libraries:
+    #     indent = ''
+    #     methods = interface_data['methods']
+    #     importer = Importer
+    #
+    #     parse_interface(
+    #         indent,
+    #         methods,
+    #         importer,
+    #         interface_data,
+    #         False
+    #     )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\basetyps.h'
-#r'C:\Users\Administrator\Desktop\New folder (6)\temp.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\propidl.h'
+# input_file = r'C:\Users\Administrator\Desktop\New folder (6)\temp.h'
+# input_file = r'C:\Users\Administrator\Desktop\New folder (16)\iTunesCOMInterface.h'
 #r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\apiset.h'
 
 import sys
@@ -1207,6 +1324,8 @@ if __name__ == '__main__':
                 # _stdout.write(data)
                 # _stdout.flush()
                 try:
+                    sys.stderr.write(data)
+                    sys.stderr.flush()
                     self.line_buffer += [data]
                     if len(self.line_buffer) == 3:
                         if (
@@ -1225,17 +1344,7 @@ if __name__ == '__main__':
             for line in self.line_buffer:
                 self.out_buffer += [line]
 
-            if interface_declarations:
-                temp_buffer = '\n\n'.join(interface_declarations).split('\n')
-                temp_buffer += ['', '']
-            else:
-                temp_buffer = []
-
-            temp_buffer += '\n\n'.join(u_s_declarations).split('\n')
-            if u_s_declarations:
-                temp_buffer += ['', '']
-
-            temp_buffer += ''.join(self.out_buffer).split('\n')
+            temp_buffer = ''.join(self.out_buffer).split('\n')
             out_buffer = []
 
             class_dec_indent = ''
@@ -1281,7 +1390,7 @@ if __name__ == '__main__':
                         continue
 
                 if (
-                    not line.strip() and
+                    not line.strip() and not back_1.startswith('# END IF') and
                     (
                         back_1.startswith('if') or
                         back_1.startswith('elif') or
@@ -1318,6 +1427,26 @@ if __name__ == '__main__':
 
                 out_buffer += [line]
 
+            new_defines = preprocessor.new_defines
+
+            for i, macro in enumerate(new_defines):
+                new_defines[i] = macro + ' = None'
+
+            if new_defines:
+                new_defines.append('')
+
+            temp_buffer = new_defines
+
+            if interface_declarations:
+                temp_buffer += '\n\n'.join(interface_declarations).split('\n')
+                temp_buffer += ['', '']
+
+            temp_buffer += '\n\n'.join(u_s_declarations).split('\n')
+            if u_s_declarations:
+                temp_buffer += ['', '']
+
+            temp_buffer += out_buffer
+
             with open(output_file, 'w') as f:
                 f.write('import ctypes\n')
                 f.write('from pyWinAPI import *\n')
@@ -1326,7 +1455,7 @@ if __name__ == '__main__':
                 f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
                 f.write('from pyWinAPI.shared.guiddef_h import *\n\n\n')
 
-                f.write('\n'.join(out_buffer) + '\n')
+                f.write('\n'.join(temp_buffer) + '\n')
 
         def __getattr__(self, item):
             if item in self.__dict__:

@@ -192,16 +192,19 @@ def parse_dll(indent, data, found_dlls):
             dll_upper=dll.upper(),
         )
 
-        if len(template) >79:
+        if len(template) > 79:
             template = TEMPLATE_DLL_2.format(
                 indent=indent,
                 dll_lower=dll.lower(),
                 dll_upper=dll.upper(),
             )
 
-        print(template + '\n')
+        template += '\n'
 
         found_dlls += [dll]
+
+    else:
+        template = ''
 
     return_values = new_data.split(pos_func)[0]
     return_values = list(item for item in return_values.split(' ') if item)
@@ -214,6 +217,9 @@ def parse_dll(indent, data, found_dlls):
 
     if return_value == 'NTKERNELAPI':
         return_value = return_values[-1]
+
+    if return_value == '*':
+        return_value = 'POINTER(' + return_values[-2].strip() + ')'
 
     original_lines = '\n' + '\n'.join(indent + '# ' + ln for ln in data)
 
@@ -243,6 +249,7 @@ def parse_dll(indent, data, found_dlls):
         )
 
     lines += [
+        template,
         TEMPLATE_ORIGINAL.format(original_lines=original_lines),
         func_template,
         res_template

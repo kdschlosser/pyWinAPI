@@ -97,7 +97,26 @@ def parse_enum(indent, enum, namespace):
                 print('\n' + comment)
                 continue
 
-        line, indent = parse_macro(indent, line, namespace)
+        for item in ('ifndef', 'ifdef', 'if', 'elif', 'else', 'endif'):
+            if (
+                line.strip().startswith('# ' + item) or
+                line.strip().startswith('#' + item)
+            ):
+                if item == 'endif':
+                    indent = indent[:-4]
+                    module_symbols += [indent + '# END IF\n']
+
+                line, indent = parse_macro(indent + '    ', line.strip(), namespace)
+                if line:
+                    module_symbols += [indent[:-4] + line]
+                found_if = True
+
+                break
+        else:
+            found_if = False
+
+        if found_if:
+            continue
 
         if not line:
             continue
@@ -202,8 +221,7 @@ def parse_enum(indent, enum, namespace):
                     exec('{0}={1}'.format(enum_symbol, value), namespace)
                     enum_count = namespace[enum_symbol]
                 except:
-                    print(indent + '    #~#~#~ ' + line)
-                    return None
+                    pass
 
             if cls_name:
                 template = ENUM_TEMPLATE.format(
@@ -391,7 +409,10 @@ def parse_enum(indent, enum, namespace):
                 )
 
         if module_level is True:
+            if module_symbols:
+                print('\n')
             for symbol in module_symbols:
                 print(symbol)
+
 
     namespace.update(enum_namespace)

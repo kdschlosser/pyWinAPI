@@ -58,10 +58,7 @@ if not defined( _BASETYPS_H_ ):
         def STDAPIVCALLTYPE(restype, *argtypes):
             return comtypes.CFUNCTYPE(restype, *argtypes)
     # END IF
-    '''
-    idlflags, restype, methodname, *argspec
-    
-    '''
+
     def STDAPI():
         return STDAPICALLTYPE(HRESULT)
 
@@ -162,7 +159,7 @@ if not defined( _BASETYPS_H_ ):
 
         def STDMETHODV(method):
             def wrapper(*args):
-                return  STDMETHODVCALLTYPE(HRESULT, method, *args)
+                return STDMETHODVCALLTYPE(HRESULT, method, *args)
             return wrapper
 
 

@@ -77,11 +77,13 @@ def process_param(key, value):
         key = '*' + key
         value = value[:-1]
     value = value.strip()
-
     value += array
 
     while key.startswith('*'):
         value = 'POINTER(' + value + ')'
         key = key[1:].strip()
+
+    if 'comtypes.IUnknown' not in value:
+        value = value.replace('IUnknown', 'comtypes.IUnknown')
 
     return key, value

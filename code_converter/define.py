@@ -44,7 +44,7 @@ def parse_define(indent, define, importer):
         comment = ''
 
     if define is None and comment is None:
-        print(indent + '#~#~#~', old_define)
+        print(indent + '# DEFINE ERROR 1:', old_define)
         return False
 
     define = define.replace('0X', '0x').replace('\t', '    ').replace('->', '.')
@@ -63,10 +63,9 @@ def parse_define(indent, define, importer):
     if var_name == '#':
         try:
             var_name, value = value.split(' ', 1)
-
         except ValueError:
-            print(indent + '#~#~#~', old_define)
-            return False
+            print(indent + value + ' = VOID')
+            return True
 
     if '(' in var_name:
         brace_count = var_name.count('(')
@@ -74,8 +73,12 @@ def parse_define(indent, define, importer):
         while brace_count > 0:
             var_name += value[:value.find(')') + 1]
             value = value[value.find(')') + 1:]
-            brace_count = var_name.count('(')
-            brace_count -= var_name.count(')')
+            new_brace_count = var_name.count('(')
+            new_brace_count -= var_name.count(')')
+            if brace_count == new_brace_count:
+                break
+
+            brace_count = new_brace_count
 
         var_name = var_name.replace('=', '')
 
@@ -83,7 +86,7 @@ def parse_define(indent, define, importer):
     value = value.strip()
 
     if var_name == value:
-        print(indent + '#~#~#~', old_define)
+        print(indent + '# DEFINE ERROR 3:', old_define)
         return False
 
     if '0x' in var_name:
@@ -107,12 +110,106 @@ def parse_define(indent, define, importer):
             value = value[1:]
 
         if var_name.startswith('def '):
-            ret = (
-                '\n\n' + indent +
-                var_name +
-                indent + '    return ' +
-                value
-            )
+            ret = '\n\n' + indent + var_name
+
+            if value == '1':
+                ret += (
+
+                    indent + '# DEFINE ERROR 4: ' +
+                    str(old_define) +
+                    '\n' +
+                    indent + '    pass'
+                )
+
+            elif '?' in value and ':' in value:
+                def split_question_answer(start, v):
+                    question, answer = v.split('?', 1)
+                    yes, no = answer.split(':', 1)
+                    if '?' in no:
+                        no = split_question_answer(indent + '    elif:', no)
+                    else:
+                        no = [indent + '    else:', indent + '        return ' + no]
+
+                    return [indent + start + question, indent + '        return ' + yes] + no
+
+                ret += '\n'.join(
+                    split_question_answer(indent + '    if:', value)
+                )
+
+            elif value.startswith('{') and value.endswith('}'):
+                import re
+
+                temp_value = value[1:-1].strip()
+                temp_value = re.sub(r"(?! )=(?! )", ' = ', temp_value)
+                temp_value = list(indent + '    ' + v.strip() for v in temp_value.split(';'))
+                ret += '\n'.join(temp_value)
+            else:
+                for char in list('()+-<>/*%!&~,[]";:'):
+                    if char in value:
+                        break
+                else:
+                    if ' ' in value:
+                        values = list(v.strip() for v in value.split(' '))
+                        value = ''
+                        while len(values) > 1:
+                            value = '(' + values.pop(len(values) - 1) + value + ')'
+
+                        value = values[0] + value
+
+                temp_value = indent + '    return ' + value
+
+                if len(temp_value) > 79:
+                    for item in (
+                        ' | ',
+                        ' or ',
+                        ' and ',
+                        ','
+                    ):
+
+                        if item in value:
+                            ret_indent = indent + '        '
+                            temp_value = indent + '    return (\n'
+
+                            split_value = list(
+                                v.strip() for v in value.split(item)
+                            )
+                            for i, r_val in enumerate(split_value):
+                                brace_count = r_val.count('(') - r_val.count(')')
+                                if i == len(split_value) - 1:
+                                    item = ''
+
+                                if brace_count > 0:
+                                    temp_value += (
+                                        ret_indent +
+                                        r_val[:r_val.find('(') + 1] +
+                                        item +
+                                        '\n'
+                                    )
+                                    r_val = r_val[r_val.find('('):]
+                                    ret_indent += '    '
+                                elif brace_count < 0:
+                                    temp_value += (
+                                        ret_indent +
+                                        r_val[:r_val.find(')') + 1] +
+                                        item +
+                                        '\n'
+                                    )
+
+                                    r_val = r_val[r_val.find(')'):]
+                                    ret_indent = ret_indent[:-4]
+
+                                temp_value += ret_indent + r_val + item + '\n'
+                            temp_value += indent + '    )'
+                            break
+                elif (
+                    value.count('(') == 1 and
+                    value.count(')') == 1 and
+                    value.startswith('(') and
+                    value.endswith(')')
+                ):
+                    temp_value = indent + '    return ' + value[1:-1]
+
+                ret += temp_value
 
         elif 'CTL_CODE' in value:
             value = value.replace('CTL_CODE', '')[:-1]
@@ -141,9 +238,13 @@ def parse_define(indent, define, importer):
 
                     new_ret, ret = ret.split(' = ', 1)
                     new_ret += ' = '
+                    ret_len = len(ret)
                     while ret:
                         try:
                             test_ret, ret = ret.split(',', 1)
+                            if ret_len == len(ret):
+                                raise ValueError
+                            ret_len = len(ret)
                             test_ret = test_ret.strip()
                             if test_ret.startswith('[') or test_ret.startswith('('):
                                 new_ret += test_ret[0] + '\n'
@@ -185,6 +286,30 @@ def parse_define(indent, define, importer):
             ret = ''
 
         return ret
+
+    for item in (
+        'HANDLE',
+        'ULONG',
+        'LONG',
+        'LONGLONG',
+        'ULONGLONG',
+        'DOUBLE',
+        'LONG_PTR',
+        'WORD',
+        'USHORT',
+        'SHORT'
+    ):
+        value = value.replace('(' + item + ')', '')
+
+    for item in (
+        'DWORD',
+        'INT',
+        'UINT',
+    ):
+        for bit in ('128', '64', '32', '16', '8', ''):
+            value = value.replace('(' + item + bit + ')', '')
+
+    value = value.replace('()', '')
 
     if '(' in var_name and var_name.endswith(')'):
         tmp_var_name = var_name.replace(' ', '').replace(',', ', ')
@@ -262,9 +387,6 @@ def parse_define(indent, define, importer):
         print(DEFINE_TEMPLATE.format(indent, get_ret(), comment))
         return True
 
-    elif value.startswith('(DWORD)'):
-        value = value[7:]
-
     if (
         value.startswith('(') and
         value.endswith(')') and
@@ -275,43 +397,27 @@ def parse_define(indent, define, importer):
     ):
         value = value[1:-1].strip()
 
-    if value.startswith('((HANDLE)(LONG_PTR)'):
-        value = value.replace(
-            '((HANDLE)(LONG_PTR)',
-            'HANDLE(LONG_PTR('
-        ) + '.value).value'
-        print(DEFINE_TEMPLATE.format(indent, get_ret(), comment))
-        return True
-
     if value.startswith('((DWORD   )'):
         value = value.replace('((DWORD   )', '')[:-1]
         if '0x' not in value and not value.isdigit():
             print(indent + get_ret())
             return
 
-    if value.startswith('((DWORD)'):
-        value = value.replace('((DWORD)', '')[:-1]
-        if '0x' not in value and not value.isdigit():
-            print(DEFINE_TEMPLATE.format(indent, get_ret(), comment))
-            return True
-
-    if value.startswith('((WORD)'):
-        value = value.replace('((WORD)', '')[:-1]
-        if '0x' not in value and not value.isdigit():
-            print(DEFINE_TEMPLATE.format(indent, get_ret(), comment))
-            return True
-
-    if value.startswith('('):
+    if value.startswith('(') and value.endswith(')'):
         if value[1:-1].strip().isdigit():
             value = process_hex(value[1:-1].strip())
 
     if not value.startswith('0x') and value.isdigit():
         value = process_hex(value)
 
-    if '|' in value or ' or ' in value:
+    if '|' in value or ' or ' in value or ',' in value:
         if '|' in value:
             splitter = '|'
             marker = ' | '
+
+        elif ',' in value:
+            splitter = ','
+            marker = ','
         else:
             splitter = ' or '
             marker = ' or '
@@ -319,21 +425,26 @@ def parse_define(indent, define, importer):
         if value.startswith('(') and value.endswith(')'):
             value = value[1:-1]
 
-            value = value.split(splitter)
-            value = marker.join(d.strip() for d in value)
+        value = value.split(splitter)
+        value = marker.join(d.strip() for d in value)
 
-            if len(indent + get_ret()) > 79:
-                value = (
-                    '(\n' + indent + '    ' +
-                    (marker + '\n' + indent + '    ').join(v.strip() for v in value.split(splitter)) +
-                    '\n' + indent + ')'
-                )
+        if len(indent + get_ret()) > 79:
+            value = (
+                '(\n' + indent + '    ' +
+                (marker + '\n' + indent + '    ').join(
+                    v.strip()
+                    for v in value.split(splitter)
+                ) +
+                '\n' + indent + ')'
+            )
 
     res = get_ret()
 
     if 'FIELD_OFFSET' in res:
 
-        beg, end = res.split('FIELD_OFFSET(', 1)
+        beg, end = res.split('FIELD_OFFSET', 1)
+
+        end = end.replace('(', '', 1).strip()
         brace_count = 1
         mid = ''
         for char in list(end):
@@ -367,7 +478,6 @@ def parse_define(indent, define, importer):
 
         if '+' in res and 'FIELD_OFFSET' in res:
             res = res.replace('+ ', '+\n    ' + indent, 1)
-
 
         print(DEFINE_TEMPLATE.format(indent, res, comment))
         return True

@@ -403,7 +403,9 @@ else:
     _AMD64_ = None
     _X86_ = 1
 
-
+_IA64_ = None
+_AXP64_ = None
+_ALPHA_ = None
 _WIN32 = True
 _WINRT_DLL = True
 __AVX__ = True
@@ -413,8 +415,15 @@ MAX_PATH = 255
 _M_ALPHA = None
 _M_AMD64 = None
 _M_X64 = None
+_M_MRX000 = None
+_M_PPC = None
+_M_IA64 = None
+_M_ARM = None
+_M_ARM64 = None
+_M_IX86 = None
+_M_HYBRID_X86_ARM64 = None
 DBG = False
-
+ENABLE_RESTRICTED = None
 
 _M_IX86_FP = not sys.maxsize > 2**32
 
@@ -429,6 +438,11 @@ _INC_WINAPIFAMILY = None
 _WIN32_WINDOWS = None
 __LPGUID_DEFINED__ = None
 _ARM_ = None
+
+_NTSYSTEM_ = None
+_STDCALL_SUPPORTED = 1
+
+_M_CEE_PURE = None
 
 WINAPI_FAMILY = None
 WINAPI_PARTITION_DESKTOP = None
@@ -484,6 +498,13 @@ del WindowsVersion
 del windows_version
 del WINDOWS_VERSIONS
 
+_MSC_FULL_VER = 191627023
+_MSC_VER = 1916
+
+_M_I86 = None
+_M_AXP64 = None
+_M_HYBRID = None
+_WIN32_FUSION = 0x0100
 
 __all__ = (
     'DECLSPEC_DEPRECATED_DDK', 'MIDL_PASS', 'RC_INVOKED', '_MSC_VER',
@@ -503,7 +524,10 @@ __all__ = (
     '__LPGUID_DEFINED__', 'DUMMYUNIONNAME', '_DEBUG', '_HRESULT_DEFINED',
     '_AMD64_', '_X86_', '_WIN32_WINNT_WIN10_RS2', '_WIN32_WINNT_WIN10_RS3',
     'WIN64', '_ARM_', 'VISTA_KB942567', 'DBG', '_M_ALPHA', '_NTSCSI_USER_MODE_',
-    '__midl'
+    '__midl', '_M_MRX000', '_M_PPC', '_M_IA64', '_M_ARM', '_M_ARM64', '_M_IX86',
+    'ENABLE_RESTRICTED', '_M_HYBRID_X86_ARM64', '_AXP64_', '_ALPHA_', '_IA64_',
+    '_M_CEE_PURE', '_NTSYSTEM_', '_STDCALL_SUPPORTED', '_MSC_FULL_VER', '_MSC_VER',
+    '_M_I86', '_M_AXP64', '_M_HYBRID', '_WIN32_FUSION',
 )
 
 from shared.sdkddkver_h import * # NOQA

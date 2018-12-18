@@ -56,7 +56,8 @@ def parse_struct_union(
     import sys
 
     lines = data.split('\n')
-    sys.stderr.write(str(lines) + '\n')
+
+    saved_lines = lines[:]
 
     for i, line in enumerate(lines):
         if '_Struct_size_bytes_' in line:
@@ -71,15 +72,27 @@ def parse_struct_union(
             line = l1 + l2
             lines[i] = line
 
+    lines[0] = parse_comment(lines[0])[0]
+
     if len(lines) == 1:
-        lines = lines[0].split(' ')
+        line = lines[0]
+        line, comment = parse_comment(line)
+
+        lines = line.split(' ')
         attr_name = lines[-1].replace(';', '').strip()
         value = lines[-2].strip()
 
         attr_name, value = process_param(attr_name, value)
         try:
-            print(indent + attr_name + ' = ' + value + '\n')
+            line = indent + attr_name + ' = ' + value + '\n'
+            if comment:
+                comment = equalize_width(indent, comment)
+                print('\n' + comment)
+
+            print(line)
+
         except TypeError:
+            print(indent + '# STRUCT ERROR 1:', lines)
             return struct_count, union_count
         return struct_count, union_count
 
@@ -88,23 +101,30 @@ def parse_struct_union(
 
     start_data = ''
 
+    comments = ''
+
     while '{' not in start_data:
         try:
-            start_data += lines.pop(0)
+            line, comment = parse_comment(lines.pop(0))
+            if comment:
+                comment = equalize_width(indent, comment)
+                comments += comment
+            start_data += ' ' + line.strip()
         except IndexError:
             break
+    if comments:
+        print('\n' + comments)
 
     try:
         start_data, extra = start_data.split('{', 1)
     except ValueError:
+        start_data = start_data.replace('{', '').strip()
         extra = ''
 
     if extra.strip():
         lines.insert(0, extra)
 
     if 'public' in start_data:
-        import sys
-        sys.stderr.write(data)
         brace_count = 0
         start = None
         for i, line in enumerate(lines):
@@ -148,10 +168,12 @@ def parse_struct_union(
             if ';' in line and brace_count == 0:
                 break
         else:
+            print(indent + '# STRUCT ERROR 2:', lines)
             return struct_count, union_count
 
         cls_names = cls_names.replace(';', '').replace('}', '').strip()
         if not cls_names:
+            print(indent + '# STRUCT ERROR 3:', lines)
             return struct_count, union_count
 
         cls_names = cls_names.split(' ')
@@ -199,6 +221,7 @@ def parse_struct_union(
             return struct_count, union_count
         else:
             if parent_cls == cls_name:
+                print(indent + '# STRUCT ERROR 4:', lines)
                 return struct_count, union_count
 
             if '*' in cls_name or '*' in parent_cls:
@@ -236,7 +259,7 @@ def parse_struct_union(
         cls_name = var_names.pop(0)
 
     elif not cls_name:
-        print(indent + '#~#~#~', repr(data))
+        print(indent + 'STRUCT ERROR 5:', lines)
         return struct_count, union_count
 
     if cls_name in var_names:
@@ -247,7 +270,8 @@ def parse_struct_union(
 
         if declare:
             for item in u_s_declarations:
-                if item.startswith('class ' + cls_name):
+                if item.startswith('class ' + cls_name + '('):
+                    print(indent + '# STRUCT ERROR 6:', cls_name, lines)
                     break
             else:
                 u_s_declarations.append(
@@ -266,8 +290,9 @@ def parse_struct_union(
                 )
             )
             print('\n')
-    else:
-        return struct_count, union_count
+    # else:
+        # sys.stderr.write('STRUCT ERROR: ' + str(lines) + '\n')
+        # return struct_count, union_count
 
     anonymous = []
     fields = []
@@ -283,6 +308,12 @@ def parse_struct_union(
     data_fields = data_fields[:data_fields.rfind('}')].split('~~~~')
 
     found_defines = []
+
+    sys.stderr.write('STRUCTURE DATAFIELDS: ' + str(data_fields) + '\n')
+
+    if '                        struct' in data_fields:
+        sys.stderr.write('SUBTYPE: ' + cls_name + '\n')
+
     for line_num, line in enumerate(data_fields):
 
         if skip_until is not None:
@@ -327,7 +358,7 @@ def parse_struct_union(
             macro_output = None
             continue
 
-        for item in ('ifdef', 'idndef', 'if', 'elif', 'else'):
+        for item in ('ifdef', 'ifndef', 'if', 'elif', 'else'):
             if (
                 line.strip().startswith('#' + item) or
                 line.strip().startswith('# ' + item)
@@ -359,7 +390,7 @@ def parse_struct_union(
             field_macro = line
             continue
 
-        if ' ' not in line.strip():
+        if ' ' not in line.strip() and 'struct' not in line and 'union' not in line:
             continue
 
         if chained_comment and '*/' not in line:
@@ -487,8 +518,9 @@ def parse_struct_union(
             else:
                 sub_structure = []
                 brace_count = 0
+
                 skip_until = line_num
-                for j, sub_line in enumerate(lines[line_num:]):
+                for j, sub_line in enumerate(data_fields[line_num:]):
                     skip_until = line_num + j
                     sub_structure += [sub_line]
                     brace_count += sub_line.count('{')
@@ -496,7 +528,7 @@ def parse_struct_union(
                     if ';' in sub_line and brace_count == 0:
                         break
 
-                sys.stderr.write(str(sub_structure) + '\n')
+                sys.stderr.write('SUBSTRUCTURE: ' + str(sub_structure) + '\n')
 
                 f_name = sub_structure[-1]
 
@@ -747,13 +779,17 @@ def parse_struct_union(
                 continue
 
             if field_data_types[i] in ('_In_', '_Out_', 'IN', 'OUT', '_Inout_'):
-                field_data_types[i], field_name = field_name.split(' ', 1)
+                try:
+                    field_data_types[i], field_name = field_name.split(' ', 1)
+                except ValueError:
+                    sys.stderr.write(str(saved_lines) + '\n')
+                    raise
                 field_data_types[i] = field_data_types[i].strip()
                 field_name = field_name.strip()
 
                 field_name, field_data_types[i] = process_param(field_name, field_data_types[i])
 
-            if ':' in field_name:
+            if ':' in field_name and '>::' not in field_name:
                 field_name, field_bit = field_name.split(':')
                 field_name = field_name.strip()
                 field_bit = field_bit.strip()
@@ -916,8 +952,10 @@ def parse_struct_union(
     if variables:
         variables = '\n'.join(variables)
         if declare:
-            u_s_declarations.append('\n' + variables + '\n')
+            u_s_declarations.append(variables + '\n')
         else:
             print(variables)
+    elif declare:
+        u_s_declarations.append('\n')
 
     return struct_count, union_count

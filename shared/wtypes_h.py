@@ -1500,6 +1500,10 @@ from um.wtypesbase_h import (
 )# NOQA
 
 
+LONGLONG_PTR = LONGLONG
+DWORDLONG_PTR = DWORDLONG
+DECLSPEC_DEPRECATED_DDK
+
 class tagRemHGLOBAL(ctypes.Structure):
     _fields_ = [
         ('fNullHGlobal', LONG),
@@ -2649,5 +2653,6 @@ __all__ = (
     'wireBSTR', 'wireCLIPFORMAT', 'wireHACCEL', 'wireHBITMAP', 'wireHDC',
     'wireHBRUSH', 'wireHENHMETAFILE', 'wireHFONT', 'wireHGLOBAL',
     'wireHICON', 'wireHMENU', 'wireHMETAFILE', 'wireHMETAFILEPICT',
-    'wireHMONITOR', 'wireHPALETTE', 'wireHRGN', 'wireHWND', 'INTERFACE'
+    'wireHMONITOR', 'wireHPALETTE', 'wireHRGN', 'wireHWND', 'INTERFACE',
+    'LONGLONG_PTR', 'DWORDLONG_PTR', 'DECLSPEC_DEPRECATED_DDK'
 )

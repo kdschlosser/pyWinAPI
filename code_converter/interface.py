@@ -130,6 +130,16 @@ interface_declarations = []
 class Options(dict):
 
     def __init__(self, options):
+
+        options = options.replace('[helpstring]', '[]')
+        options = options.replace('helpstring, ', '')
+        if 'range(' in options:
+            options_beg, options_end = options.split('range(')
+            options_end = options_end.split(')', 1)[1]
+            options = options_beg + options_end
+
+        import sys
+        sys.stderr.write('OPTIONS: ' + options + '\n')
         dict.__init__(self)
         self.options = options.replace('in,', '"in",').replace('in]', '"in"]')
         for item in ('length_is', 'size_is'):
@@ -194,10 +204,10 @@ class Options(dict):
     def defaultvalue(self, value):
         return 'defaultvalue({0})'.format(repr(value))
 
-    def size_is(self):
+    def size_is(self, *_):
         return 'size_is'
 
-    def length_is(self):
+    def length_is(self, *_):
         return 'length_is'
 
     def __setitem__(self, key, value):
@@ -230,13 +240,21 @@ class Options(dict):
 
     def __str__(self):
         exec('found_options = ' + self.options + '\n', self)
+
         found_options = []
         for item in self.found_options:
             if isinstance(item, list):
                 found_options += item
+            elif item == self.length_is:
+                found_options += [item()]
+            elif item == self.size_is:
+                found_options += [item()]
             else:
                 found_options += [item]
 
+        import sys
+
+        sys.stderr.write('OPTIONS: ' + str(found_options) + '\n')
         options = dict(
             list((item, 1) for item in found_options)
         )
@@ -308,195 +326,362 @@ def parse_options(line):
 
 
 def parse_interface(indent, methods, importer, interface_data, dec):
-    if 'declared' in interface_data and dec:
-        dec = False
 
-    if dec is True:
-        help_string = get_help_string(indent, interface_data)
-        interface_data['iid'] = interface_data['iid'].format(indent=indent)
-        interface_data['declared'] = True
+    if isinstance(interface_data, dict):
 
-        if interface_data['co_class']:
-            co_class = TEMPLATE_COCLASS.format(
-                indent='',
-                helpstring=help_string,
-                **interface_data
-            )
-            interface_declarations.append(co_class)
+        if 'declared' in interface_data and dec:
+            dec = False
 
-        elif interface_data['library']:
-            library = TEMPLATE_LIBRARY.format(
-                indent='',
-                helpstring=help_string,
-                **interface_data
-            )
+        if dec is True:
+            help_string = get_help_string(indent, interface_data)
+            interface_data['iid'] = interface_data['iid'].format(indent=indent)
+            interface_data['declared'] = True
 
-            interface_declarations.append(library)
-        else:
-            interface = TEMPLATE_INTERFACE.format(
-                indent='',
-                helpstring=help_string,
-                **interface_data
-            )
+            if interface_data['co_class']:
+                co_class = TEMPLATE_COCLASS.format(
+                    indent='',
+                    helpstring=help_string,
+                    **interface_data
+                )
+                interface_declarations.append(co_class)
 
-            interface_declarations.append(interface)
-        return
+            elif interface_data['library']:
+                library = TEMPLATE_LIBRARY.format(
+                    indent='',
+                    helpstring=help_string,
+                    **interface_data
+                )
 
-    if interface_data['co_class'] or interface_data['library']:
-        return
+                interface_declarations.append(library)
+            else:
+                interface = TEMPLATE_INTERFACE.format(
+                    indent='',
+                    helpstring=help_string,
+                    **interface_data
+                )
 
-    cls_name = interface_data['cls_name']
+                interface_declarations.append(interface)
+            return
+
+        if interface_data['co_class'] or interface_data['library']:
+            return
+
+        cls_name = interface_data['cls_name']
+
+    else:
+        cls_name = interface_data
 
     chained_comment = False
     chained_method = False
     found_methods = []
+
+    skip_dict = None
     for line_num, method in enumerate(methods):
+        if not isinstance(interface_data, dict):
+            if skip_dict is not None:
+                if line_num != skip_dict:
+                    continue
+                skip_dict = None
+            import sys
 
-        if chained_method:
-            if ';' in method:
-                chained_method = False
+            if method.strip().startswith('virtual'):
+                method = method.replace('virtual', '')
+                method, method_options = parse_comment(method)
+                method_options = method_options.replace('#', '').strip()
+
+                method = method.replace('STDMETHODCALLTYPE ', '').strip()
+
+                skip_dict = line_num + 1
+                found_params = []
+                if not method.strip().endswith(';'):
+                    while method.count('(') - 1 != method.count(')'):
+                        method = method.replace('(', '')
+                        method = method.replace(')', '')
+
+                method_data_type, method_name = method.split(' ', 1)
+                method_name = method_name.split('(', 1)[0]
+                method_name = method_name.strip()
+
+                method_options = method_options.replace('[helpstring]', '')
+                method_options = method_options.replace('[id]', '')
+
+                if method_options.strip():
+                    method_options = method_options.replace('][', ', ')
+                    method_options = method_options.replace('] [', ', ')
+                    method_options = Options(method_options)
+                    method_options = "[helpstring('Method {0}'), {1}]".format(method_name, str(method_options)[1:-1])
+                else:
+                    method_options = "[helpstring('Method {0}')]".format(method_name)
+
+                sys.stderr.write('METHOD: ' + method_options + '\n')
+
+                if not method.strip().endswith(';'):
+                    end = False
+                    for j, line in enumerate(methods[line_num + 1:]):
+                        if end:
+                            break
+
+                        skip_dict += 1
+                        param, param_options = parse_comment(line.strip())
+                        if param.endswith(';'):
+                            end = True
+                        param = param.replace(',', '').replace(') = 0;', '')
+                        param = param.replace('};', '').strip()
+                        param = param.replace(');', '').strip()
+
+                        if not param:
+                            continue
+
+                        param_options = param_options.replace('#', '').strip()
+                        param_options = param_options.replace('[helpstring]', '')
+                        param_options = param_options.replace('[id]', '')
+                        param_options = param_options.replace('[size_is]', '')
+
+                        if param_options.startswith('['):
+                            param_options = param_options.replace('][', ', ')
+                            param_options = param_options.replace('] [', ', ')
+                            param_options = Options(param_options)
+                        else:
+                            param_options = '[]'
+                        try:
+                            param_data_type, param = param.strip().rsplit(' ', 1)
+                        except ValueError:
+                            sys.stderr.write('PARAM: ' + param + '\n')
+                            raise
+                        param_data_type = param_data_type.strip().split(' ')
+                        if len(param_data_type) == 1:
+                            param_additional_options = []
+                            param_data_type = param_data_type[0]
+                        else:
+                            param_additional_options = param_data_type[:-1]
+                            param_data_type = param_data_type[-1]
+
+                        param, param_data_type = process_param(
+                            param.strip(),
+                            param_data_type.strip()
+                        )
+
+                        try:
+                            param_options = eval(str(param_options))
+                        except SyntaxError:
+                            param_options = eval(str(param_options).replace(', , ', ', '))
+
+                        for addl_option in param_additional_options:
+                            if 'Out' in addl_option or 'out' in addl_option:
+                                if 'out' not in param_options:
+                                    param_options += ['out']
+                            if 'In' in addl_option or 'in' in addl_option:
+                                if 'in' not in param_options:
+                                    param_options += ['in']
+                            if '_Reserved_' in addl_option:
+                                if 'in' not in param_options:
+                                    param_options += ['in']
+
+                        template = TEMPLATE_PARAM1.format(
+                            indent=indent,
+                            param_direction=param_options,
+                            param_data_type=param_data_type,
+                            param_name=param,
+                            comment=''
+                        )
+
+                        if len(template) > 79:
+                            template = TEMPLATE_PARAM2.format(
+                                indent=indent,
+                                param_direction=param_options,
+                                param_data_type=param_data_type,
+                                param_name=param,
+                                comment=''
+                            )
+
+                        sys.stderr.write('PARAMTEMPLATE: ' + template + '\n')
+                        found_params += [template]
+
+                found_methods += [
+                    TEMPLATE_METHOD.format(
+                        indent=indent,
+                        method_options=method_options,
+                        method_data_type=method_data_type.replace('virtual', '').replace('STDMETHODCALLTYPE', '').strip(),
+                        method_name=method_name.replace('(', '').strip(),
+                        params=''.join(found_params) if found_params else '',
+                        comment=''
+                    )
+                ]
+                sys.stderr.write('METHODTEMPLATE: ' + found_methods[-1] + '\n')
             continue
 
-        if chained_comment:
-            if '*/' in method:
-                chained_comment = False
-
-            continue
-
-        method, comment = parse_comment(method)
-
-        if method is None and comment is None:
-            comment = ''
-            chained_comment = True
-            for comnt in methods[line_num:]:
-                comnt = comnt.strip()
-
-                if (
-                    not comnt.startswith('**/') and
-                    not comnt.startswith('*/') and
-                    comnt.startswith('*')
-                ):
-                    comnt = comnt[1:].strip()
-
-                comment += ' ' + comnt
-                if '*/' in comnt:
-                    break
-            method, new_comment = parse_comment(comment)
-
-        if method and not method.endswith(';'):
-            chained_method = True
-
-            method = ''
-            comment = ''
-            for meth in methods[line_num:]:
-                meth = meth.strip()
-                meth, new_comment = parse_comment(meth)
-                comment += ' ' + new_comment
-                method += ' ' + meth
-
-                if meth.endswith('\\'):
-                    method = method[:-1]
-
-                if ';' in meth:
-                    break
-
-        comment = equalize_width(indent + '    ', comment)
-
-        if comment:
-            if '\n' in comment:
-                found_methods += ['\n']
-                split_comment = comment.split('\n')
-                for comnt in split_comment[:-1]:
-                    found_methods += [comnt + '\n']
-
-                found_methods += [split_comment[-1]]
-            else:
-                try:
-                    if found_methods[-1].strip().endswith('\n'):
-                        found_methods += [comment.rstrip() + '\n']
-                    else:
-                        found_methods += ['\n' + comment.rstrip()]
-                except IndexError:
-                    found_methods += [comment.rstrip() + '\n']
-
-            comment = ''
-
-        if not method:
-            continue
-
-        if method.strip().startswith('['):
-            pattern, method_options = parse_options(method.strip())
-            method = method.replace(pattern, '')
         else:
-            method_options = Options('[]')
+            if chained_method:
+                if ';' in method:
+                    chained_method = False
+                continue
 
-        try:
-            method_name, temp_params = method.split('(', 1)
-        except ValueError:
-            continue
+            if chained_comment:
+                if '*/' in method:
+                    chained_comment = False
 
-        method_name = method_name.strip()
-        try:
-            method_data_type, method_name = method_name.split(' ')
-        except ValueError:
-            continue
+                continue
 
-        method_name = method_name.strip()
-        method_data_type = method_data_type.strip()
-        temp_params = temp_params.strip()[:-2]
+            method, comment = parse_comment(method)
 
-        found_params = []
+            if method is None and comment is None:
+                comment = ''
+                chained_comment = True
+                for comnt in methods[line_num:]:
+                    comnt = comnt.strip()
 
-        while temp_params:
-            if temp_params.startswith('['):
-                pattern, param_direction = parse_options(temp_params)
-                temp_params = temp_params.replace(pattern, '')
+                    if (
+                        not comnt.startswith('**/') and
+                        not comnt.startswith('*/') and
+                        comnt.startswith('*')
+                    ):
+                        comnt = comnt[1:].strip()
+
+                    comment += ' ' + comnt
+                    if '*/' in comnt:
+                        break
+                method, new_comment = parse_comment(comment)
+
+            if method and not method.endswith(';'):
+                chained_method = True
+
+                method = ''
+                comment = ''
+                skip_meth = None
+                for j, meth in enumerate(methods[line_num:]):
+                    if skip_meth is not None:
+                        if skip_meth <= j:
+                            continue
+                        skip_meth = None
+
+                    meth = meth.strip()
+                    meth, new_comment = parse_comment(meth)
+
+                    if meth is None and new_comment is None:
+                        new_comment = ''
+                        skip_meth = j
+                        for k, comnt in enumerate(methods[line_num + j:]):
+                            skip_meth += 1
+                            comnt = comnt.strip()
+
+                            if (
+                                not comnt.startswith('**/') and
+                                not comnt.startswith('*/') and
+                                comnt.startswith('*')
+                            ):
+                                comnt = comnt[1:].strip()
+
+                            new_comment += ' ' + comnt
+                            if '*/' in comnt:
+                                break
+                        meth, new_comment = parse_comment(new_comment)
+
+                    comment += ' ' + new_comment
+                    method += ' ' + meth
+
+                    if meth.endswith('\\'):
+                        method = method[:-1]
+
+                    if ';' in meth:
+                        break
+
+            comment = equalize_width(indent + '    ', comment)
+
+            if comment:
+                if '\n' in comment:
+                    found_methods += ['\n']
+                    split_comment = comment.split('\n')
+                    for comnt in split_comment[:-1]:
+                        found_methods += [comnt + '\n']
+
+                    found_methods += [split_comment[-1]]
+                else:
+                    try:
+                        if found_methods[-1].strip().endswith('\n'):
+                            found_methods += [comment.rstrip() + '\n']
+                        else:
+                            found_methods += ['\n' + comment.rstrip()]
+                    except IndexError:
+                        found_methods += [comment.rstrip() + '\n']
+
+                comment = ''
+
+            if not method:
+                continue
+
+            if method.strip().startswith('['):
+                pattern, method_options = parse_options(method.strip())
+                method = method.replace(pattern, '')
             else:
-                param_direction = Options('[]')
-
-            if ',' in temp_params:
-                param, temp_params = split_strip(temp_params, ',')
-            else:
-                param = temp_params
-                temp_params = ''
+                method_options = Options('[]')
 
             try:
-                param_data_type, param_name = split_strip(param, ' ')
+                method_name, temp_params = method.split('(', 1)
             except ValueError:
                 continue
 
-            param_name, param_data_type = process_param(
-                param_name,
-                param_data_type
-            )
-            template = TEMPLATE_PARAM1.format(
-                indent=indent,
-                param_direction=param_direction,
-                param_data_type=param_data_type,
-                param_name=param_name,
-                comment=comment
-            )
-            if len(template) > 79:
-                template = TEMPLATE_PARAM2.format(
+            method_name = method_name.strip()
+            try:
+                method_data_type, method_name = method_name.split(' ')
+            except ValueError:
+                continue
+
+            method_name = method_name.strip()
+            method_data_type = method_data_type.strip()
+            temp_params = temp_params.strip()[:-2]
+
+            found_params = []
+
+            while temp_params:
+                if temp_params.startswith('['):
+                    pattern, param_direction = parse_options(temp_params)
+                    temp_params = temp_params.replace(pattern, '')
+                else:
+                    param_direction = Options('[]')
+
+                if ',' in temp_params:
+                    param, temp_params = split_strip(temp_params, ',')
+                else:
+                    param = temp_params
+                    temp_params = ''
+
+                try:
+                    param_data_type, param_name = split_strip(param, ' ')
+                except ValueError:
+                    continue
+
+                param_name, param_data_type = process_param(
+                    param_name,
+                    param_data_type
+                )
+                template = TEMPLATE_PARAM1.format(
                     indent=indent,
                     param_direction=param_direction,
                     param_data_type=param_data_type,
                     param_name=param_name,
                     comment=comment
                 )
+                if len(template) > 79:
+                    template = TEMPLATE_PARAM2.format(
+                        indent=indent,
+                        param_direction=param_direction,
+                        param_data_type=param_data_type,
+                        param_name=param_name,
+                        comment=comment
+                    )
 
-            found_params += [template]
+                found_params += [template]
 
-        found_methods += [
-            TEMPLATE_METHOD.format(
-                indent=indent,
-                method_options=method_options,
-                method_data_type=method_data_type,
-                method_name=method_name,
-                params=''.join(found_params) if found_params else '',
-                comment=comment
-            )
-        ]
+            found_methods += [
+                TEMPLATE_METHOD.format(
+                    indent=indent,
+                    method_options=method_options,
+                    method_data_type=method_data_type,
+                    method_name=method_name,
+                    params=''.join(found_params) if found_params else '',
+                    comment=comment
+                )
+            ]
 
     template = TEMPLATE_METHODS.format(
         indent=indent,
@@ -507,4 +692,8 @@ def parse_interface(indent, methods, importer, interface_data, dec):
         template = template.split('[')[0]
         template += '[]\n\n'
 
-    print(template)
+    if isinstance(interface_data, dict):
+        print(template)
+    else:
+        print(indent + 'pass')
+        return cls_name, template
