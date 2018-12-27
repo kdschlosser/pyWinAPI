@@ -699,6 +699,9 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
             skip_until = None
 
+        if line.strip().startswith('extern "C" {'):
+            continue
+
         if '#ifdef COBJMACROS' in line:
             skip_until = combine_extended_lines(i, marker='#endif')[1]
             continue
@@ -1294,7 +1297,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
     #     )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\propidl.h'
+input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\dpapi.h'
 # input_file = r'C:\Users\Administrator\Desktop\New folder (6)\temp.h'
 # input_file = r'C:\Users\Administrator\Desktop\New folder (16)\iTunesCOMInterface.h'
 #r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\apiset.h'

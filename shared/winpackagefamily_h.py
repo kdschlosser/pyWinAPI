@@ -28,7 +28,6 @@ if not defined(_INC_WINPACKAGEFAMILY):
     # #define-ed to be either 1 or 0 or depending on the active WINAPI_FAMILY.
     # PARTITIONS for feature packages. Each package might be active for
     # one or more editions
-
     WINAPI_PARTITION_PKG_WINTRUST = WINAPI_PARTITION_SERVER == 1
     WINAPI_PARTITION_PKG_WEBSERVICES = (
         WINAPI_PARTITION_SERVER == 1
