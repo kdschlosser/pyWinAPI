@@ -190,6 +190,14 @@ def parse_enum(indent, enum, namespace):
             enum_symbol = enum_symbol.strip().rstrip(',').strip()
             value = value.strip().rstrip(',').strip()
 
+            if (
+                value.count(')') == 1 and
+                value.count('(') == 1 and
+                value.startswith('(') and
+                value.endswith(')')
+            ):
+                value = value[1:-1].strip()
+
             if '(' in value:
                 values = list(v.strip() for v in value.split('('))
                 new_values = []

@@ -372,21 +372,27 @@ _WIN32_WINNT_WIN10_RS2 = _WIN32_WINNT_WIN10
 _WIN32_WINNT_WIN10_RS3 = _WIN32_WINNT_WIN10
 
 if windows_version.is_xp:
+    GDIPVER = 0x0100
     _WIN32_WINNT = _WIN32_WINNT_WINXP
 
 elif windows_version.is_vista:
+    GDIPVER = 0x0110
     _WIN32_WINNT = _WIN32_WINNT_VISTA
 
 elif windows_version.is_7:
+    GDIPVER = 0x0110
     _WIN32_WINNT = _WIN32_WINNT_WIN7
 
 elif windows_version.is_8:
+    GDIPVER = 0x0110
     _WIN32_WINNT = _WIN32_WINNT_WIN8
 
 elif windows_version.is_10:
+    GDIPVER = 0x0110
     _WIN32_WINNT = _WIN32_WINNT_WIN10
 
 else:
+    GDIPVER = 0x0110
     _WIN32_WINNT = None
 
 
@@ -469,6 +475,7 @@ __midl = None
 _FILETIME_ = None
 _MAC = None
 UNICODE = 1
+_WIN32_WINNT_THRESHOLD = 0
 
 # TODO: Figure out how to check and see what KB's are installed
 # Windows KB proprocessor macros.
@@ -527,7 +534,8 @@ __all__ = (
     '__midl', '_M_MRX000', '_M_PPC', '_M_IA64', '_M_ARM', '_M_ARM64', '_M_IX86',
     'ENABLE_RESTRICTED', '_M_HYBRID_X86_ARM64', '_AXP64_', '_ALPHA_', '_IA64_',
     '_M_CEE_PURE', '_NTSYSTEM_', '_STDCALL_SUPPORTED', '_MSC_FULL_VER', '_MSC_VER',
-    '_M_I86', '_M_AXP64', '_M_HYBRID', '_WIN32_FUSION',
+    '_M_I86', '_M_AXP64', '_M_HYBRID', '_WIN32_FUSION', 'GDIPVER',
+    '_WIN32_WINNT_THRESHOLD'
 )
 
 from shared.sdkddkver_h import * # NOQA

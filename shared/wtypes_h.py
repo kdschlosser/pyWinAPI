@@ -15,7 +15,11 @@ from ctypes.wintypes import (
     WIN32_FIND_DATAW,
 )
 
-INTERFACE = comtypes.IUnknown
+
+def INTERFACE(name):
+    return type(name, (comtypes.IUnknown,), {})
+
+
 NULL = None
 
 cdecl = ctypes.CFUNCTYPE

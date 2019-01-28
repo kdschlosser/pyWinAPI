@@ -54,20 +54,28 @@ NOT_ALLOWED_PATTERN = [
 
 
 def write_functions():
+    from io import StringIO
+    output = StringIO()
+
+    for key, value in known_dlls.items():
+        key = key.replace('.', '__').decode('utf-8')
+        output.write(key + ' = [\n')
+        for item in value:
+            output.write("    '{0}',\n".format(item).decode('utf-8'))
+        output.write(u']\n\n')
+
+    output.seek(0)
+
     with open(functions_file, 'w') as f:
-        for key, value in known_dlls.items():
-            f.write(key + ' = [\n')
-            for item in value:
-                f.write("    '{0}',\n".format(item))
-            f.write(']\n\n')
+        f.write(output.read())
+
 
 known_dlls = {}
-
 
 for key, value in win_functions.__dict__.items():
     if key.startswith('__'):
         continue
-    known_dlls[key] = value[:]
+    known_dlls[key.replace('__', '.')] = value[:]
 
 
 TEMPLATE_DLL_1 = '''{indent}{dll_lower} = ctypes.windll.{dll_upper}'''
@@ -92,11 +100,14 @@ NOT_ALLOWED_PUNC = '#/<>()=*+-\\!"\',%^$@&|{}[];:.?` \n'
 
 
 def print_not_found():
+    output = '\n'.join(not_found_funcs)
     with open(not_found_file, 'w') as f:
-        f.write('\n'.join(not_found_funcs))
+        f.write(output)
 
 
 def get_dll_name(func):
+    if func.startswith('Gdip'):
+        return 'GdiPlus'
     for item in list(NOT_ALLOWED_PUNC):
         if item in func:
             return None
@@ -185,6 +196,7 @@ def parse_dll(indent, data, found_dlls):
         known_dlls[dll] += [pos_func]
 
     lines = []
+
     if dll not in found_dlls:
         template = TEMPLATE_DLL_1.format(
             indent=indent,
@@ -235,24 +247,35 @@ def parse_dll(indent, data, found_dlls):
             dll_lower=dll.lower()
         )
 
-    res_template = TEMPLATE_RESTYPE_1.format(
-        indent=indent,
-        func_name=pos_func,
-        return_value=return_value
-    )
+    if '(' in return_value and ')' in return_value:
+        return_value = return_value.split('(', 1)[-1]
+        return_value = return_value.split(')', 1)[0]
 
-    if len(res_template) > 79:
-        res_template = TEMPLATE_RESTYPE_2.format(
+    if return_value == 'STDAPI':
+        lines += [
+            template,
+            TEMPLATE_ORIGINAL.format(original_lines=original_lines),
+            func_template,
+        ]
+    else:
+        res_template = TEMPLATE_RESTYPE_1.format(
             indent=indent,
             func_name=pos_func,
             return_value=return_value
         )
 
-    lines += [
-        template,
-        TEMPLATE_ORIGINAL.format(original_lines=original_lines),
-        func_template,
-        res_template
-    ]
+        if len(res_template) > 79:
+            res_template = TEMPLATE_RESTYPE_2.format(
+                indent=indent,
+                func_name=pos_func,
+                return_value=return_value
+            )
 
-    return '\n'.join(lines) + '\n'
+        lines += [
+            template,
+            TEMPLATE_ORIGINAL.format(original_lines=original_lines),
+            func_template,
+            res_template
+        ]
+
+    return '\n'.join(lines)

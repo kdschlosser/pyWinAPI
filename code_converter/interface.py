@@ -118,7 +118,7 @@ TEMPLATE_PARAM2 = '''
 {indent}        (
 {indent}            {param_direction},
 {indent}            {param_data_type},
-{indent}           '{param_name}'
+{indent}            '{param_name}'
 {indent}        ),'''
 
 TEMPLATE_HELPSTRING = '''\n{indent}    """{indent}\n    {helpstring}\n{indent}    """'''
@@ -291,6 +291,12 @@ class Options(dict):
                     res = res.replace("'{0}',".format(itm), '', 1)
                 else:
                     break
+        if "'in'" not in res and "'out'" not in res:
+            res = res[:-1]
+            if res == '[':
+                res += "'in']"
+            else:
+                res += ", 'in']"
 
         return res
 
@@ -675,7 +681,7 @@ def parse_interface(indent, methods, importer, interface_data, dec):
             found_methods += [
                 TEMPLATE_METHOD.format(
                     indent=indent,
-                    method_options=method_options,
+                    method_options=str(method_options).replace("['in']", "[]"),
                     method_data_type=method_data_type,
                     method_name=method_name,
                     params=''.join(found_params) if found_params else '',

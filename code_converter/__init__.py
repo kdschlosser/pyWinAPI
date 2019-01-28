@@ -6,6 +6,40 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+
+lib_path = os.path.dirname(__file__)
+
+if not lib_path:
+    lib_path = os.getcwd()
+
+lib_path = os.path.abspath(os.path.join(lib_path, '..'))
+
+
+IMPORTS = {}
+
+
+def enumerate_imports(p):
+    mod_path = []
+
+    head = p
+    while head != lib_path:
+        head, tail = os.path.split(head)
+        mod_path.insert(0, tail.replace('.', '_'))
+
+    mod_path.insert(0, 'pyWinAPI')
+
+    files = os.listdir(p)
+    for f in files:
+        if f.endswith('.h'):
+            f = f.lower()
+            IMPORTS[f] = '.'.join(mod_path + [f.replace('.', '_')])
+        elif os.path.isdir(os.path.join(p, f)):
+            enumerate_imports(os.path.join(p, f))
+
+
+enumerate_imports(lib_path)
+
+
 from code_converter.includes import parse_include
 from code_converter.enum import parse_enum
 from code_converter.define import parse_define
@@ -17,6 +51,7 @@ from code_converter.guid import parse_guid
 from code_converter.utils import process_param
 from code_converter.preprocessor import parse_macro
 from code_converter import preprocessor
+from code_converter.declare_interface import parse_declare_interface
 
 
 class Allowed:
@@ -314,7 +349,73 @@ TEMPLATE_DECLSPEC = '''DECLSPEC_UUID(
 {1}    "{{{{{0}}}}}"
 {1})'''
 
+
+INTERFACE_START = '''
+def INTERFACE(name):
+    return type(name, (comtypes.IUnknown,), {})
+
+
+def STDMETHOD(name):
+
+    def method_wrapper(restype, *args):
+        if isinstance(restype, tuple):
+            args = (restype,) + args
+            restype = HRESULT
+
+        argtypes = tuple(arg[0] for arg in args)
+        argnames = list(arg[1] for arg in args)
+        res = comtypes.STDMETHOD(restype, name, argtypes)
+        return argnames, res
+
+    return method_wrapper
+
+
+def DECLARE_INTERFACE_(cls, super_cls):
+    if super_cls != comtypes.IUnknown:
+        bases = super_cls.__bases__
+        cls.__bases__ = (
+            (super_cls,) +
+            tuple(base for base in cls.__bases__ if base not in bases)
+        )
+
+    def wrapper(*args):
+        argnames = list(arg[0] for arg in args)
+        _methods_ = list(arg[1] for arg in args)
+
+        method_names = list(itm[1] for itm in _methods_)
+
+        for i, method_name in enumerate(method_names):
+            defaults = argnames[i]
+
+            class MethodWrapper(object):
+
+                def __init__(self, parent, name, keywords):
+                    self.__parent = parent
+                    self.__name__ = name
+                    self.__keywords = keywords
+
+                def __call__(self, *args, **kwargs):
+                    args = list(args)
+                    for j, keyword in enumerate(self.__keywords):
+                        if keyword in kwargs:
+                            args.insert(j, kwargs.pop(keyword))
+
+                    getattr(self.__parent, '__com_' + self.__name__)(*args)
+
+
+            method = MethodWrapper(cls, method_name, defaults)
+            setattr(cls, method_name, method)
+
+        cls._methods_ = _methods_
+
+    return wrapper
+
+
+'''
+
 found_dlls = []
+imports_to_follow = []
+start_output = []
 
 
 def gen_code(file_path=None, output='', string_data=None, dll=None):
@@ -903,6 +1004,15 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                         print(indent + var_name + ' = DECLARE_HANDLE()')
                         continue
 
+                    if line.strip().startswith('#define INTERFACE'):
+                        if INTERFACE_START not in start_output:
+                            start_output.append(INTERFACE_START)
+
+                        interface_name = line.replace('#define INTERFACE', '')
+                        interface_name = interface_name.strip().split(' ')[0]
+                        print(indent + interface_name + " = INTERFACE('" + interface_name + "')")
+                        continue
+
                     if line.strip().startswith('#define'):
                         define_line, skip_until = combine_extended_lines(i, indent)
                         handle_preprocessor()
@@ -912,6 +1022,18 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                         else:
                             skip_until = None
         if skip_until is not None:
+            continue
+
+        if line.strip().startswith('DECLARE_INTERFACE_'):
+            if print_newline:
+                print()
+                print_newline = False
+
+            declare_interface, skip_until = combine_extended_lines(i, indent, ';', '{}')
+            declare_interface = list(
+                di.replace(indent, '', 1) for di in declare_interface.split('\n')
+            )
+            parse_declare_interface(indent, declare_interface)
             continue
 
         if (
@@ -936,9 +1058,35 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 enum.pop(0)
                 enum[0] = enum[0].replace('enum', 'typedef enum')
 
-            if not enum[0].endswith('{'):
-                enum[0] += '{'
-                enum[1] = enum[1].replace('{    ', '')
+            if len(enum) > 1:
+                if not enum[0].endswith('{'):
+                    enum[0] += '{'
+                    try:
+                        enum[1] = enum[1].replace('{    ', '')
+                    except IndexError:
+                        sys.stderr.write(str(enum) + '\n')
+                        raise
+
+            else:
+                enum = enum[0].strip()
+                if enum.endswith(';'):
+                    enum = enum.replace('typedef enum', '')
+                    enum = enum.replace('enum', '').replace(';', '').strip()
+                    attr_name, values = enum.split(' ', 1)
+                    values = list(v.strip() for v in values.split(','))
+
+                    for v in values:
+                        if v == attr_name:
+                            continue
+                        key, v = process_param(v, attr_name)
+                        handle_preprocessor()
+                        print(indent + key + ' = ' + v)
+
+                    print()
+                    continue
+                else:
+                    sys.stderr.write(enum + '\n')
+                    raise IndexError
 
             handle_preprocessor()
             parse_enum(indent, enum, namespace)
@@ -1006,85 +1154,165 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             ret_val = None
             params = []
 
-            for typed in typedef.split('\n'):
-                typed = parse_comment(typed)[0]
+            new_typedef = ''
+            for itm in typedef.split('\n'):
+                itm = parse_comment(itm)[0]
+                if itm and itm.strip():
+                    new_typedef += ' ' + itm.strip()
 
-                typed = typed.replace('typedef', '').strip()
-                typed = list(
-                    t.strip().replace('** ', '**').replace('* ', '*')
-                    for t in typed.split(',') if t.strip()
-                )
-                for lne in typed:
-                    if lne.endswith('('):
-                        ret_val, cls_name = lne.split('(', 1)
-                        ret_val = ret_val.split(' ')[-1].strip()
+            typedef = new_typedef.replace('typedef', '').strip()
 
-                        cls_name = list(
-                            itm for itm in
-                            cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
-                            if itm
-                        )
-                        if not cls_name:
-                            break
-                        if len(cls_name) == 1:
-                            cls_name = cls_name[0]
-                        else:
-                            callback = cls_name[-2]
-                            cls_name = cls_name[-1]
+            brace_count = 1
 
+            # # typedef BOOL (CALLBACK* LANGUAGEGROUP_ENUMPROCA)(LGRPID, LPSTR, LPSTR, DWORD, LONG_PTR);
+            try:
+                ret, func = typedef.split('(', 1)
+            except ValueError:
+                # typedef DWORD LGRPID;
+                try:
+                    value, key = typedef.replace(';', '').strip().split(' ')
+                    key, value = process_param(key, value)
+                    print(indent + key + ' = ' + value)
+                    continue
+                except ValueError:
+                    print(indent + '# ' + 'TYPEDEF ERROR: ' + typedef)
+                    continue
+
+            for i, char in enumerate(list(func)):
+                if char == '(':
+                    brace_count += 1
+                if char == ')':
+                    brace_count -= 1
+                if not brace_count:
+                    if func[i + 1] == ';':
+                        continue
+                    vals = func[i:]
+                    func = func[:i]
+                    cls_name = func.replace('*', '').strip().split(' ')
+                    if len(cls_name) == 1:
+                        cls_name = cls_name[0]
                     else:
-                        if cls_name is None:
-                            lne = list(
-                                itm.strip() for itm in lne.split('(', 1)
-                                if itm.strip()
-                            )
+                        callback = cls_name[-2]
+                        cls_name = cls_name[-1]
 
-                            if len(lne) == 1:
-                                lne = lne[0]
-                                if lne.endswith(')'):
-                                    cls_name = list(
-                                        itm for itm in lne[:-1].split(' ') if itm
-                                    )
-                                    if len(cls_name) == 1:
-                                        cls_name = cls_name[0]
-                                    else:
-                                        callback = cls_name[-2]
-                                        cls_name = cls_name[-1]
+                    ret_val = ret.strip()
+                    break
+            else:
+                vals = func
+                ret, func = ret.rsplit(' ', 1)
+                ret_val = ret.strip()
 
-                                else:
-                                    ret_val = list(itm for itm in lne.split(' ') if itm)[-1]
-                                continue
-                            else:
-                                ret_val, cls_name = lne[-2:]
-                                ret_val = list(itm for itm in ret_val.split(' ') if itm)[-1]
+                cls_name = func.strip().replace('*', '').split(' ')
 
-                                cls_name = list(
-                                    itm for itm in
-                                    cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
-                                    if itm
-                                )
-                                if len(cls_name) == 1:
-                                    cls_name = cls_name[0]
-                                else:
-                                    callback = cls_name[-2]
-                                    cls_name = cls_name[-1]
+                if len(cls_name) == 1:
+                    cls_name = cls_name[0]
+                else:
+                    callback = cls_name[-2]
+                    cls_name = cls_name[-1]
 
-                                lne = lne[:-2]
-                                if not lne:
-                                    continue
-                                lne = ')'.join(lne)
-                        try:
-                            param_type, param_name = lne.replace(')', '').split(' ')[-2:]
-                            param_type = process_param(param_name, param_type)[1]
-                            params += [param_type]
-                        except ValueError:
-                            if lne.strip() == ');':
-                                break
-                            else:
-                                if lne.count('(') != lne.count(')'):
-                                    continue
-                                break
+            vals = vals.strip()
+            if vals.startswith('('):
+                vals = vals[1:]
 
+            vals = vals.replace(');', '')
+
+            for val in vals.split(','):
+                val = val.replace(')(', '').strip()
+                val = val.split(' ')
+                if len(val) == 1:
+                    params += [val[0]]
+                else:
+                    val, key = val[-2:]
+                    _, val = process_param(key, val)
+                    params += [val]
+            #
+            # for typed in typedef.split('\n'):
+            #     typed = parse_comment(typed)[0]
+            #     typed = typed.replace('typedef', '').strip()
+            #     typed = list(
+            #         t.strip().replace('** ', '**').replace('* ', '*')
+            #         for t in typed.split(',') if t.strip()
+            #     )
+            #     for lne in typed:
+            #         if lne.endswith('('):
+            #             ret_val, cls_name = lne.split('(', 1)
+            #             ret_val = ret_val.split(' ')[-1].strip()
+            #
+            #             cls_name = list(
+            #                 itm for itm in
+            #                 cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
+            #                 if itm
+            #             )
+            #             if not cls_name:
+            #                 break
+            #             if len(cls_name) == 1:
+            #                 cls_name = cls_name[0]
+            #             else:
+            #                 callback = cls_name[-2]
+            #                 cls_name = cls_name[-1]
+            #
+            #         else:
+            #             if cls_name is None:
+            #                 lne = list(
+            #                     itm.strip() for itm in lne.split('(', 1)
+            #                     if itm.strip()
+            #                 )
+            #
+            #                 if len(lne) == 1:
+            #                     lne = lne[0]
+            #                     if lne.endswith(')'):
+            #                         cls_name = list(
+            #                             itm.strip() for itm in lne[:-1].split(' ') if itm.strip()
+            #                         )
+            #                         if len(cls_name) == 1:
+            #                             cls_name = cls_name[0]
+            #                         else:
+            #                             callback = cls_name[-2]
+            #                             cls_name = cls_name[-1]
+            #
+            #                     else:
+            #                         ret_val = list(itm for itm in lne.split(' ') if itm)[-1]
+            #                     continue
+            #                 else:
+            #                     ret_val, cls_name = lne[-2:]
+            #                     ret_val = list(itm for itm in ret_val.split(' ') if itm)[-1]
+            #
+            #                     cls_name = list(
+            #                         itm for itm in
+            #                         cls_name.split(')', 1)[0].strip().replace('*', '').split(' ')
+            #                         if itm
+            #                     )
+            #                     if len(cls_name) == 1:
+            #                         cls_name = cls_name[0]
+            #                     else:
+            #                         callback = cls_name[-2]
+            #                         cls_name = cls_name[-1]
+            #
+            #                     lne = lne[:-2]
+            #                     if not lne:
+            #                         continue
+            #                     lne = ')'.join(lne)
+            #             try:
+            #                 param_type, param_name = lne.replace(')', '').split(' ')[-2:]
+            #                 param_type = process_param(param_name, param_type)[1]
+            #                 params += [param_type]
+            #             except ValueError:
+            #                 if lne.strip() == ');':
+            #                     break
+            #                 else:
+            #                     if lne.count('(') != lne.count(')'):
+            #                         continue
+            #
+            #                     lne = list(itm.strip() for itm in lne.split(',') if itm.strip())
+            #                     for itm in lne:
+            #                         itm = itm.split(' ')
+            #                         if len(itm) == 1:
+            #                             params += [itm[0]]
+            #                         else:
+            #                             value, key = itm[-2:]
+            #                             _, value = process_param(key, value)
+            #                             params += [value]
+            #
             if cls_name is not None:
                 tmpl = '{indent}{cls_name} = {callback}(\n'
                 tmpl = tmpl.format(
@@ -1219,20 +1447,26 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             continue
 
         tdef = False
-        if line.startswith('#include'):
+        if line.startswith('#include') or line.startswith('# include'):
             tdef = False
-            line = line.replace('#include', '').strip()
-            line = line.replace('<', '').replace('>', '')
-            line = line.replace('"', '').strip()
-            line = line.replace('.h', '_h')
-            line = line.replace('/', '.').replace('\\', '.')
+            mod = line.replace('#include', '').replace('# include', '').strip()
+            mod = mod.replace('<', '').replace('>', '').strip()
+            mod = mod.replace('"', '').strip()
+            mod = mod.split('/')
+            mod = mod[-1].split('\\')
+            mod = mod[-1].strip().lower()
+            if mod in IMPORTS:
+                mod = IMPORTS[mod]
+            else:
+                mod = mod.replace('.', '_')
 
             handle_preprocessor()
             if comment:
                 comment = equalize_width(indent, comment)
                 print('\n' + comment)
 
-            print(indent + 'from {0} import * # NOQA'.format(line))
+            print(indent + 'from {0} import * # NOQA'.format(mod))
+            imports_to_follow.append(mod)
             continue
 
         if line.startswith('#'):
@@ -1297,181 +1531,233 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
     #     )
 
 # enter the input filename here
-input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\dpapi.h'
+# input_file = r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\spatialaudiometadata.h'
 # input_file = r'C:\Users\Administrator\Desktop\New folder (6)\temp.h'
 # input_file = r'C:\Users\Administrator\Desktop\New folder (16)\iTunesCOMInterface.h'
 #r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\apiset.h'
 
+
+output_folder = r'C:\Users\Administrator\Desktop\New folder (24)'
+input_folder = r'C:\Stackless27\Lib\site-packages\pyWinAPI'
 import sys
+
 
 if __name__ == '__main__':
     _stdout = sys.stdout
 
-    import threading
+    def run(input_file):
+        import threading
 
-    print_lock = threading.Lock()
+        print_lock = threading.Lock()
 
-    output_file = input_file[:-2] + '_h.py'
+        head, input_filename = os.path.split(input_file)
 
-    if os.path.exists(output_file):
-        if raw_input("delete file " + output_file).lower() == 'n':
-            sys.exit(0)
+        output_folders = []
+        output_file = [input_filename]
 
+        while head != input_folder:
+            head, temp_folder = os.path.split(head)
+            output_folders.insert(0, temp_folder)
 
-    class STDOut(object):
-        line_buffer = []
-        out_buffer = []
+        new_output_folder = os.path.join(output_folder, *output_folders)
+        if not os.path.exists(new_output_folder):
+            os.makedirs(new_output_folder)
 
-        def write(self, data):
-            with print_lock:
-                # _stdout.write(data)
-                # _stdout.flush()
-                try:
-                    sys.stderr.write(data)
-                    sys.stderr.flush()
-                    self.line_buffer += [data]
-                    if len(self.line_buffer) == 3:
-                        if (
-                            self.line_buffer[0].strip().startswith('#') and
-                            self.line_buffer[2].strip().startswith('#') and
-                            not self.line_buffer[1].strip()
-                        ):
-                            self.line_buffer.pop(1)
+        output_file = os.path.join(new_output_folder, input_filename[:-2] + '_h.py')
 
-                        self.out_buffer += [self.line_buffer.pop(0)]
+        if os.path.exists(output_file):
+            return
+            if raw_input("delete file " + output_file).lower() == 'n':
+                sys.exit(0)
 
-                except ValueError:
-                    pass
+        class STDOut(object):
 
-        def close(self):
-            for line in self.line_buffer:
-                self.out_buffer += [line]
+            def __init__(self):
+                self.line_buffer = []
+                self.out_buffer = []
 
-            temp_buffer = ''.join(self.out_buffer).split('\n')
-            out_buffer = []
+            def write(self, data):
+                with print_lock:
+                    # _stdout.write(data)
+                    # _stdout.flush()
+                    try:
+                        sys.stderr.write(data)
+                        sys.stderr.flush()
+                        self.line_buffer += [data]
+                        if len(self.line_buffer) == 3:
+                            if (
+                                self.line_buffer[0].strip().startswith('#') and
+                                self.line_buffer[2].strip().startswith('#') and
+                                not self.line_buffer[1].strip()
+                            ):
+                                self.line_buffer.pop(1)
 
-            class_dec_indent = ''
+                            self.out_buffer += [self.line_buffer.pop(0)]
 
-            open_brackets = 0
+                    except ValueError:
+                        pass
 
-            for line in temp_buffer:
+            def close(self):
+                for line in self.line_buffer:
+                    self.out_buffer += [line]
 
-                if (
-                    not line.strip().startswith('if ') and
-                    not line.strip().startswith('elif ') and
-                    not line.strip().startswith('else:')
-                ):
-                    for item in ('()', '{}', '[]'):
-                        open_brackets += line.count(item[0])
-                        open_brackets -= line.count(item[1])
-                else:
-                    open_brackets = 0
+                temp_buffer = ''.join(self.out_buffer).split('\n')
+                out_buffer = []
 
-                if open_brackets and not line.strip():
-                    continue
+                class_dec_indent = ''
 
-                if line.strip() and class_dec_indent and not line.startswith(class_dec_indent):
-                    class_dec_indent = ''
+                open_brackets = 0
 
-                try:
-                    back_2 = out_buffer[-2].strip()
-                    back_1 = out_buffer[-1].strip()
-                except IndexError:
-                    out_buffer += [line]
-                    continue
+                for line in temp_buffer:
 
-                if class_dec_indent:
-                    if not line.strip() and not back_1:
-                        continue
-                else:
-                    if not line.strip() and not back_1 and not back_2:
-                        continue
+                    if (
+                        not line.strip().startswith('if ') and
+                        not line.strip().startswith('elif ') and
+                        not line.strip().startswith('else:')
+                    ):
+                        for item in ('()', '{}', '[]'):
+                            open_brackets += line.count(item[0])
+                            open_brackets -= line.count(item[1])
+                    else:
+                        open_brackets = 0
 
-                if back_2 == 'pass' and open_brackets == 1 and '_fields_ =' in line:
-                    if line.strip():
-                        out_buffer += ['', line]
+                    if open_brackets and not line.strip():
                         continue
 
-                if (
-                    not line.strip() and not back_1.startswith('# END IF') and
-                    (
-                        back_1.startswith('if') or
-                        back_1.startswith('elif') or
-                        back_1.startswith('else') or
-                        back_1.startswith('#')
-                    )
-                ):
-                    continue
+                    if line.strip() and class_dec_indent and not line.startswith(class_dec_indent):
+                        class_dec_indent = ''
 
-                if not class_dec_indent:
-                    if line.strip().endswith('= [') or line.strip().endswith('= ('):
-                        class_dec_indent = '    ' * line.count('    ') + '    '
+                    try:
+                        back_2 = out_buffer[-2].strip()
+                        back_1 = out_buffer[-1].strip()
+                    except IndexError:
+                        out_buffer += [line]
+                        continue
 
-                if line.strip().startswith('class '):
-                    open_brackets = 0
-                    class_dec_indent = '    ' * line.count('    ') + '    '
+                    if class_dec_indent:
+                        if not line.strip() and not back_1:
+                            continue
+                    else:
+                        if not line.strip() and not back_1 and not back_2:
+                            continue
 
-                    if back_1:
-                        if (
+                    if back_2 == 'pass' and open_brackets == 1 and '_fields_ =' in line:
+                        if line.strip():
+                            out_buffer += ['', line]
+                            continue
+
+                    if (
+                        not line.strip() and not back_1.startswith('# END IF') and
+                        (
                             back_1.startswith('if') or
                             back_1.startswith('elif') or
                             back_1.startswith('else') or
                             back_1.startswith('#')
-                        ):
-                            out_buffer += [line]
-                        else:
-                            out_buffer += ['', '', line]
-
+                        )
+                    ):
                         continue
 
-                    if back_2:
-                        out_buffer += ['', line]
-                        continue
+                    if not class_dec_indent:
+                        if line.strip().endswith('= [') or line.strip().endswith('= ('):
+                            class_dec_indent = '    ' * line.count('    ') + '    '
 
-                out_buffer += [line]
+                    if line.strip().startswith('class '):
+                        open_brackets = 0
+                        class_dec_indent = '    ' * line.count('    ') + '    '
 
-            new_defines = preprocessor.new_defines
+                        if back_1:
+                            if (
+                                back_1.startswith('if') or
+                                back_1.startswith('elif') or
+                                back_1.startswith('else') or
+                                back_1.startswith('#')
+                            ):
+                                out_buffer += [line]
+                            else:
+                                out_buffer += ['', '', line]
 
-            for i, macro in enumerate(new_defines):
-                new_defines[i] = macro + ' = None'
+                            continue
 
-            if new_defines:
-                new_defines.append('')
+                        if back_2:
+                            out_buffer += ['', line]
+                            continue
 
-            temp_buffer = new_defines
+                    out_buffer += [line]
 
-            if interface_declarations:
-                temp_buffer += '\n\n'.join(interface_declarations).split('\n')
-                temp_buffer += ['', '']
+                new_defines = preprocessor.new_defines
 
-            temp_buffer += '\n\n'.join(u_s_declarations).split('\n')
-            if u_s_declarations:
-                temp_buffer += ['', '']
+                for i, macro in enumerate(new_defines):
+                    new_defines[i] = macro + ' = None'
 
-            temp_buffer += out_buffer
+                if new_defines:
+                    new_defines.append('')
 
-            with open(output_file, 'w') as f:
-                f.write('import ctypes\n')
-                f.write('from pyWinAPI import *\n')
-                f.write('from pyWinAPI.shared.wtypes_h import *\n')
-                f.write('from pyWinAPI.shared.winapifamily_h import *\n')
-                f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
-                f.write('from pyWinAPI.shared.guiddef_h import *\n\n\n')
+                temp_buffer = new_defines
 
-                f.write('\n'.join(temp_buffer) + '\n')
+                if interface_declarations:
+                    temp_buffer += '\n\n'.join(interface_declarations).split('\n')
+                    temp_buffer += ['', '']
 
-        def __getattr__(self, item):
-            if item in self.__dict__:
-                return self.__dict__[item]
-            with print_lock:
-                return getattr(_stdout, item)
+                temp_buffer += '\n\n'.join(u_s_declarations).split('\n')
+                if u_s_declarations:
+                    temp_buffer += ['', '']
+
+                temp_buffer += out_buffer
+
+                with open(output_file, 'w') as f:
+                    f.write('import ctypes\n')
+                    f.write('from pyWinAPI import *\n')
+                    f.write('from pyWinAPI.shared.wtypes_h import *\n')
+                    f.write('from pyWinAPI.shared.winapifamily_h import *\n')
+                    f.write('from pyWinAPI.shared.sdkddkver_h import *\n')
+                    f.write('from pyWinAPI.shared.guiddef_h import *\n\n\n')
+                    f.write(''.join(start_output))
+                    f.write('\n'.join(temp_buffer) + '\n')
+
+            def __getattr__(self, item):
+                if item in self.__dict__:
+                    return self.__dict__[item]
+                with print_lock:
+                    return getattr(_stdout, item)
 
 
-    sys.stdout = STDOut()
-    gen_code(input_file)
-    sys.stdout.close()
+        sys.stdout = STDOut()
+        try:
+            gen_code(input_file)
+            tb = ''
+        except:
+            import traceback
+            tb = traceback.format_exc()
+
+        sys.stdout.close()
+
+        if tb:
+            with open(output_file, 'a') as f:
+                f.write('\n' + tb)
+
+    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\winnls.h')
+
+    for import_to_follow in imports_to_follow:
+        while import_to_follow in imports_to_follow:
+            imports_to_follow.remove(import_to_follow)
+
+        import_to_follow = import_to_follow.split('.')[1:]
+        check_filename = os.path.join(input_folder, *import_to_follow) + '.py'
+        if 'pyWinAPI.py' in check_filename:
+            continue
+        sys.stderr.write('FOLLOW IMPORT: ' + check_filename + '\n')
+        if os.path.exists(check_filename):
+            continue
+        import_to_follow = list(itm.replace('_', '.') for itm in import_to_follow)
+        import_to_follow = os.path.join(input_folder, *import_to_follow)
+
+        del preprocessor.new_defines[:]
+        del interface_declarations[:]
+        del u_s_declarations[:]
+        del start_output[:]
+        sys.stdout = _stdout
+
+        run(import_to_follow)
 
     write_functions()
     print_not_found()
-
-
