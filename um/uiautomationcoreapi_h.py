@@ -13,93 +13,52 @@ class UiaCondition(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaPropertyCondition(ctypes.Structure):
     pass
-
-
-
 
 
 class UiaAndOrCondition(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaNotCondition(ctypes.Structure):
     pass
-
-
-
 
 
 class UiaCacheRequest(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaFindParams(ctypes.Structure):
     pass
-
-
-
 
 
 class UiaEventArgs(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaPropertyChangedEventArgs(ctypes.Structure):
     pass
-
-
-
 
 
 class UiaStructureChangedEventArgs(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaTextEditTextChangedEventArgs(ctypes.Structure):
     pass
-
-
-
 
 
 class UiaChangesEventArgs(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaAsyncContentLoadedEventArgs(ctypes.Structure):
     pass
 
 
-
-
-
 class UiaWindowClosedEventArgs(ctypes.Structure):
     pass
-
-
-
-
-
 
 
 # -------------------------------------------------------------
@@ -113,7 +72,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
         pass
     # END IF
 
-
     from pyWinAPI.shared.winapifamily_h import * # NOQA
     if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP):
         # ----------------------------------------------------------------
@@ -121,14 +79,8 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
         # ----------------------------------------------------------------
         # These are all in FACILITY_ITF
         UIA_E_ELEMENTNOTENABLED = 0x80040200
-
-
         UIA_E_ELEMENTNOTAVAILABLE = 0x80040201
-
-
         UIA_E_NOCLICKABLEPOINT = 0x80040202
-
-
         UIA_E_PROXYASSEMBLYNOTLOADED = 0x80040203
 
         # Can be thrown by providers to indicate they
@@ -150,9 +102,8 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
         # ArgumentNullException - maps to ArgumentException
         # Other constants
         UiaAppendRuntimeId = 3
-
-
         UiaRootObjectId = -25
+
         HUIANODE = DECLARE_HANDLE()
         HUIAPATTERNOBJECT = DECLARE_HANDLE()
         HUIATEXTRANGE = DECLARE_HANDLE()
@@ -180,7 +131,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             TreeScope_Ancestors = TreeScope.TreeScope_Ancestors
             TreeScope_Subtree = TreeScope.TreeScope_Subtree
         # END IF
-
 
         # ----------------------------------------------------------------
         # Automation Identifier GUIDs
@@ -2512,18 +2462,20 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             0xAE,
             0xC6
         )
-        SelectionItem_ElementRemovedFromSelectionEvent_Event_GUID = DEFINE_GUID(
-            0x097FA8A9,
-            0x7079,
-            0x41AF,
-            0x8B,
-            0x9C,
-            0x09,
-            0x34,
-            0xD8,
-            0x30,
-            0x5E,
-            0x5C
+        SelectionItem_ElementRemovedFromSelectionEvent_Event_GUID = (
+            DEFINE_GUID(
+                0x097FA8A9,
+                0x7079,
+                0x41AF,
+                0x8B,
+                0x9C,
+                0x09,
+                0x34,
+                0xD8,
+                0x30,
+                0x5E,
+                0x5C
+            )
         )
         SelectionItem_ElementSelectedEvent_Event_GUID = DEFINE_GUID(
             0xB9C7DBFB,
@@ -5108,10 +5060,16 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
                 PropertyConditionFlags_None = 0x00
                 PropertyConditionFlags_IgnoreCase = 0x01
 
-            PropertyConditionFlags_None = PropertyConditionFlags.PropertyConditionFlags_None
-            PropertyConditionFlags_IgnoreCase = PropertyConditionFlags.PropertyConditionFlags_IgnoreCase
+            PropertyConditionFlags_None = (
+                PropertyConditionFlags.PropertyConditionFlags_None
+            )
+            PropertyConditionFlags_IgnoreCase = (
+                PropertyConditionFlags.PropertyConditionFlags_IgnoreCase
+            )
         # END IF
 
+        from pyWinAPI.um.oaidl_h import *
+        from pyWinAPI.um.uiautomationcore_h import *
 
         UiaPropertyCondition._fields_ = [
             ('PropertyId', PROPERTYID),
@@ -5137,10 +5095,13 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
                 AutomationElementMode_None = 1
                 AutomationElementMode_Full = 2
 
-            AutomationElementMode_None = AutomationElementMode.AutomationElementMode_None
-            AutomationElementMode_Full = AutomationElementMode.AutomationElementMode_Full
+            AutomationElementMode_None = (
+                AutomationElementMode.AutomationElementMode_None
+            )
+            AutomationElementMode_Full = (
+                AutomationElementMode.AutomationElementMode_Full
+            )
         # END IF
-
 
         UiaCacheRequest._fields_ = [
             ('pViewCondition', POINTER(UiaCondition)),
@@ -5151,7 +5112,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             ('cPatterns', INT),
             ('automationElementMode', AutomationElementMode),
         ]
-
 
         # HRESULT WINAPI UiaHUiaNodeFromVariant(VARIANT * pvar, HUIANODE *phnode);
         UiaHUiaNodeFromVariant = uiautomationcore.UiaHUiaNodeFromVariant
@@ -5166,6 +5126,7 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
         # HRESULT WINAPI UiaHTextRangeFromVariant(VARIANT * pvar, HUIATEXTRANGE *phtextrange);
         UiaHTextRangeFromVariant = uiautomationcore.UiaHTextRangeFromVariant
         UiaHTextRangeFromVariant.restype = HRESULT
+
         # ----------------------------------------------------------------
         # UiaNode methods
         # ----------------------------------------------------------------
@@ -5175,9 +5136,11 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             NormalizeState_View = 2
             NormalizeState_Custom = 3
 
+
         NormalizeState_None = NormalizeState.NormalizeState_None
         NormalizeState_View = NormalizeState.NormalizeState_View
         NormalizeState_Custom = NormalizeState.NormalizeState_Custom
+
         if not defined(__uiautomationclient_h__):
             # Option groups (flags):
             # 1) Traversal order (preorder,
@@ -5195,11 +5158,17 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
                 TreeTraversalOptions_PostOrder = 0x1
                 TreeTraversalOptions_LastToFirstOrder = 0x2
 
-            TreeTraversalOptions_Default = TreeTraversalOptions.TreeTraversalOptions_Default
-            TreeTraversalOptions_PostOrder = TreeTraversalOptions.TreeTraversalOptions_PostOrder
-            TreeTraversalOptions_LastToFirstOrder = TreeTraversalOptions.TreeTraversalOptions_LastToFirstOrder
-        # END IF   __uiautomationclient_h__
 
+            TreeTraversalOptions_Default = (
+                TreeTraversalOptions.TreeTraversalOptions_Default
+            )
+            TreeTraversalOptions_PostOrder = (
+                TreeTraversalOptions.TreeTraversalOptions_PostOrder
+            )
+            TreeTraversalOptions_LastToFirstOrder = (
+                TreeTraversalOptions.TreeTraversalOptions_LastToFirstOrder
+            )
+        # END IF   __uiautomationclient_h__
 
         UiaFindParams._fields_ = [
             ('MaxDepth', INT),
@@ -5207,7 +5176,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             ('ExcludeRoot', BOOL),
             ('pFindCondition', POINTER(UiaCondition)),
         ]
-
 
         # BOOL WINAPI UiaNodeRelease(HUIANODE hnode);
         UiaNodeRelease = uiautomationcore.UiaNodeRelease
@@ -5265,7 +5233,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             pass
         # END IF
 
-
         # ----------------------------------------------------------------
         # Client-side provider support
         # ----------------------------------------------------------------
@@ -5273,6 +5240,7 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             ProviderType_BaseHwnd = 1
             ProviderType_Proxy = 2
             ProviderType_NonClientArea = 3
+
 
         ProviderType_BaseHwnd = ProviderType.ProviderType_BaseHwnd
         ProviderType_Proxy = ProviderType.ProviderType_Proxy
@@ -5304,16 +5272,34 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             AutomationIdentifierType_Changes = 8
             AutomationIdentifierType_Style = 9
 
-        AutomationIdentifierType_Property = AutomationIdentifierType.AutomationIdentifierType_Property
-        AutomationIdentifierType_Pattern = AutomationIdentifierType.AutomationIdentifierType_Pattern
-        AutomationIdentifierType_Event = AutomationIdentifierType.AutomationIdentifierType_Event
-        AutomationIdentifierType_ControlType = AutomationIdentifierType.AutomationIdentifierType_ControlType
-        AutomationIdentifierType_TextAttribute = AutomationIdentifierType.AutomationIdentifierType_TextAttribute
-        AutomationIdentifierType_LandmarkType = AutomationIdentifierType.AutomationIdentifierType_LandmarkType
-        AutomationIdentifierType_Annotation = AutomationIdentifierType.AutomationIdentifierType_Annotation
-        AutomationIdentifierType_Changes = AutomationIdentifierType.AutomationIdentifierType_Changes
-        AutomationIdentifierType_Style = AutomationIdentifierType.AutomationIdentifierType_Style
 
+        AutomationIdentifierType_Property = (
+            AutomationIdentifierType.AutomationIdentifierType_Property
+        )
+        AutomationIdentifierType_Pattern = (
+            AutomationIdentifierType.AutomationIdentifierType_Pattern
+        )
+        AutomationIdentifierType_Event = (
+            AutomationIdentifierType.AutomationIdentifierType_Event
+        )
+        AutomationIdentifierType_ControlType = (
+            AutomationIdentifierType.AutomationIdentifierType_ControlType
+        )
+        AutomationIdentifierType_TextAttribute = (
+            AutomationIdentifierType.AutomationIdentifierType_TextAttribute
+        )
+        AutomationIdentifierType_LandmarkType = (
+            AutomationIdentifierType.AutomationIdentifierType_LandmarkType
+        )
+        AutomationIdentifierType_Annotation = (
+            AutomationIdentifierType.AutomationIdentifierType_Annotation
+        )
+        AutomationIdentifierType_Changes = (
+            AutomationIdentifierType.AutomationIdentifierType_Changes
+        )
+        AutomationIdentifierType_Style = (
+            AutomationIdentifierType.AutomationIdentifierType_Style
+        )
 
         # INT WINAPI UiaLookupId(AutomationIdentifierType type, GUID* pGuid);
         UiaLookupId = uiautomationcore.UiaLookupId
@@ -5351,11 +5337,19 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             EventArgsType_Notification = 8
 
         EventArgsType_Simple = EventArgsType.EventArgsType_Simple
-        EventArgsType_PropertyChanged = EventArgsType.EventArgsType_PropertyChanged
-        EventArgsType_StructureChanged = EventArgsType.EventArgsType_StructureChanged
-        EventArgsType_AsyncContentLoaded = EventArgsType.EventArgsType_AsyncContentLoaded
+        EventArgsType_PropertyChanged = (
+            EventArgsType.EventArgsType_PropertyChanged
+        )
+        EventArgsType_StructureChanged = (
+            EventArgsType.EventArgsType_StructureChanged
+        )
+        EventArgsType_AsyncContentLoaded = (
+            EventArgsType.EventArgsType_AsyncContentLoaded
+        )
         EventArgsType_WindowClosed = EventArgsType.EventArgsType_WindowClosed
-        EventArgsType_TextEditTextChanged = EventArgsType.EventArgsType_TextEditTextChanged
+        EventArgsType_TextEditTextChanged = (
+            EventArgsType.EventArgsType_TextEditTextChanged
+        )
         EventArgsType_Changes = EventArgsType.EventArgsType_Changes
         EventArgsType_Notification = EventArgsType.EventArgsType_Notification
 
@@ -5365,9 +5359,16 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             AsyncContentLoadedState_Progress = 2
             AsyncContentLoadedState_Completed = 3
 
-        AsyncContentLoadedState_Beginning = AsyncContentLoadedState.AsyncContentLoadedState_Beginning
-        AsyncContentLoadedState_Progress = AsyncContentLoadedState.AsyncContentLoadedState_Progress
-        AsyncContentLoadedState_Completed = AsyncContentLoadedState.AsyncContentLoadedState_Completed
+
+        AsyncContentLoadedState_Beginning = (
+            AsyncContentLoadedState.AsyncContentLoadedState_Beginning
+        )
+        AsyncContentLoadedState_Progress = (
+            AsyncContentLoadedState.AsyncContentLoadedState_Progress
+        )
+        AsyncContentLoadedState_Completed = (
+            AsyncContentLoadedState.AsyncContentLoadedState_Completed
+        )
 
         UiaEventArgs._fields_ = [
             ('Type', EventArgsType),
@@ -5414,7 +5415,6 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
             ('pRuntimeId', POINTER(INT)),
             ('cRuntimeIdLen', INT),
         ]
-
 
         # Provider Event APIs
         # HRESULT WINAPI UiaRaiseAutomationPropertyChangedEvent(IRawElementProviderSimple * pProvider, PROPERTYID id, VARIANT oldValue, VARIANT newValue);
@@ -5827,10 +5827,8 @@ if not defined(_INC_UIAUTOMATIONCOREAPI):
     if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP):
         UIA_PFIA_DEFAULT = 0x0000
 
-
         UIA_PFIA_UNWRAP_BRIDGE = 0x0001
         uiautomationcore = ctypes.windll.UIAUTOMATIONCORE
-
 
         # HRESULT WINAPI UiaProviderFromIAccessible(
         # _In_ IAccessible * pAccessible,
