@@ -330,8 +330,11 @@ def convert(data):
     data = re.sub(r"(?! )<<(?! )", ' << ', data)
     data = re.sub(r"(?! )>>(?! )", ' >> ', data)
     data = re.sub(r"(?! )\|(?! )", ' | ', data)
-    data = re.sub(r"(?! )(?!>)>(?!>)(?! )", ' > ', data)
-    data = re.sub(r"(?! )(?!<)<(?!<)(?! )", ' < ', data)
+    data = re.sub(r"(?!>?! )>(?!>?! )", ' > ', data)
+    data = re.sub(r"(?!<?! )<(?!<?! )", ' < ', data)
+    data = re.sub(r"> =", '>=', data)
+    data = re.sub(r"< =", '<=', data)
+
     data = re.sub(r"(?! )&(?! )", ' & ', data)
     data = re.sub(r"&lt;", '<', data)
     data = re.sub(r"&gt;", '>', data)
@@ -886,6 +889,13 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
 
         line = line.strip()
 
+        if line.startswith('LONG') and '=' in line:
+            line = line.replace('LONG', '', 1)
+            line = line.replace(';', '').strip()
+            line = ' = '.join(item.strip() for item in line.split('=', 1))
+            print(indent + line)
+            continue
+
         if line.startswith('MIDL_INTERFACE'):
             handle_preprocessor()
 
@@ -1175,7 +1185,7 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     print(indent + key + ' = ' + value)
                     continue
                 except ValueError:
-                    print(indent + '# ' + 'TYPEDEF ERROR: ' + typedef)
+                    print(indent + '# ' + 'TYPEDEF ERROR: 1' + typedef)
                     continue
 
             for i, char in enumerate(list(func)):
@@ -1184,8 +1194,11 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                 if char == ')':
                     brace_count -= 1
                 if not brace_count:
-                    if func[i + 1] == ';':
-                        continue
+                    try:
+                        if func[i + 1] == ';':
+                            continue
+                    except IndexError:
+                        print(indent + '# ' + 'TYPEDEF ERROR 2: ' + typedef)
                     vals = func[i:]
                     func = func[:i]
                     cls_name = func.replace('*', '').strip().split(' ')
@@ -1735,7 +1748,7 @@ if __name__ == '__main__':
             with open(output_file, 'a') as f:
                 f.write('\n' + tb)
 
-    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\winnls.h')
+    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\UIAutomationCoreApi.h')
 
     for import_to_follow in imports_to_follow:
         while import_to_follow in imports_to_follow:

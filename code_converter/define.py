@@ -37,11 +37,12 @@ def parse_define(indent, define, importer):
         return
 
     define, comment = parse_comment(define)
-    comment = equalize_width(indent, comment)
+    comment = equalize_width(indent, comment.strip())
 
-    if '\n' in comment:
+    if comment is not None:
         print('\n' + comment)
-        comment = ''
+
+    comment = ''
 
     if define is None and comment is None:
         print(indent + '# DEFINE ERROR 1:', old_define)
@@ -114,7 +115,6 @@ def parse_define(indent, define, importer):
 
             if value == '1':
                 ret += (
-
                     indent + '# DEFINE ERROR 4: ' +
                     str(old_define) +
                     '\n' +
@@ -126,14 +126,19 @@ def parse_define(indent, define, importer):
                     question, answer = v.split('?', 1)
                     yes, no = answer.split(':', 1)
                     if '?' in no:
-                        no = split_question_answer(indent + '    elif:', no)
+                        no = split_question_answer('    elif ', no)
                     else:
+                        if no.count('(') != no.count(')') and no.strip().endswith(')'):
+                            no = no[:-1]
                         no = [indent + '    else:', indent + '        return ' + no]
 
-                    return [indent + start + question, indent + '        return ' + yes] + no
+                    if question.count('(') != question.count(')') and question.strip().startswith('('):
+                        question = question[1:]
+
+                    return [indent + start + question + ':', indent + '        return ' + yes] + no
 
                 ret += '\n'.join(
-                    split_question_answer(indent + '    if:', value)
+                    split_question_answer('    if ', value)
                 )
 
             elif value.startswith('{') and value.endswith('}'):

@@ -2635,3 +2635,6 @@ mmioInstallIOProc
 mmioOpen
 mmioRename
 DEPRECATED
+UiaRectSetEmpty
+UiaRectIsEmpty
+CustomNavigationPattern_Navigate
