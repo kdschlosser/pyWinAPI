@@ -60,17 +60,17 @@ def parse_struct_union(
     saved_lines = lines[:]
 
     for i, line in enumerate(lines):
+        line = line.replace('__WRAPPED__', '')
         if '_Struct_size_bytes_' in line:
             l1, l2 = line.split('_Struct_size_bytes_(', 1)
             l2 = l2.split(')', 1)[1]
             line = l1 + l2
-            lines[i] = line
 
         if '_Union_size_bytes_' in line:
             l1, l2 = line.split('_Union_size_bytes_(', 1)
             l2 = l2.split(')', 1)[1]
             line = l1 + l2
-            lines[i] = line
+        lines[i] = line
 
     lines[0] = parse_comment(lines[0])[0]
 
@@ -873,7 +873,11 @@ def parse_struct_union(
                         TEMPLATE_DECLARATION_FIELDS_MACRO_END.format(
                             indent=indent)
                     )
-                    _, indent = parse_macro(indent + '    ', macro.strip(), struct=True)
+                    if '#else' in macro:
+                        _, indent = parse_macro(indent, macro.strip(), struct=True)
+                    else:
+                        _, indent = parse_macro(indent + '    ', macro.strip(), struct=True)
+                        indent = indent[:-4]
 
                     if 'endif' in macro:
                         print()

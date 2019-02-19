@@ -2153,60 +2153,33 @@ cryptdlg = [
     'GetFriendlyNameOfCertW',
 ]
 
-tdi = [
-    'CTEAllocateString',
-    'CTEBlock',
-    'CTEBlockWithTracker',
-    'CTEInitEvent',
-    'CTEInitString',
-    'CTEInitTimer',
-    'CTEInitialize',
-    'CTEInsertBlockTracker',
-    'CTELogEvent',
-    'CTERemoveBlockTracker',
-    'CTEScheduleCriticalEvent',
-    'CTEScheduleDelayedEvent',
-    'CTEScheduleEvent',
-    'CTESignal',
-    'CTEStartTimer',
-    'CTESystemUpTime',
-    'TdiBuildNetbiosAddress',
-    'TdiBuildNetbiosAddressEa',
-    'TdiCopyBufferToMdl',
-    'TdiCopyBufferToMdlWithReservedMappingAtDpcLevel',
-    'TdiCopyMdlChainToMdlChain',
-    'TdiCopyMdlToBuffer',
-    'TdiDefaultChainedRcvDatagramHandler',
-    'TdiDefaultChainedRcvExpeditedHandler',
-    'TdiDefaultChainedReceiveHandler',
-    'TdiDefaultConnectHandler',
-    'TdiDefaultDisconnectHandler',
-    'TdiDefaultErrorHandler',
-    'TdiDefaultRcvDatagramHandler',
-    'TdiDefaultRcvExpeditedHandler',
-    'TdiDefaultReceiveHandler',
-    'TdiDefaultSendPossibleHandler',
-    'TdiDeregisterAddressChangeHandler',
-    'TdiDeregisterDeviceObject',
-    'TdiDeregisterNetAddress',
-    'TdiDeregisterNotificationHandler',
-    'TdiDeregisterPnPHandlers',
-    'TdiDeregisterProvider',
-    'TdiEnumerateAddresses',
-    'TdiGet9FTriageBlock',
-    'TdiInitialize',
-    'TdiMapUserRequest',
-    'TdiOpenNetbiosAddress',
-    'TdiPnPPowerComplete',
-    'TdiPnPPowerRequest',
-    'TdiProviderReady',
-    'TdiRegisterAddressChangeHandler',
-    'TdiRegisterDeviceObject',
-    'TdiRegisterNetAddress',
-    'TdiRegisterNotificationHandler',
-    'TdiRegisterPnPHandlers',
-    'TdiRegisterProvider',
-    'TdiReturnChainedReceives',
+dwmapi = [
+    'DwmAttachMilContent',
+    'DwmDefWindowProc',
+    'DwmDetachMilContent',
+    'DwmEnableBlurBehindWindow',
+    'DwmEnableComposition',
+    'DwmEnableMMCSS',
+    'DwmExtendFrameIntoClientArea',
+    'DwmFlush',
+    'DwmGetColorizationColor',
+    'DwmGetCompositionTimingInfo',
+    'DwmGetGraphicsStreamClient',
+    'DwmGetGraphicsStreamTransformHint',
+    'DwmGetTransportAttributes',
+    'DwmGetWindowAttribute',
+    'DwmInvalidateIconicBitmaps',
+    'DwmIsCompositionEnabled',
+    'DwmModifyPreviousDxFrameDuration',
+    'DwmQueryThumbnailSourceSize',
+    'DwmRegisterThumbnail',
+    'DwmSetDxFrameDuration',
+    'DwmSetIconicLivePreviewBitmap',
+    'DwmSetIconicThumbnail',
+    'DwmSetPresentParameters',
+    'DwmSetWindowAttribute',
+    'DwmUnregisterThumbnail',
+    'DwmUpdateThumbnailProperties',
 ]
 
 usbd = [
@@ -4080,26 +4053,6 @@ netjoin = [
     'NetpUnpickleBlobWin7',
     'NetpUpgradePreNT5JoinInfo',
     'NetpValidateName',
-]
-
-ogldrv = [
-    'DrvCopyContext',
-    'DrvCreateContext',
-    'DrvCreateLayerContext',
-    'DrvDeleteContext',
-    'DrvDescribeLayerPlane',
-    'DrvDescribePixelFormat',
-    'DrvGetLayerPaletteEntries',
-    'DrvGetProcAddress',
-    'DrvRealizeLayerPalette',
-    'DrvReleaseContext',
-    'DrvSetContext',
-    'DrvSetLayerPaletteEntries',
-    'DrvSetPixelFormat',
-    'DrvShareLists',
-    'DrvSwapBuffers',
-    'DrvSwapLayerBuffers',
-    'DrvValidateVersion',
 ]
 
 appmgr = [
@@ -17621,6 +17574,13 @@ Kernel32 = [
     'IsValidNLSVersion',
 ]
 
+aclui = [
+    'CreateSecurityPage',
+    'EditSecurity',
+    'EditSecurityAdvanced',
+    'IID_ISecurityInformation',
+]
+
 faultrep = [
     'AddERExcludedApplicationA',
     'AddERExcludedApplicationW',
@@ -17704,6 +17664,24 @@ printui = [
     'vPrinterPropPages',
     'vQueueCreate',
     'vServerPropPages',
+]
+
+linkinfo = [
+    'CompareLinkInfoReferents',
+    'CompareLinkInfoVolumes',
+    'CreateLinkInfo',
+    'CreateLinkInfoA',
+    'CreateLinkInfoW',
+    'DestroyLinkInfo',
+    'DisconnectLinkInfo',
+    'GetCanonicalPathInfo',
+    'GetCanonicalPathInfoA',
+    'GetCanonicalPathInfoW',
+    'GetLinkInfoData',
+    'IsValidLinkInfo',
+    'ResolveLinkInfo',
+    'ResolveLinkInfoA',
+    'ResolveLinkInfoW',
 ]
 
 win32spl = [
@@ -22323,22 +22301,24 @@ dhcpcsvc = [
     'McastRequestAddress',
 ]
 
-linkinfo = [
-    'CompareLinkInfoReferents',
-    'CompareLinkInfoVolumes',
-    'CreateLinkInfo',
-    'CreateLinkInfoA',
-    'CreateLinkInfoW',
-    'DestroyLinkInfo',
-    'DisconnectLinkInfo',
-    'GetCanonicalPathInfo',
-    'GetCanonicalPathInfoA',
-    'GetCanonicalPathInfoW',
-    'GetLinkInfoData',
-    'IsValidLinkInfo',
-    'ResolveLinkInfo',
-    'ResolveLinkInfoA',
-    'ResolveLinkInfoW',
+ogldrv = [
+    'DrvCopyContext',
+    'DrvCreateContext',
+    'DrvCreateLayerContext',
+    'DrvDeleteContext',
+    'DrvDescribeLayerPlane',
+    'DrvDescribePixelFormat',
+    'DrvGetLayerPaletteEntries',
+    'DrvGetProcAddress',
+    'DrvRealizeLayerPalette',
+    'DrvReleaseContext',
+    'DrvSetContext',
+    'DrvSetLayerPaletteEntries',
+    'DrvSetPixelFormat',
+    'DrvShareLists',
+    'DrvSwapBuffers',
+    'DrvSwapLayerBuffers',
+    'DrvValidateVersion',
 ]
 
 wmsgapi = [
@@ -22532,12 +22512,31 @@ msoert2 = [
     'strtrimW',
 ]
 
-mcd = [
-    'ChangerClassAllocatePool',
-    'ChangerClassDebugPrint',
-    'ChangerClassFreePool',
-    'ChangerClassInitialize',
-    'ChangerClassSendSrbSynchronous',
+dsauth = [
+    'DhcpAddServerDS',
+    'DhcpDeleteServerDS',
+    'DhcpDsAddServer',
+    'DhcpDsCleanupDS',
+    'DhcpDsDelServer',
+    'DhcpDsEnumServers',
+    'DhcpDsGetAttribs',
+    'DhcpDsGetLists',
+    'DhcpDsGetRoot',
+    'DhcpDsInitDS',
+    'DhcpDsSetLists',
+    'DhcpDsValidateService',
+    'DhcpEnumServersDS',
+    'StoreBeginSearch',
+    'StoreCleanupHandle',
+    'StoreCollectAttributes',
+    'StoreCreateObjectVA',
+    'StoreDeleteObject',
+    'StoreEndSearch',
+    'StoreGetHandle',
+    'StoreInitHandle',
+    'StoreSearchGetNext',
+    'StoreSetSearchOneLevel',
+    'StoreSetSearchSubTree',
 ]
 
 Uiautomationcore = [
@@ -22641,11 +22640,6 @@ Uiautomationcore = [
 
 dinput8 = [
     'DirectInput8Create',
-]
-
-spnet = [
-    'Sysprep_Clean_Net',
-    'Sysprep_Generalize_Net',
 ]
 
 kernelbase = [
@@ -26394,33 +26388,60 @@ gptext = [
     'ProcessTCPIPPolicy',
 ]
 
-dwmapi = [
-    'DwmAttachMilContent',
-    'DwmDefWindowProc',
-    'DwmDetachMilContent',
-    'DwmEnableBlurBehindWindow',
-    'DwmEnableComposition',
-    'DwmEnableMMCSS',
-    'DwmExtendFrameIntoClientArea',
-    'DwmFlush',
-    'DwmGetColorizationColor',
-    'DwmGetCompositionTimingInfo',
-    'DwmGetGraphicsStreamClient',
-    'DwmGetGraphicsStreamTransformHint',
-    'DwmGetTransportAttributes',
-    'DwmGetWindowAttribute',
-    'DwmInvalidateIconicBitmaps',
-    'DwmIsCompositionEnabled',
-    'DwmModifyPreviousDxFrameDuration',
-    'DwmQueryThumbnailSourceSize',
-    'DwmRegisterThumbnail',
-    'DwmSetDxFrameDuration',
-    'DwmSetIconicLivePreviewBitmap',
-    'DwmSetIconicThumbnail',
-    'DwmSetPresentParameters',
-    'DwmSetWindowAttribute',
-    'DwmUnregisterThumbnail',
-    'DwmUpdateThumbnailProperties',
+tdi = [
+    'CTEAllocateString',
+    'CTEBlock',
+    'CTEBlockWithTracker',
+    'CTEInitEvent',
+    'CTEInitString',
+    'CTEInitTimer',
+    'CTEInitialize',
+    'CTEInsertBlockTracker',
+    'CTELogEvent',
+    'CTERemoveBlockTracker',
+    'CTEScheduleCriticalEvent',
+    'CTEScheduleDelayedEvent',
+    'CTEScheduleEvent',
+    'CTESignal',
+    'CTEStartTimer',
+    'CTESystemUpTime',
+    'TdiBuildNetbiosAddress',
+    'TdiBuildNetbiosAddressEa',
+    'TdiCopyBufferToMdl',
+    'TdiCopyBufferToMdlWithReservedMappingAtDpcLevel',
+    'TdiCopyMdlChainToMdlChain',
+    'TdiCopyMdlToBuffer',
+    'TdiDefaultChainedRcvDatagramHandler',
+    'TdiDefaultChainedRcvExpeditedHandler',
+    'TdiDefaultChainedReceiveHandler',
+    'TdiDefaultConnectHandler',
+    'TdiDefaultDisconnectHandler',
+    'TdiDefaultErrorHandler',
+    'TdiDefaultRcvDatagramHandler',
+    'TdiDefaultRcvExpeditedHandler',
+    'TdiDefaultReceiveHandler',
+    'TdiDefaultSendPossibleHandler',
+    'TdiDeregisterAddressChangeHandler',
+    'TdiDeregisterDeviceObject',
+    'TdiDeregisterNetAddress',
+    'TdiDeregisterNotificationHandler',
+    'TdiDeregisterPnPHandlers',
+    'TdiDeregisterProvider',
+    'TdiEnumerateAddresses',
+    'TdiGet9FTriageBlock',
+    'TdiInitialize',
+    'TdiMapUserRequest',
+    'TdiOpenNetbiosAddress',
+    'TdiPnPPowerComplete',
+    'TdiPnPPowerRequest',
+    'TdiProviderReady',
+    'TdiRegisterAddressChangeHandler',
+    'TdiRegisterDeviceObject',
+    'TdiRegisterNetAddress',
+    'TdiRegisterNotificationHandler',
+    'TdiRegisterPnPHandlers',
+    'TdiRegisterProvider',
+    'TdiReturnChainedReceives',
 ]
 
 tdh = [
@@ -30885,11 +30906,9 @@ kerberos = [
     'SpUserModeInitialize',
 ]
 
-aclui = [
-    'CreateSecurityPage',
-    'EditSecurity',
-    'EditSecurityAdvanced',
-    'IID_ISecurityInformation',
+spnet = [
+    'Sysprep_Clean_Net',
+    'Sysprep_Generalize_Net',
 ]
 
 ubpm = [
@@ -32224,31 +32243,12 @@ mtxdm = [
     'GetDispenserManager',
 ]
 
-dsauth = [
-    'DhcpAddServerDS',
-    'DhcpDeleteServerDS',
-    'DhcpDsAddServer',
-    'DhcpDsCleanupDS',
-    'DhcpDsDelServer',
-    'DhcpDsEnumServers',
-    'DhcpDsGetAttribs',
-    'DhcpDsGetLists',
-    'DhcpDsGetRoot',
-    'DhcpDsInitDS',
-    'DhcpDsSetLists',
-    'DhcpDsValidateService',
-    'DhcpEnumServersDS',
-    'StoreBeginSearch',
-    'StoreCleanupHandle',
-    'StoreCollectAttributes',
-    'StoreCreateObjectVA',
-    'StoreDeleteObject',
-    'StoreEndSearch',
-    'StoreGetHandle',
-    'StoreInitHandle',
-    'StoreSearchGetNext',
-    'StoreSetSearchOneLevel',
-    'StoreSetSearchSubTree',
+mcd = [
+    'ChangerClassAllocatePool',
+    'ChangerClassDebugPrint',
+    'ChangerClassFreePool',
+    'ChangerClassInitialize',
+    'ChangerClassSendSrbSynchronous',
 ]
 
 rndismp = [

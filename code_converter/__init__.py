@@ -887,6 +887,11 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
                     )
                     continue
 
+        line = line.replace('typedef _Struct_size_bytes_(Size) struct', 'typedef struct')
+        if '__WRAPPED__' in line:
+            line = line.replace(' __WRAPPED__', '').strip()
+            if not line:
+                continue
         line = line.strip()
 
         if line.startswith('LONG') and '=' in line:
@@ -1102,9 +1107,13 @@ def gen_code(file_path=None, output='', string_data=None, dll=None):
             parse_enum(indent, enum, namespace)
             continue
 
+        if '_STORAGE_DEVICE_DESCRIPTOR' in line:
+            print('# _STORAGE_DEVICE_DESCRIPTOR: ' + line)
+
         if (
             line.startswith('struct') or
             line.startswith('union') or
+            line.startswith('typedef  struct') or
             line.startswith('typedef struct') or
             line.startswith('typedef union')
         ):
@@ -1748,7 +1757,7 @@ if __name__ == '__main__':
             with open(output_file, 'a') as f:
                 f.write('\n' + tb)
 
-    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\um\UIAutomationCoreApi.h')
+    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\bdamedia.h')
 
     for import_to_follow in imports_to_follow:
         while import_to_follow in imports_to_follow:

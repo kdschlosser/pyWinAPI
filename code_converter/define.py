@@ -21,7 +21,7 @@ from __future__ import print_function, absolute_import
 from code_converter.comment import parse_comment, equalize_width
 from code_converter.utils import OPERATORS, process_hex
 
-DEFINE_TEMPLATE = '{0}{1}{2}'
+DEFINE_TEMPLATE = '{0}{1}'
 
 
 def parse_define(indent, define, importer):
@@ -39,14 +39,14 @@ def parse_define(indent, define, importer):
     define, comment = parse_comment(define)
     comment = equalize_width(indent, comment.strip())
 
-    if comment is not None:
+    if comment:
         print('\n' + comment)
-
-    comment = ''
 
     if define is None and comment is None:
         print(indent + '# DEFINE ERROR 1:', old_define)
         return False
+
+    comment = ''
 
     define = define.replace('0X', '0x').replace('\t', '    ').replace('->', '.')
 
@@ -389,7 +389,7 @@ def parse_define(indent, define, importer):
 
         for i in range(10, 1, -1):
             value = value.replace(' ' * i, ' ')
-        print(DEFINE_TEMPLATE.format(indent, get_ret(), comment))
+        print(DEFINE_TEMPLATE.format(indent, get_ret()))
         return True
 
     if (
@@ -484,5 +484,5 @@ def parse_define(indent, define, importer):
         if '+' in res and 'FIELD_OFFSET' in res:
             res = res.replace('+ ', '+\n    ' + indent, 1)
 
-        print(DEFINE_TEMPLATE.format(indent, res, comment))
+        print(DEFINE_TEMPLATE.format(indent, res))
         return True
