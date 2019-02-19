@@ -8,7 +8,18 @@ If you are interested in helping there is a special set of h and idl files that 
 
 Now that I have come up with a layout I am going to stick to you will see additions and changes to this repo pretty often. My goal is to do the whole Windows SDK. creating what would be a pure python version of pywin32. except it will include the whole Windows API.
 
-The file/folder structure is an identical replica of the latest Windows 10 SDK this makes it easier to locate things because you can use the information found on the Microsoft Developer website along with the Microsoft docs. if it tells you what file in the SDK something is located it will be in the same location with this package 
+The file/folder structure is an identical replica of the latest Windows 10 SDK this makes it easier to locate things because you can use the information found on the Microsoft Developer website along with the Microsoft docs. if it tells you what file in the SDK something is located it will be in the same location with this package
 
 I am still learning how to handle some of the conversions from c/cpp to ctypes. so some things may not work properly. There are also unfinished conversions that could throw you an exception. let me know if there is a specific part you need and i will shift gears and get that part working for ya.
+
+
+current statistics
+total number of C code files 1016
+number of files converted 376
+
+total number of C code lines 1328464
+number of line converted 693756
+
+percentage of files completed: 37.01 %
+percentage of line of code converted 52.22 %
 
