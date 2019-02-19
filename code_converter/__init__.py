@@ -1757,7 +1757,7 @@ if __name__ == '__main__':
             with open(output_file, 'a') as f:
                 f.write('\n' + tb)
 
-    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\bdamedia.h')
+    run(r'C:\Stackless27\Lib\site-packages\pyWinAPI\shared\clfslsn.h')
 
     for import_to_follow in imports_to_follow:
         while import_to_follow in imports_to_follow:

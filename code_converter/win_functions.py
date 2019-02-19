@@ -4769,9 +4769,14 @@ wmdrmdev = [
     'WMCreateDeviceRegistrationPriv',
 ]
 
-iprtrmgr = [
-    'MapInterfaceToAdapter',
-    'StartRouter',
+winbrand = [
+    'BrandingFormatString',
+    'BrandingLoadBitmap',
+    'BrandingLoadCursor',
+    'BrandingLoadIcon',
+    'BrandingLoadImage',
+    'BrandingLoadString',
+    'GetHinstanceByNameSpace',
 ]
 
 mmci = [
@@ -6290,13 +6295,6 @@ wsdchngr = [
 defaultlocationcpl = [
     'RequestDLPPermissionsInternalA',
     'RequestDLPPermissionsInternalW',
-]
-
-prvdmofcomp = [
-    'CompileSchemaToWMI',
-    'CreateRegisterParameter',
-    'GetProviderSchema',
-    'GetProviderSchemaFile',
 ]
 
 reagent = [
@@ -15809,14 +15807,9 @@ mgmtapi = [
     'SnmpMgrTrapListen',
 ]
 
-winbrand = [
-    'BrandingFormatString',
-    'BrandingLoadBitmap',
-    'BrandingLoadCursor',
-    'BrandingLoadIcon',
-    'BrandingLoadImage',
-    'BrandingLoadString',
-    'GetHinstanceByNameSpace',
+iprtrmgr = [
+    'MapInterfaceToAdapter',
+    'StartRouter',
 ]
 
 tbs = [
@@ -17572,13 +17565,6 @@ Kernel32 = [
     'GetUserDefaultGeoName',
     'SetUserGeoName',
     'IsValidNLSVersion',
-]
-
-aclui = [
-    'CreateSecurityPage',
-    'EditSecurity',
-    'EditSecurityAdvanced',
-    'IID_ISecurityInformation',
 ]
 
 faultrep = [
@@ -21488,6 +21474,53 @@ dmrc = [
     'DMrcQueryModelId',
 ]
 
+winbio = [
+    'WinBioAcquireFocus',
+    'WinBioCancel',
+    'WinBioCaptureSample',
+    'WinBioCaptureSampleWithCallback',
+    'WinBioCloseSession',
+    'WinBioControlUnit',
+    'WinBioControlUnitPrivileged',
+    'WinBioDeleteTemplate',
+    'WinBioEnrollBegin',
+    'WinBioEnrollCapture',
+    'WinBioEnrollCaptureWithCallback',
+    'WinBioEnrollCommit',
+    'WinBioEnrollDiscard',
+    'WinBioEnumBiometricUnits',
+    'WinBioEnumDatabases',
+    'WinBioEnumEnrollments',
+    'WinBioEnumServiceProviders',
+    'WinBioFree',
+    'WinBioGetCredentialState',
+    'WinBioGetDomainLogonSetting',
+    'WinBioGetEnabledSetting',
+    'WinBioGetLogonSetting',
+    'WinBioGetProperty',
+    'WinBioIdentify',
+    'WinBioIdentifyWithCallback',
+    'WinBioLocateSensor',
+    'WinBioLocateSensorWithCallback',
+    'WinBioLockUnit',
+    'WinBioLogonIdentifiedUser',
+    'WinBioOpenSession',
+    'WinBioRegisterEventMonitor',
+    'WinBioRegisterServiceMonitor',
+    'WinBioReleaseFocus',
+    'WinBioRemoveAllCredentials',
+    'WinBioRemoveAllDomainCredentials',
+    'WinBioRemoveCredential',
+    'WinBioSetCredential',
+    'WinBioUnlockUnit',
+    'WinBioUnregisterEventMonitor',
+    'WinBioUnregisterServiceMonitor',
+    'WinBioVerify',
+    'WinBioVerifyWithCallback',
+    'WinBioWait',
+    '_BioLogonIdentifiedUser',
+]
+
 msdtcuiu = [
     'DtcPerfClose',
     'DtcPerfCollect',
@@ -22640,6 +22673,11 @@ Uiautomationcore = [
 
 dinput8 = [
     'DirectInput8Create',
+]
+
+spnet = [
+    'Sysprep_Clean_Net',
+    'Sysprep_Generalize_Net',
 ]
 
 kernelbase = [
@@ -30906,9 +30944,11 @@ kerberos = [
     'SpUserModeInitialize',
 ]
 
-spnet = [
-    'Sysprep_Clean_Net',
-    'Sysprep_Generalize_Net',
+aclui = [
+    'CreateSecurityPage',
+    'EditSecurity',
+    'EditSecurityAdvanced',
+    'IID_ISecurityInformation',
 ]
 
 ubpm = [
@@ -30937,51 +30977,11 @@ tsgqec = [
     'UninitializeQec',
 ]
 
-winbio = [
-    'WinBioAcquireFocus',
-    'WinBioCancel',
-    'WinBioCaptureSample',
-    'WinBioCaptureSampleWithCallback',
-    'WinBioCloseSession',
-    'WinBioControlUnit',
-    'WinBioControlUnitPrivileged',
-    'WinBioDeleteTemplate',
-    'WinBioEnrollBegin',
-    'WinBioEnrollCapture',
-    'WinBioEnrollCaptureWithCallback',
-    'WinBioEnrollCommit',
-    'WinBioEnrollDiscard',
-    'WinBioEnumBiometricUnits',
-    'WinBioEnumDatabases',
-    'WinBioEnumEnrollments',
-    'WinBioEnumServiceProviders',
-    'WinBioFree',
-    'WinBioGetCredentialState',
-    'WinBioGetDomainLogonSetting',
-    'WinBioGetEnabledSetting',
-    'WinBioGetLogonSetting',
-    'WinBioGetProperty',
-    'WinBioIdentify',
-    'WinBioIdentifyWithCallback',
-    'WinBioLocateSensor',
-    'WinBioLocateSensorWithCallback',
-    'WinBioLockUnit',
-    'WinBioLogonIdentifiedUser',
-    'WinBioOpenSession',
-    'WinBioRegisterEventMonitor',
-    'WinBioRegisterServiceMonitor',
-    'WinBioReleaseFocus',
-    'WinBioRemoveAllCredentials',
-    'WinBioRemoveAllDomainCredentials',
-    'WinBioRemoveCredential',
-    'WinBioSetCredential',
-    'WinBioUnlockUnit',
-    'WinBioUnregisterEventMonitor',
-    'WinBioUnregisterServiceMonitor',
-    'WinBioVerify',
-    'WinBioVerifyWithCallback',
-    'WinBioWait',
-    '_BioLogonIdentifiedUser',
+prvdmofcomp = [
+    'CompileSchemaToWMI',
+    'CreateRegisterParameter',
+    'GetProviderSchema',
+    'GetProviderSchemaFile',
 ]
 
 framedyn = [
