@@ -12,8 +12,6 @@ idl_line_count = 0
 h_line_count = 0
 
 
-
-
 def iter_folder(path):
     global py_count
     global idl_count
@@ -46,10 +44,11 @@ def iter_folder(path):
         elif os.path.isdir(f):
             iter_folder(f)
 
+
 shared = os.path.join(base_path, 'shared')
-km = os.path.join(base_path, 'shared')
-um = os.path.join(base_path, 'shared')
-ucrt = os.path.join(base_path, 'shared')
+km = os.path.join(base_path, 'km')
+um = os.path.join(base_path, 'um')
+ucrt = os.path.join(base_path, 'ucrt')
 
 iter_folder(shared)
 iter_folder(km)

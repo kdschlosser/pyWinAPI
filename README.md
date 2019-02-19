@@ -14,12 +14,13 @@ I am still learning how to handle some of the conversions from c/cpp to ctypes. 
 
 
 current statistics
-total number of C code files 1016
-number of files converted 376
 
-total number of C code lines 1328464
-number of line converted 693756
+total number of C code files 2397
+number of files converted 335
 
-percentage of files completed: 37.01 %
-percentage of line of code converted 52.22 %
+total number of C code lines 3823868
+number of line converted 667026
+
+percentage of files completed: 13.98 %
+percentage of line of code converted 17.44 %
 
