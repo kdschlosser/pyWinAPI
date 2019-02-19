@@ -1,6 +1,6 @@
 
 import os
-base_path = r'C:\Stackless27\Lib\site-packages\pyWinAPI'
+base_path = os.getcwd()
 
 
 py_count = 0
@@ -45,9 +45,6 @@ def iter_folder(path):
 
         elif os.path.isdir(f):
             iter_folder(f)
-
-
-
 
 shared = os.path.join(base_path, 'shared')
 km = os.path.join(base_path, 'shared')
