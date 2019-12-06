@@ -6,7 +6,7 @@ This project is never intended to run. It is to be used as a reference in order 
 
 WARNING
 
-Most objects created using ctypes or comtypes is going to require you to release them explicitly. Releasing an ovject is freeing the memory the object is using. simply deleting the ovject in python is not going to release the memory that is being used. This is extremely important because if you do not do this you are going to end up with memory fragmentation and leaks, and this is never a nice thing to have to deal with. Make sure you read the Windows SDK documentation, it will tell you if you need to release or (free) an object. and if it tells you that you do then you MUST do it. 
+Most objects created using ctypes or comtypes is going to require you to release them explicitly. Releasing an object is freeing the memory the object is using. Simply deleting the object in python is not going to release the memory that is being used. This is extremely important because if you do not do this you are going to end up with memory fragmentation and leaks, and this is never a nice thing to have to deal with. Make sure you read the Windows SDK documentation, it will tell you if you need to release or (free) an object. and if it tells you that you do then you MUST do it. 
 
 Another suggestion is when you need to access some information from an object in the Windows API DO NOT HOLD REFERENCE to this object.. collect whatever data it is you need then release (free) it. It is far easier then having to keep tack of objects. and quite often the objct can become invalid which is a whole other issue because the invalid object you are not going to be able to release so you end up with your memory being held hostage. 
 
