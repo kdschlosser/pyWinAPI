@@ -2,7 +2,7 @@ pyWinAPI
 
 NOTICE
 
-This project is never intended to run. It is to be used as a reference in order to obtain python version of the c code located in the Windows SDK. TheWindows SDK is a behemoth clockin in at almost 10 million lines of code. I think that Python would cringe and then run away if we tried to run a program that contained that many lines of code. Not to mention what the memory hiw would be if we loaded that much code.
+This project is never intended to run. It is to be used as a reference in order to obtain python version of the c code located in the Windows SDK. TheWindows SDK is a behemoth clockin in at almost 10 million lines of code. I think that Python would cringe and then run away if we tried to run a program that contained that many lines of code. Not to mention what the memory hit would be if we loaded that much code.
 
 WARNING
 
